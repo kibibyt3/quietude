@@ -1,0 +1,2 @@
+Finish fleshing out the qattr module so work can resume on qwalk, whose logic
+depends heavily on qattr.

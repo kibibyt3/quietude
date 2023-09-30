@@ -8,19 +8,19 @@
 
 
 /*
- * Initialize the mode module. Returns Q_SUCCESS or Q_FAILURE.
+ * Initialize the mode module. Returns Q_OK or Q_ERROR.
  */
 int
 mode_init() {
-	return Q_SUCCESS;
+	return Q_OK;
 }
 
 /*
- * Exit the mode module. Returns Q_SUCCESS or Q_FAILURE.
+ * Exit the mode module. Returns Q_OK or Q_ERROR.
  */
 int
 mode_exit(){
-	return Q_SUCCESS;
+	return Q_OK;
 }
 
 /*
@@ -30,7 +30,7 @@ mode_exit(){
  * is allowed to be NULL. This is passed, unsanitized, to the initialization 
  * function of the next mode. MODE_T_INIT and MODE_T_EXIT are handled here. Do
  * not treat MODE_T_INIT as the next mode or MODE_T_EXIT as the previous mode,
- * as this is impossible behaviour. Returns Q_SUCCESS or Q_FAILURE.
+ * as this is impossible behaviour. Returns Q_OK or Q_ERROR.
  */
 int
 mode_switch(ModeSwitchData_t *mode_data_next, Mode_t mode_prev) {
@@ -77,7 +77,7 @@ mode_switch(ModeSwitchData_t *mode_data_next, Mode_t mode_prev) {
 		}	
 	}
 
-	return Q_SUCCESS;
+	return Q_OK;
 }
 
 /*

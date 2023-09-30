@@ -5,7 +5,7 @@
 int main(int argc, char** argv) {
 	
 	/* Initializations */
-	assert(mode_init() == Q_SUCCESS);
+	assert(mode_init() == Q_OK);
 
 	Mode_t            mode_curr             = MODE_T_INIT;
 	ModeSwitchData_t *mode_switch_data_next;
