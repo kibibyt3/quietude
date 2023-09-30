@@ -11,8 +11,8 @@ typedef enum Mode_t {
 } Mode_t;
 
 typedef struct ModeSwitchData_t {
-	Mode_t mode;
-	void  *data;
+	Mode_t      mode;
+	QDatameta_t datameta;
 } ModeSwitchData_t;
 
 extern int              mode_init(void);
