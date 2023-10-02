@@ -5,7 +5,7 @@
 
 
 /* Return codes */
-#define Q_OK  0
+#define Q_OK     0
 #define Q_ERROR -1
 
 /* 
@@ -21,4 +21,4 @@ typedef struct Qdatameta_t {
 	size_t   size; 
 } Qdatameta_t;
 
-Qdatameta_t *qdatameta_create(Qdata_t
+Qdatameta_t *qdatameta_create(Qdata_t*, size_t);

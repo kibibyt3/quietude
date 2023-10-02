@@ -9,24 +9,15 @@
 #include "qdefs.h"
 
 /*
- * Creates a datameta. Size must be given as a size in bytes (ideally using the
- * sizeof operator). It is not a 'count' as in other initializers.
+ * Creates a datameta. Size must be the number of elements allocated to the
+ * given pointer. data's memory must be allocated in advance and merely cast to
+ * the form of Qdata_t*
  */ 
 Qdatameta_t*
 qdatameta_create(Qdata_t* data, size_t size) {
 	Qdatameta_t datameta;
-	datameta = malloc(size);
-	assert(datameta != NULL);
-	datameta->datap = data;
-	datameta->size = size;
+	datametap = &datameta;
+	datametap->datap = data;
+	datametap->size = size;
 	return &datameta;
-}
-
-/*
- * Frees a datameta from memory.
- */
-int
-qdatameta_destroy(Qdatameta *datameta){
-	free(datameta);
-	return Q_SUCCESS;
 }
