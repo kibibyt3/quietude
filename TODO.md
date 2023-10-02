@@ -1,6 +1,6 @@
 Finish fleshing out the qattr module so work can resume on qwalk, whose logic
 depends heavily on qattr.
-- This job means fleshing out Qdatameta access and related functions because pointers will be used!
+- This job means fleshing out Qdatameta access and related functions because pointers will be used! Qdatameta does not need a malloc. Figure out what's going on. I'm so tired.
 ---
 Also, add a member to Qdatameta\_t to reflect the
 species of the data contained therein. This will be for error-checking and the
