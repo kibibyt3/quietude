@@ -9,10 +9,10 @@
 #define Q_ERROR -1
 
 /* Type for holding arbitrary amounts of data to pass between modules */
-typedef void QData;
+typedef void Qdata;
 
 /* Type for holding QDatameta and its size */
-typedef struct QDatameta_t {
+typedef struct Qdatameta_t {
 	QData *datap;
 	size_t size; 
 } QDatameta_t;
