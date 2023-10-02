@@ -1,2 +1,5 @@
 Finish fleshing out the qattr module so work can resume on qwalk, whose logic
-depends heavily on qattr.
+depends heavily on qattr. Also, add a member to QDatameta_t to reflect the
+species of the data contained therein. This will be for error-checking and the
+new member's type will be a newly-typedeffed enum that contains all possible
+forms the datameta may take.
