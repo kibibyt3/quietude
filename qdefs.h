@@ -1,4 +1,5 @@
 /*
+ * qdefs.h
  * Game-wide definitions. Depends on stdint.h.
  */
 
@@ -29,4 +30,5 @@ typedef struct Qdatameta_t {
 	QdataType_t type;
 } Qdatameta_t;
 
+/* Creates a datameta */
 Qdatameta_t *qdatameta_create(Qdata_t*, QdataType_t, size_t);

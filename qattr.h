@@ -43,9 +43,10 @@ typedef struct Qattr_t {
  * Type for holding a collection of attributes (e.g. for tying to an object).
  */
 typedef struct QattrList_t {
-	int      count;
+	size_t   count;
 	Qattr_t *attrp;
-} QattrList_t;
+	size_t   index_ok; /* For holding the earliest index of attrp that isn't yet in use */
+} QattrL ist_t;
 
 
 
@@ -59,4 +60,4 @@ extern int qattr_list_destroy(QattrList_t*);
 extern Qdatameta_t* qattr_list_value_get(QattrList_t*, QattrKey_t);
 
 /* Sets an AttrKey/Datameta pair in the given AttrList */
-extern int qattr_list_set(QattrList_t*, QattrKey_t, Qdatameta_t*);
+extern int qattr_list_attr_set(QattrList_t*, QattrKey_t, Qdatameta_t*);
