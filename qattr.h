@@ -36,7 +36,7 @@ typedef enum QattrKey_t {
  */
 typedef struct Qattr_t {
 	QattrKey_t    key;
-	QDatameta_t  *valuep;
+	QDatameta_t*  valuep;
 } Qattr_t;
 
 /*
@@ -53,10 +53,10 @@ typedef struct QattrList_t {
 extern QattrList_t* qattr_list_create(int);
 
 /* Frees a given qattr_list from memory */
-extern qattr_list_destroy(QattrList_t*);
+extern int qattr_list_destroy(QattrList_t*);
 
 /* Returns the value associated with the given key in the given AttrList */
-extern QDatameta* qattr_list_value_get(QattrList_t*, QattrKey_t);
+extern QDatameta_t* qattr_list_value_get(QattrList_t*, QattrKey_t);
 
 /* Sets an AttrKey/Datameta pair in the given AttrList */
-extern int qattr_list_set(QattrList_t*, QattrKey_t, QDatameta_t);
+extern int qattr_list_set(QattrList_t*, QattrKey_t, QDatameta_t*);

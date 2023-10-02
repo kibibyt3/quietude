@@ -22,3 +22,19 @@ qattr_list_create(size_t count){
 	qattr_listp->count = count;
 	return qattr_listp;
 }
+
+int
+qattr_list_destroy(QattrList_t *qattr_list) {
+	free(qattr_list);
+}
+
+int
+QDatameta_t* qattr_list_value_get(QattrList_t*, QattrKey_t) {
+	
+}
+
+int
+qattr_list_set(QattrList_t *attr_list, QattrKey_t attr_key, QDatameta_t *datameta) {
+	attr_list->key = attr_key;
+	attr_list->va
+}

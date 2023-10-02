@@ -25,14 +25,14 @@ typedef struct QwalkArea_t {
 static bool is_init = false;
 
 int
-qwalk_init(QDatameta_t) {
+qwalk_init(QDatameta_t*) {
 	assert(is_init == false);
 	is_init = true;
 	return Q_OK;
 }
 
 int
-qwalk_end(QDatameta_t) {
+qwalk_end() {
 	assert(is_init == true);
 	is_init = false;
 	return Q_OK;
