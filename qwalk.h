@@ -15,6 +15,6 @@ typedef struct QwalkArea {
 		
 } QwalkArea;
 
-extern int              qwalk_init(QDatameta_t*);
+extern int              qwalk_init(Qdatameta_t*);
 extern int              qwalk_end(void);
 extern ModeSwitchData_t qwalk_tick(void);

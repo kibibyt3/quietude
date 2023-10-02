@@ -11,8 +11,8 @@
 /* Type for holding arbitrary amounts of data to pass between modules */
 typedef void Qdata;
 
-/* Type for holding QDatameta and its size */
+/* Type for holding Qdatameta and its size */
 typedef struct Qdatameta_t {
 	QData *datap;
 	size_t size; 
-} QDatameta_t;
+} Qdatameta_t;
