@@ -1,4 +1,4 @@
-/**
+/** 
  * qattr.h
  * Header file for the attribute module. Attributes can be used to store 
  * arbitrary data tied to a key. These keys must be defined in the enum 

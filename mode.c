@@ -1,14 +1,20 @@
+/*
+ * @file mode.c
+ * Program file for the modes module of the game.
+ */
+
 #include "qdefs.h"
 
 #include "mode.h"
 
-#define MODE_SWITCH_DATA_SIZE 500
+#define MODE_SWITCH_DATA_SIZE 500 
 
 
 
 
 /**
- * Initialize the mode module. Returns Q_OK or Q_ERROR.
+ * Initialize the mode module.
+ * @return #Q_OK or #Q_ERROR.
  */
 int
 mode_init() {
@@ -16,7 +22,8 @@ mode_init() {
 }
 
 /**
- * Exit the mode module. Returns Q_OK or Q_ERROR.
+ * Exit the mode module.
+ * @return #Q_OK or #Q_ERROR.
  */
 int
 mode_exit(){
@@ -24,13 +31,14 @@ mode_exit(){
 }
 
 /**
- * Switch from one mode to another; mode_prev stores the name of the previous
- * mode. mode_data_next must store the name of the next mode and data to pass
- * to the next mode. If the game has just been initialized, mode_data_next.data
- * is allowed to be NULL. This is passed, unsanitized, to the initialization 
- * function of the next mode. MODE_T_INIT and MODE_T_EXIT are handled here. Do
- * not treat MODE_T_INIT as the next mode or MODE_T_EXIT as the previous mode,
- * as this is impossible behaviour. Returns Q_OK or Q_ERROR.
+ * Switch from one mode to another.
+ * The previous mode is put away and the next mode is brought out. Data to pass
+ * between each mode is also traded here, wherever applicable. #MODE_T_INIT and
+ * #MODE_T_EXIT are handled here. 
+ * @param mode_prev[in]: the name of the previous mode. Must not be #MODE_T_EXIT.
+ * @param mode_data_next[in]: name and data for the next mode. Data will be NULL
+ * when #MODE_T_INIT is handled. Must not be #MODE_T_EXIT.
+ * @return #Q_OK or #Q_ERROR.
  */
 int
 mode_switch(ModeSwitchData_t *mode_data_next, Mode_t mode_prev) {
@@ -81,10 +89,15 @@ mode_switch(ModeSwitchData_t *mode_data_next, Mode_t mode_prev) {
 }
 
 /**
- * Cause a tick to pass in Mode_t mode; if the next tick must be in a different
- * mode, return the mode name and the data to pass on as a ModeSwitchData_t
- * pointer; otherwise, the returned pointer contains the current mode along
- * with junk data in the other members.
+ * Cause a tick to pass.
+ * Acts as an interface to the relevant tick functions in each module. Tracks
+ * whether the tick function wants to switch control to a different module
+ * by keeping the name of the mode for the next tick in @c mode_switch_data.
+ * If modes are to be changed by the next tick, the datameta to pass to the
+ * next tick is also returned in the #ModeSwitchData_t*.
+ * @param[in] mode: the specific mode to tick forward.
+ * @return switch data with the name of the next mode and data to pass to 
+ * the next mode, if applicable.
  */
 ModeSwitchData_t*
 mode_tick(Mode_t mode){
