@@ -1,4 +1,4 @@
-/*
+/**
  * qwalkl.c
  * Program file for the logic section of the qwalk module.
  */

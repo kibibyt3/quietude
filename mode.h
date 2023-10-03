@@ -1,4 +1,4 @@
-/*
+/**
  * Interface for controlling modes. Depends on qdefs.h and stdint.h.
  */
 

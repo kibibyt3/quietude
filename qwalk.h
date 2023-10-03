@@ -1,4 +1,4 @@
-/*
+/**
  * qwalk.h
  * qwalk module. Depends on qdefs.h and stdint.h.
  */

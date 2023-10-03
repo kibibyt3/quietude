@@ -1,4 +1,4 @@
-/*
+/**
  * qdefs.h
  * Game-wide definitions. Depends on stdint.h.
  */

@@ -1,4 +1,4 @@
-/*
+/**
  * qdefs.c
  * Program file for the qdefs 'module'. Currently only holds functions for
  * dealing with datametas.
@@ -8,7 +8,7 @@
 
 #include "qdefs.h"
 
-/*
+/**
  * Creates a datameta. Size must be the number of elements allocated to the
  * given pointer. data's memory must be allocated in advance and merely cast to
  * the form of Qdata_t*. Param type holds the type of data and count holds the

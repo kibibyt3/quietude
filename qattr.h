@@ -1,4 +1,4 @@
-/*
+/**
  * qattr.h
  * Header file for the attribute module. Attributes can be used to store 
  * arbitrary data tied to a key. These keys must be defined in the enum 
@@ -7,7 +7,7 @@
 
 
 
-/*
+/**
  * Type for holding attribute keys. This avoids needing to use char pointers or
  * char arrays which would consume excessive memory and result in needlessly
  * brief key names.
@@ -31,7 +31,7 @@ typedef enum QattrKey_t {
 	
 } QattrKey_t;
 
-/*
+/**
  * Type for holding attribute pairs.
  */
 typedef struct Qattr_t {
@@ -39,7 +39,7 @@ typedef struct Qattr_t {
 	Qdatameta_t*  valuep;
 } Qattr_t;
 
-/*
+/**
  * Type for holding a collection of attributes (e.g. for tying to an object).
  */
 typedef struct QattrList_t {

@@ -7,7 +7,7 @@
 
 
 
-/*
+/**
  * Initialize the mode module. Returns Q_OK or Q_ERROR.
  */
 int
@@ -15,7 +15,7 @@ mode_init() {
 	return Q_OK;
 }
 
-/*
+/**
  * Exit the mode module. Returns Q_OK or Q_ERROR.
  */
 int
@@ -23,7 +23,7 @@ mode_exit(){
 	return Q_OK;
 }
 
-/*
+/**
  * Switch from one mode to another; mode_prev stores the name of the previous
  * mode. mode_data_next must store the name of the next mode and data to pass
  * to the next mode. If the game has just been initialized, mode_data_next.data
@@ -80,7 +80,7 @@ mode_switch(ModeSwitchData_t *mode_data_next, Mode_t mode_prev) {
 	return Q_OK;
 }
 
-/*
+/**
  * Cause a tick to pass in Mode_t mode; if the next tick must be in a different
  * mode, return the mode name and the data to pass on as a ModeSwitchData_t
  * pointer; otherwise, the returned pointer contains the current mode along
