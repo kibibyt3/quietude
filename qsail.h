@@ -1,3 +1,4 @@
 /**
- * Logic and i/o module for qsail.
+ * @file qsail.h
+ * Header for qsail logic and i/o modules.
  */  

@@ -1,4 +1,4 @@
-/*
+/**
  * @file mode.c
  * Program file for the modes module of the game.
  */
@@ -6,9 +6,6 @@
 #include "qdefs.h"
 
 #include "mode.h"
-
-#define MODE_SWITCH_DATA_SIZE 500 
-
 
 
 
@@ -35,8 +32,8 @@ mode_exit(){
  * The previous mode is put away and the next mode is brought out. Data to pass
  * between each mode is also traded here, wherever applicable. #MODE_T_INIT and
  * #MODE_T_EXIT are handled here. 
- * @param mode_prev[in]: the name of the previous mode. Must not be #MODE_T_EXIT.
- * @param mode_data_next[in]: name and data for the next mode. Data will be NULL
+ * @param[in] mode_prev: the name of the previous mode. Must not be #MODE_T_EXIT.
+ * @param[in] mode_data_next: name and data for the next mode. Data will be @c NULL
  * when #MODE_T_INIT is handled. Must not be #MODE_T_EXIT.
  * @return #Q_OK or #Q_ERROR.
  */

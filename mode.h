@@ -28,8 +28,14 @@ typedef struct ModeSwitchData_t {
 	Qdatameta_t* datameta; /**< datameta to pass to the next mode, if applicable */
 } ModeSwitchData_t;
 
+/** Initialize mode module.         */
 extern int              mode_init(void);
+
+/** Exit mode module.               */
 extern int              mode_exit(void);
 
+/** Switch to a different mode      */
 extern int              mode_switch(ModeSwitchData_t, Mode_t);
+
+/** Pass a tick in the current mode */
 extern ModeSwitchData_t mode_tick(Mode_t);

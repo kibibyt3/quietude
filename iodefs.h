@@ -15,7 +15,7 @@ typedef int IOCh_t;
  * displayed. Intentionally abstracted from the logic half of Q.
  */
 typedef struct IOTile_t {
-	int    y;
-	int    x;
-	IOCh_t ch;
+	int    y;  /**< Y coord of the tile                 */
+	int    x;  /**< X coord of the tile                 */
+	IOCh_t ch; /**< #IOCh_t to be displayed on the tile */
 } IOTile_t;

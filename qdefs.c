@@ -1,7 +1,7 @@
 /**
- * qdefs.c
- * Program file for the qdefs 'module'. Currently only holds functions for
- * dealing with datametas.
+ * @file qdefs.c
+ * Program file for the qdefs 'module'.
+ * Logic for game-wide types.
  */
 
 #include <stdlib.h>

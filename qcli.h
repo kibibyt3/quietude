@@ -1,3 +1,4 @@
 /**
- * Logic and i/o module for qcli.
+ * @file qcli.h
+ * Logic and i/o module interface for qcli.
  */

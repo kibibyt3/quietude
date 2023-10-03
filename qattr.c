@@ -1,5 +1,5 @@
 /**
- * qattr.c
+ * @file qattr.c
  * Program file for the attribute module.
  */
 
@@ -12,7 +12,10 @@
 #include "qattr.h"
 
 /**
- * Creates and allocates memory for a new attr_list of size count.
+ * Create a #QattrList_t
+ * Allocates memory for a new #QattrList_t of a given size.
+ * @param[in] count: the number of #Qattr_t to allocate memory for
+ * @return pointer to a newly allocated #QattrList_t
  */
 QattrList_t*
 qattr_list_create(size_t count){
@@ -29,7 +32,9 @@ qattr_list_create(size_t count){
 }
 
 /**
- * Frees from memory a given attr_list. Returns Q_OK or Q_ERROR.
+ * Destroy a #QattrList_t
+ * @param[in] qattr_list: #QattrList_t to free from memory
+ * @return #Q_OK or #Q_ERROR
  */
 int
 qattr_list_destroy(QattrList_t *qattr_list) {
@@ -38,8 +43,11 @@ qattr_list_destroy(QattrList_t *qattr_list) {
 }
 
 /**
- * Fetches the value associated with param attr_key in attr_list. Returns NULL
- * if the key doesn't exist.
+ * Fetch an attribute value
+ * Fetches the value associated with a #QattrKey_t in a #QattrList_t.
+ * @param[in] attr_key: key whose value is to be found
+ * @param[in] attr_list: list whose keys are to be parsed
+ * @return #Qdatameta_t containing the value or @c NULL if the key doesn't exist.
  */ 
 Qdatameta_t*
 qattr_list_value_get(QattrList_t* attr_list, QattrKey_t attr_key) {	
@@ -53,9 +61,12 @@ qattr_list_value_get(QattrList_t* attr_list, QattrKey_t attr_key) {
 }
 
 /**
- * Adds key/value pair to a given attr_list. attr_list->index_ok gets 
- * incremented only when the attribute is successfully added. Returns Q_OK
- * or Q_ERROR.
+ * Add key/value pair to a #QattrList_t.
+ * @param[out] attr_list: list to gain a key/value pair. Its @c index_ok element
+ * is incremented with a successful addition.
+ * @param[in]  attr_key: key to add to the #QattrList_t
+ * @param[out] datameta: datameta to add to the #QattrList_t
+ * @return #Q_OK or #Q_ERROR.
  */
 int
 qattr_list_attr_set(QattrList_t *attr_list, QattrKey_t attr_key, Qdatameta_t *datameta) {

@@ -1,7 +1,17 @@
+/**
+ * @file main.c
+ * Main file for Q.
+ */
+
 #include "qdefs.h"
 
 #include "mode.h"
 
+/**
+ * Main function of Q.
+ * @param[in] argc: argument count
+ * @param[in] argv: argument vector
+ */
 int main(int argc, char** argv) {
 	
 	/* Initializations */
