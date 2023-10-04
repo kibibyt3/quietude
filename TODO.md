@@ -1,4 +1,5 @@
 # TODO
 
-### Finish making code readable for doxygen
-### Debug qattr & qdefs
+- [x] Finish making code readable for doxygen
+- [X] Debug qattr & qdefs
+- [ ] Resume work on qwalk

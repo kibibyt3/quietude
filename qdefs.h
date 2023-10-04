@@ -14,7 +14,7 @@ typedef enum QdataType_t {
 	QDATA_TYPE_FLOAT,
 	QDATA_TYPE_STRING,
 	QDATA_TYPE_COUNT = QDATA_TYPE_STRING
-} QdataSpecies_t;
+} QdataType_t;
 
 /** 
  * Type for holding arbitrary amounts of data to pass between modules. Meant to

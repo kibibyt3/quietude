@@ -15,10 +15,10 @@
 typedef enum QattrKey_t {
 
 	/* GENERAL ATTRIBUTE KEYS         */
-	QATTR_KEY_NAME = 1,                 /**< name of object */
-	QATTR_KEY_DESCRIPTION_BRIEF,        /**< brief description of object */
-	QATTR_KEY_DESCRIPTION_LONG,         /**< long description of object  */
-	/* QWALK-EXCLUSIVE ATTRIBUTE KEYS */
+	QATTR_KEY_NAME = 1,                  /**< name of object */
+	QATTR_KEY_DESCRIPTION_BRIEF,         /**< brief description of object */
+	QATTR_KEY_DESCRIPTION_LONG,          /**< long description of object  */
+	/* QWALK-EXCLUSIVE ATTRIBUTE KEYS */ 
 
 	/* QTALK-EXCLUSIVE ATTRIBUTE KEYS */
 
@@ -27,7 +27,13 @@ typedef enum QattrKey_t {
 	/* QSAIL_EXCLUSIVE ATTRIBUTE KEYS */
 
 	/* INTERNAL ATTRIBUTE KEYS        */
-	QATTR_KEY_COUNT = Q_ATTR_KEY_DESCRIPTION /**< MUST DEFINE VIA THE FINAL ENUM */
+	QATTR_KEY_DEBUG,                    /**< Test attribute for debugging */
+	
+	/**
+	 * Number of allowed values for #QattrKey_t.
+	 * Must be defined via the second-to-last enum.
+	 */
+	QATTR_KEY_COUNT = QATTR_KEY_DEBUG
 	
 } QattrKey_t;
 
@@ -36,7 +42,7 @@ typedef enum QattrKey_t {
  */
 typedef struct Qattr_t {
 	QattrKey_t    key;    /**< Key to address the value by */
-	Qdatameta_t*  valuep; /**< Value to properly hold the data for the attribute */
+	Qdatameta_t  *valuep; /**< Value to hold the proper data for the attribute */
 } Qattr_t;
 
 /**
@@ -47,12 +53,12 @@ typedef struct QattrList_t {
 	size_t   count;    /**< The number of #Qattr_t in the list                */
 	Qattr_t *attrp;    /**< The actual collection of #Qattr_t                 */
 	size_t   index_ok; /**< The earliest index of attrp that isn't yet in use */
-} QattrL ist_t;
+} QattrList_t;
 
 
 
 /** Returns a newly-created attr list of a given size */
-extern QattrList_t* qattr_list_create(int);
+extern QattrList_t* qattr_list_create(size_t);
 
 /** Frees a given qattr_list from memory */
 extern int qattr_list_destroy(QattrList_t*);
@@ -60,5 +66,5 @@ extern int qattr_list_destroy(QattrList_t*);
 /** Returns the value associated with the given key in the given AttrList */
 extern Qdatameta_t* qattr_list_value_get(QattrList_t*, QattrKey_t);
 
-/** Sets an AttrKey/Datameta pair in the given AttrList */
+/** Sets a #QattrKey_t/#Qdatameta_t pair in the given AttrList */
 extern int qattr_list_attr_set(QattrList_t*, QattrKey_t, Qdatameta_t*);

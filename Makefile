@@ -1,10 +1,10 @@
 CC = gcc
 DEBUG_CC = gcc
 
-CFLAGS =
+CFLAGS = -O0 -g3
 DEBUG_CFLAGS = -O0 -g3
 
-debug_objects = qattr.o test.o
+debug_objects = qattr.o test.o qdefs.o
 objects = qattr.o
 
 test: $(debug_objects)
@@ -12,3 +12,9 @@ test: $(debug_objects)
 
 $(objects): %.o: %.c
 
+clean:
+	rm *.o
+
+.PHONY: docs
+docs:
+	doxygen Doxyfile

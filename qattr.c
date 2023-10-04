@@ -11,6 +11,8 @@
 
 #include "qattr.h"
 
+
+
 /**
  * Create a #QattrList_t
  * Allocates memory for a new #QattrList_t of a given size.
@@ -20,9 +22,8 @@
 QattrList_t*
 qattr_list_create(size_t count){
 	assert(count < SIZE_MAX);
-	QattrList_t  qattr_dummy;
 	QattrList_t *qattr_listp;
-	qattr_listp = &qattr_dummy;
+	qattr_listp        = calloc(1, sizeof(*qattr_listp));
 	qattr_listp->attrp = calloc(count, sizeof(*(qattr_listp->attrp)));
 	assert(qattr_listp->attrp != NULL);
 	qattr_listp->count = count;
@@ -53,8 +54,8 @@ Qdatameta_t*
 qattr_list_value_get(QattrList_t* attr_list, QattrKey_t attr_key) {	
 	/* We need only iterate through those elements which have been properly added */
 	for (int i = 0; i < (int) (attr_list->index_ok); i++){
-		if (attr_list->attrp[i]->key == attr_key){
-			return attr_list->attrp[i]->valuep;
+		if (attr_list->attrp[i].key == attr_key){
+			return attr_list->attrp[i].valuep;
 		}
 	}
 	return NULL;
@@ -71,14 +72,14 @@ qattr_list_value_get(QattrList_t* attr_list, QattrKey_t attr_key) {
 int
 qattr_list_attr_set(QattrList_t *attr_list, QattrKey_t attr_key, Qdatameta_t *datameta) {
 	size_t index_free = attr_list->index_ok; /* To ease readability */
-	for (size_t i = 0; i < index_free; i++){ /* Hoping size_t increments by 1! */
-		/* Check if key is already defined. This could be removed to improve performance. */
-		if (attr_list->attrp[i]->key == attr_key){
-			return Q_ERROR;
-		}
+	
+	/* Validate attr_key */
+	if (attr_key < 1 || attr_key > QATTR_KEY_COUNT) {
+		return Q_ERROR;
 	}
-	attr_list->attrp[index_free]->key = attr_key;
-	attr_list->attrp[index_free]->valuep = datameta;
+
+	attr_list->attrp[index_free].key = attr_key;
+	attr_list->attrp[index_free].valuep = datameta;
 	(attr_list->index_ok)++; /* Index is no longer available; move to the next */
 	return Q_OK;
 }

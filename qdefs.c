@@ -9,17 +9,18 @@
 #include "qdefs.h"
 
 /**
- * Creates a datameta. Size must be the number of elements allocated to the
- * given pointer. data's memory must be allocated in advance and merely cast to
- * the form of Qdata_t*. Param type holds the type of data and count holds the
- * number of type in data.
+ * Create a datameta.
+ * @param[in] count: number of elements allocated to the given pointer
+ * @param[in] data:  pointer to allocated memory that stores the data
+ * @param[in] type:  type of @c data
+ * @return newly created #Qdatameta_t
  */ 
 Qdatameta_t*
 qdatameta_create(Qdata_t* data, QdataType_t type, size_t count) {
-	Qdatameta_t datameta;
-	datametap = &datameta;
+	Qdatameta_t *datametap; 
+	datametap = calloc(1, sizeof(*datametap));
 	datametap->datap = data;
 	datametap->count = count;
 	datametap->type = type;
-	return &datameta;
+	return datametap;
 }
