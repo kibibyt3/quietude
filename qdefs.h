@@ -5,8 +5,8 @@
 
 
 
-#define Q_OK     0 /** General OK return code for Q */
-#define Q_ERROR -1 /** General ERROR return code for Q */
+#define Q_OK     0 /**< General OK return code for Q */
+#define Q_ERROR -1 /**< General ERROR return code for Q */
 
 /**
  * Type for representing data types.
