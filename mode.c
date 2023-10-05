@@ -3,6 +3,8 @@
  * Program file for the modes module of the game.
  */
 
+#include <assert.h>
+
 #include "qdefs.h"
 
 #include "mode.h"
