@@ -1,12 +1,10 @@
 /**
  * @file iodefs.h
- * Header file for definitions that involve i/o genenerally, i.e. independent of
- * modes.
+ * Header file for definitions that involve i/o genenerally.
+ * This module does not know about modes.
  */
 
-/**
- * Type for characters that belong to tiles.
- */
+/** I/O character. */
 typedef int IOCh_t;
 
 /**
