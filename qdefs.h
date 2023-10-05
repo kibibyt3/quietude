@@ -1,18 +1,26 @@
 /**
- * qdefs.h
+ * @file qdefs.h
  * Header file for game-wide definitions. Depends on stdint.h.
  */
 
 
 
-/* Return codes */
-#define Q_OK     0
-#define Q_ERROR -1
+#define Q_OK     0 /** General OK return code for Q */
+#define Q_ERROR -1 /** General ERROR return code for Q */
 
+/**
+ * Type for representing data types.
+ * Used primarily for error-checking and casting when data type is unknown.
+ */
 typedef enum QdataType_t {
-	QDATA_TYPE_INT = 1,
-	QDATA_TYPE_FLOAT,
-	QDATA_TYPE_STRING,
+	QDATA_TYPE_INT = 1, /**< int type   */
+	QDATA_TYPE_FLOAT,   /**< float type */
+	QDATA_TYPE_STRING,  /**< int* type (when used to represent characters) */
+
+	/**
+	 * Total enumerated #QdataType_t values.
+	 * Must be defined via the final proper enum.
+	 */
 	QDATA_TYPE_COUNT = QDATA_TYPE_STRING
 } QdataType_t;
 
