@@ -42,9 +42,9 @@ mode_switch(ModeSwitchData_t *mode_data_next, Mode_t mode_prev) {
 	
 	/* Validate params against 'impossible' values */
 	assert(mode_prev              != MODE_T_EXIT);
-	assert((*mode_data_next).mode != MODE_T_INIT);
+	assert(mode_data_next->mode != MODE_T_INIT);
 	assert(mode_prev              > 0 && mode_prev           < MODE_T_COUNT);
-	assert((*mode_data_next).mode > 0 && mode_data_next.mode < MODE_T_COUNT);
+	assert(mode_data_next->mode > 0 && mode_data_next->mode < MODE_T_COUNT);
 	
 	/* Put away previous mode unless we just initialized the game */
 	if (mode_prev != MODE_T_INIT){
@@ -65,19 +65,19 @@ mode_switch(ModeSwitchData_t *mode_data_next, Mode_t mode_prev) {
 	}
 
 	/* Bring out the next mode unless we're going to exit */
-	if ((*mode_data_next).mode != MODE_T_EXIT){
-		switch ((*mode_data_next).mode) {
+	if (mode_data_next->mode != MODE_T_EXIT){
+		switch (mode_data_next->mode) {
 		case MODE_T_WALK:
-			qwalk_init((*mode_data_next).datameta);
+			qwalk_init(mode_data_next->datameta);
 			break;
 		case MODE_T_TALK:
-			qtalk_init((*mode_data_next).datameta);
+			qtalk_init(mode_data_next->datameta);
 			break;
 		case MODE_T_CLI:
-			qcli_init((*mode_data_next).datameta);
+			qcli_init(mode_data_next->datameta);
 			break;
 		case MODE_T_SAIL:
-			qsail_init((*mode_data_next).datameta);
+			qsail_init(mode_data_next->datameta);
 			break;
 		}	
 	}

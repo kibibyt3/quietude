@@ -15,7 +15,7 @@ typedef enum Mode_t {
 	MODE_T_TALK,
 	MODE_T_CLI,
 	MODE_T_SAIL,
-	MODE_T_COUNT = MODE_T_SAIL; /**< MUST BE CHANGED IF MODE_T_SAIL IS NOT THE LAST ENUM CONSTANT! */
+	MODE_T_COUNT = MODE_T_SAIL /**< MUST BE CHANGED IF MODE_T_SAIL IS NOT THE LAST ENUM CONSTANT! */
 } Mode_t;
 
 /**
@@ -29,13 +29,13 @@ typedef struct ModeSwitchData_t {
 } ModeSwitchData_t;
 
 /** Initialize mode module.         */
-extern int              mode_init(void);
+extern int               mode_init(void);
 
 /** Exit mode module.               */
-extern int              mode_exit(void);
+extern int               mode_exit(void);
 
 /** Switch to a different mode      */
-extern int              mode_switch(ModeSwitchData_t, Mode_t);
+extern int               mode_switch(ModeSwitchData_t*, Mode_t);
 
 /** Pass a tick in the current mode */
-extern ModeSwitchData_t mode_tick(Mode_t);
+extern ModeSwitchData_t *mode_tick(Mode_t);
