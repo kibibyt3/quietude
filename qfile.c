@@ -1,7 +1,9 @@
 /**
  * @file qfile.c
- * Program file for the file module of Q. Responsible for directly reading and
- * writing to files.
+ * Program file for the file module of Q.
+ * Responsible for directly reading and writing to files. This module keeps the
+ * current file for I/O operations at a global scope; this avoids the need to
+ * open & close a file every time a lone datam needs to be written.
  */
 
 
@@ -18,16 +20,20 @@
  * Pointer to the current active file.
  * Modify via #QfileOpen() and #QfileClose().
  */
-static QFile_t *qfile_ptr;
+static FILE *qfile_ptr;
 
 /** Indicates whether qfile_ptr is currently active. */
 static bool qfile_isactive = false;
 
 
 
+/**
+ * Opens a file for future access by the qfile module.
+ * @param[in] filename: the name of the file to be kept open
+ * @return #Q_SUCCESS or #Q_ERROR
+ */
 int
 QfileOpen(int *filename) {
-	
 	if (!qfile_isactive){
 		return Q_ERROR;
 	}
@@ -37,12 +43,15 @@ QfileOpen(int *filename) {
 	}
 	qfile_isactive = true;
 	return Q_SUCCESS;
-
 }
 
+/**
+ * Closes the file opened in the qfile module.
+ * @param[out] file: the pointer to the @c FILE to be closed.
+ * @return #Q_SUCCESS or #Q_ERROR
+ */
 int
 QfileClose(FILE *file) {
-	
 	if (qfile_isactive) {
 		return Q_ERROR;
 	}
@@ -51,20 +60,62 @@ QfileClose(FILE *file) {
 	}
 	qfile_isactive = false;
 	return Q_SUCCESS;
-
 }
 
+/**
+ * Write a #Qdatameta_t to the file open in qfile.
+ * @param[in] data_meta: pointer to the #Qdatameta_t to be written
+ * @return #Q_SUCCESS or #Q_ERROR
+ */
 int
-QfileQdataWrite(Qdata_t *data, QdataType_t data_type) {
+QfileQdatametaWrite(Qdatameta_t *data_meta) {
+	size_t datameta_data_type_size;
+	size_t data_written_count;
+	if (!qfile_isactive) {
+		return Q_ERROR;
+	}
 	
+	if ((datameta_data_type_size = qdata_type_size_get(datameta->type)
+				== Q_DEFAULT_TYPE_SIZE)) {
+		return Q_ERROR;
+	}
+	
+	data_written_count = fwrite((void *) (data_meta->datap),
+			datameta_data_type_size,
+			data_meta->count,
+			qfile_ptr);
+	
+	if (data_written_count < data_meta->count) {
+		return Q_ERROR;
+	}
+	return Q_SUCCESS;
+}
+
+/**
+ * Read to a #Qdatameta_t from the file open in qfile.
+ * @param[out] pointer to the #Qdatameta_t to be read to
+ * @return #Q_SUCCESS or #Q_ERROR
+ */
+int
+QfileQdataRead(Qdatameta_t *data_meta) {
+	size_t data_read_count;
+	size_t datameta_data_type_size;
 	if (!qfile_isactive) {
 		return Q_ERROR;
 	}
 
+	if ((datameta_data_type_size = qdata_type_size_get(datameta->type)
+				== Q_DEFAULT_TYPE_SIZE)) {
+		return Q_ERROR;
+	}
 
-}
-
-Qdata_t*
-QfileQdataRead(QdataType_t data_type) {
+	data_read_count = fread((void *) (data_meta->datap),
+			datameta_data_type_size,
+			data_meta->count,
+			qfile_ptr);
 	
+	if (data_read_count < data_meta->count) {
+		return Q_ERROR;
+	}
+	return Q_SUCCESS;
 }

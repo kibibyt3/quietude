@@ -5,9 +5,6 @@
 
 
 
-/** Files accessed via the qfile module. */
-typedef FILE QFile_t;
-
 /**
  * Type of a q file.
  * i.e., what module it belongs to and the format of its data.
@@ -30,8 +27,8 @@ extern int QfileOpen(FILE*);
 /** Close a file for qfile */
 extern int QfileClose(FILE*);
 
-/** Write a #Qdata_t */
-extern int QfileQdataWrite(Qdata_t*, QdataType_t);
+/** Write a #Qdata_t to a file  */
+extern int QfileQdataWrite(Qdatameta_t*, QdataType_t);
 
-/** Read a #Qdata_t */
+/** Read a #Qdata_t from a file */
 extern QData_t* QfileQdataRead(QdataType_t);
