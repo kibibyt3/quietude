@@ -14,7 +14,7 @@
 
 #include "qdefs.h"
 
-
+#include "qfile.h"
 
 /**
  * Pointer to the current active file.
@@ -22,8 +22,8 @@
  */
 static FILE *qfile_ptr;
 
-/** Indicates whether qfile_ptr is currently active. */
-static bool qfile_isactive = false;
+/** Current #QfileMode_t */
+static QfileMode_t qfile_mode = QFILE_MODE_INACTIVE;
 
 
 
@@ -33,15 +33,23 @@ static bool qfile_isactive = false;
  * @return #Q_OK or #Q_ERROR
  */
 int
-QfileOpen(int *filename) {
-	if (!qfile_isactive){
+qfile_open(int *filename, QfileMode_t mode) {
+	if (qfile_mode == QFILE_MODE_INACTIVE){
 		return Q_ERROR;
 	}
-	qfile_ptr = fopen((char *) filename);
+	if (mode == QFILE_MODE_WRITE) {
+		qfile_ptr  = fopen((char *) filename, "w");
+		qfile_mode = QFILE_MODE_WRITE;
+	} else if (mode == QFILE_MODE_READ) {
+		qfile_ptr = fopen((char *) filename, "r");
+		qfile_mode = QFILE_MODE_READ;
+	} else {
+		return Q_ERROR;
+	}
 	if (qfile_ptr == NULL){
+		qfile_mode = QFILE_MODE_INACTIVE;
 		return Q_ERROR;
 	}
-	qfile_isactive = true;
 	return Q_OK;
 }
 
@@ -51,14 +59,14 @@ QfileOpen(int *filename) {
  * @return #Q_OK or #Q_ERROR
  */
 int
-QfileClose(FILE *file) {
-	if (qfile_isactive) {
+qfile_close() {
+	if (qfile_mode == QFILE_MODE_INACTIVE) {
 		return Q_ERROR;
 	}
 	if (fclose(qfile_ptr) == EOF){
 		return Q_ERROR;
 	}
-	qfile_isactive = false;
+	qfile_mode = QFILE_MODE_INACTIVE;
 	return Q_OK;
 }
 
@@ -68,10 +76,10 @@ QfileClose(FILE *file) {
  * @return #Q_OK or #Q_ERROR
  */
 int
-QfileQdatametaWrite(Qdatameta_t *datameta) {
+qfile_qdatameta_write(Qdatameta_t *datameta) {
 	size_t datameta_data_type_size;
 	size_t data_written_count;
-	if (!qfile_isactive) {
+	if (qfile_mode != QFILE_MODE_READ) {
 		return Q_ERROR;
 	}
 	
@@ -93,14 +101,15 @@ QfileQdatametaWrite(Qdatameta_t *datameta) {
 
 /**
  * Read to a #Qdatameta_t from the file open in qfile.
- * @param[out] datameta: pointer to the #Qdatameta_t to be read to
+ * @param[out] datameta: pointer to the #Qdatameta_t to be read to.
+ * Its members must be set in advance to allow @c fread() to parse the data.
  * @return #Q_OK or #Q_ERROR
  */
 int
-QfileQdataRead(Qdatameta_t *datameta) {
+qfile_qdatameta_read(Qdatameta_t *datameta) {
 	size_t data_read_count;
 	size_t datameta_data_type_size;
-	if (!qfile_isactive) {
+	if (qfile_mode != QFILE_MODE_READ) {
 		return Q_ERROR;
 	}
 

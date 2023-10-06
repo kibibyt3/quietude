@@ -6,6 +6,7 @@
 
 #include "qdefs.h"
 #include "qattr.h"
+#include "qfile.h"
 
 int main(int argc, char** argv) {
 	QattrList_t *qattr_list;

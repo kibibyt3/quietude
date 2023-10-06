@@ -19,16 +19,31 @@ typedef enum QfileType_t {
 	 * Must be defined via the final proper enum constant
 	 */
 	QFILE_TYPE_COUNT = QFILE_TYPE_SAIL_RAW
-}
+} QfileType_t;
+
+/**
+ * Mode of a qfile
+ */
+typedef enum QfileMode_t {
+	QFILE_MODE_READ = 1, /** Read mode  */
+	QFILE_MODE_WRITE,    /** Write mode */
+	QFILE_MODE_INACTIVE, /** File isn't open */
+
+	/**
+	 * Number of modes.
+	 * Must be defined by final enum constant.
+	 */
+	QFILE_MODE_COUNT = QFILE_MODE_WRITE
+} QfileMode_t;
 
 /** Open a file for qfile */
-extern int QfileOpen(FILE*);
+extern int qfile_open(int*, QfileMode_t);
 
 /** Close a file for qfile */
-extern int QfileClose(FILE*);
+extern int qfile_close(void);
 
 /** Write a #Qdata_t to a file  */
-extern int QfileQdataWrite(Qdatameta_t*, QdataType_t);
+extern int qfile_qdatameta_write(Qdatameta_t*);
 
 /** Read a #Qdata_t from a file */
-extern QData_t* QfileQdataRead(QdataType_t);
+extern int qfile_qdatameta_read(Qdatameta_t*);
