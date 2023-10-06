@@ -30,7 +30,7 @@ static bool qfile_isactive = false;
 /**
  * Opens a file for future access by the qfile module.
  * @param[in] filename: the name of the file to be kept open
- * @return #Q_SUCCESS or #Q_ERROR
+ * @return #Q_OK or #Q_ERROR
  */
 int
 QfileOpen(int *filename) {
@@ -42,13 +42,13 @@ QfileOpen(int *filename) {
 		return Q_ERROR;
 	}
 	qfile_isactive = true;
-	return Q_SUCCESS;
+	return Q_OK;
 }
 
 /**
  * Closes the file opened in the qfile module.
  * @param[out] file: the pointer to the @c FILE to be closed.
- * @return #Q_SUCCESS or #Q_ERROR
+ * @return #Q_OK or #Q_ERROR
  */
 int
 QfileClose(FILE *file) {
@@ -59,13 +59,13 @@ QfileClose(FILE *file) {
 		return Q_ERROR;
 	}
 	qfile_isactive = false;
-	return Q_SUCCESS;
+	return Q_OK;
 }
 
 /**
  * Write a #Qdatameta_t to the file open in qfile.
  * @param[in] data_meta: pointer to the #Qdatameta_t to be written
- * @return #Q_SUCCESS or #Q_ERROR
+ * @return #Q_OK or #Q_ERROR
  */
 int
 QfileQdatametaWrite(Qdatameta_t *data_meta) {
@@ -88,13 +88,13 @@ QfileQdatametaWrite(Qdatameta_t *data_meta) {
 	if (data_written_count < data_meta->count) {
 		return Q_ERROR;
 	}
-	return Q_SUCCESS;
+	return Q_OK;
 }
 
 /**
  * Read to a #Qdatameta_t from the file open in qfile.
  * @param[out] pointer to the #Qdatameta_t to be read to
- * @return #Q_SUCCESS or #Q_ERROR
+ * @return #Q_OK or #Q_ERROR
  */
 int
 QfileQdataRead(Qdatameta_t *data_meta) {
@@ -117,5 +117,5 @@ QfileQdataRead(Qdatameta_t *data_meta) {
 	if (data_read_count < data_meta->count) {
 		return Q_ERROR;
 	}
-	return Q_SUCCESS;
+	return Q_OK;
 }
