@@ -60,5 +60,8 @@ extern Qdatameta_t *qdatameta_create(Qdata_t*, QdataType_t, size_t);
 /** Destroy a #Qdatameta_t */
 extern Qdatameta_t *qdatameta_destroy(Qdatameta_t*);
 
+/** Create a #Qdata_t      */
+extern Qdata_t     *qdata_create(QdataType_t, size_t count);
+
 /** Get the size of a #QdataType_t */
 extern size_t       qdata_type_size_get(QdataType_t);
