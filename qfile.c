@@ -64,11 +64,11 @@ QfileClose(FILE *file) {
 
 /**
  * Write a #Qdatameta_t to the file open in qfile.
- * @param[in] data_meta: pointer to the #Qdatameta_t to be written
+ * @param[in] datameta: pointer to the #Qdatameta_t to be written
  * @return #Q_OK or #Q_ERROR
  */
 int
-QfileQdatametaWrite(Qdatameta_t *data_meta) {
+QfileQdatametaWrite(Qdatameta_t *datameta) {
 	size_t datameta_data_type_size;
 	size_t data_written_count;
 	if (!qfile_isactive) {
@@ -80,12 +80,12 @@ QfileQdatametaWrite(Qdatameta_t *data_meta) {
 		return Q_ERROR;
 	}
 	
-	data_written_count = fwrite((void *) (data_meta->datap),
+	data_written_count = fwrite((void *) (datameta->datap),
 			datameta_data_type_size,
-			data_meta->count,
+			datameta->count,
 			qfile_ptr);
 	
-	if (data_written_count < data_meta->count) {
+	if (data_written_count < datameta->count) {
 		return Q_ERROR;
 	}
 	return Q_OK;
@@ -93,11 +93,11 @@ QfileQdatametaWrite(Qdatameta_t *data_meta) {
 
 /**
  * Read to a #Qdatameta_t from the file open in qfile.
- * @param[out] pointer to the #Qdatameta_t to be read to
+ * @param[out] datameta: pointer to the #Qdatameta_t to be read to
  * @return #Q_OK or #Q_ERROR
  */
 int
-QfileQdataRead(Qdatameta_t *data_meta) {
+QfileQdataRead(Qdatameta_t *datameta) {
 	size_t data_read_count;
 	size_t datameta_data_type_size;
 	if (!qfile_isactive) {
@@ -109,12 +109,12 @@ QfileQdataRead(Qdatameta_t *data_meta) {
 		return Q_ERROR;
 	}
 
-	data_read_count = fread((void *) (data_meta->datap),
+	data_read_count = fread((void *) (datameta->datap),
 			datameta_data_type_size,
-			data_meta->count,
+			datameta->count,
 			qfile_ptr);
 	
-	if (data_read_count < data_meta->count) {
+	if (data_read_count < datameta->count) {
 		return Q_ERROR;
 	}
 	return Q_OK;
