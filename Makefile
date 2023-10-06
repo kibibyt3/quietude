@@ -1,14 +1,12 @@
 CC = gcc
-DEBUG_CC = gcc
 
-CFLAGS = -O0 -g3
-DEBUG_CFLAGS = -O0 -g3
+CFLAGS = -O0 -g3 -Wall -Wstrict-prototypes -Wmissing-prototypes -Wshadow -Wconversion 
 
-debug_objects = qattr.o test.o qdefs.o
+debug_objects = qfile.o qattr.o test.o qdefs.o
 objects = qattr.o
 
 test: $(debug_objects)
-	$(DEBUG_CC) $(DEBUG_CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^
 
 $(objects): %.o: %.c
 
