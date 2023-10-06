@@ -8,6 +8,11 @@
 #define Q_OK     0 /**< General OK return code for Q */
 #define Q_ERROR -1 /**< General ERROR return code for Q */
 
+
+/** Returned by #Qdata_type_size_get if the type doesn't exist */
+#define Q_DEFAULT_TYPE_SIZE 0
+
+
 /**
  * Type for representing data types.
  * Used primarily for error-checking and casting when data type is unknown.
@@ -46,5 +51,14 @@ typedef struct Qdatameta_t {
 	QdataType_t type; /**< Type of the data. */
 } Qdatameta_t;
 
-/* Create a datameta */
-Qdatameta_t *qdatameta_create(Qdata_t*, QdataType_t, size_t);
+
+
+
+/* Create a #Qdatameta_t  */
+extern Qdatameta_t *qdatameta_create(Qdata_t*, QdataType_t, size_t);
+
+/* Destroy a #Qdatameta_t */
+extern Qdatameta_t *qdatameta_destroy(Qdatameta_t*);
+
+/* Get the size of a #QdataType_t */
+extern size_t       qdata_type_size_get(QdataType_t);
