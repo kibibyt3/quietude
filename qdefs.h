@@ -9,7 +9,7 @@
 #define Q_ERROR -1 /**< General ERROR return code for Q */
 
 
-/** Returned by #Qdata_type_size_get if the type doesn't exist */
+/** Returned by #qdata_type_size_get if the type doesn't exist */
 #define Q_DEFAULT_TYPE_SIZE 0
 
 
@@ -54,11 +54,11 @@ typedef struct Qdatameta_t {
 
 
 
-/* Create a #Qdatameta_t  */
+/** Create a #Qdatameta_t  */
 extern Qdatameta_t *qdatameta_create(Qdata_t*, QdataType_t, size_t);
 
-/* Destroy a #Qdatameta_t */
+/** Destroy a #Qdatameta_t */
 extern Qdatameta_t *qdatameta_destroy(Qdatameta_t*);
 
-/* Get the size of a #QdataType_t */
+/** Get the size of a #QdataType_t */
 extern size_t       qdata_type_size_get(QdataType_t);
