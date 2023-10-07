@@ -29,19 +29,20 @@ static QfileMode_t qfile_mode = QFILE_MODE_INACTIVE;
 
 /**
  * Opens a file for future access by the qfile module.
- * @param[in] filename: the name of the file to be kept open
+ * @param[in] filename: @c char* that the name of the file to be kept open
+ * @param[in] mode: #QfileMode_t to open @c filename in
  * @return #Q_OK or #Q_ERROR
  */
 int
-qfile_open(int *filename, QfileMode_t mode) {
-	if (qfile_mode == QFILE_MODE_INACTIVE){
+qfile_open(char *filename, QfileMode_t mode) {
+	if (qfile_mode != QFILE_MODE_INACTIVE) {
 		return Q_ERROR;
 	}
 	if (mode == QFILE_MODE_WRITE) {
-		qfile_ptr  = fopen((char *) filename, "w");
+		qfile_ptr  = fopen(filename, "w");
 		qfile_mode = QFILE_MODE_WRITE;
 	} else if (mode == QFILE_MODE_READ) {
-		qfile_ptr = fopen((char *) filename, "r");
+		qfile_ptr = fopen(filename, "r");
 		qfile_mode = QFILE_MODE_READ;
 	} else {
 		return Q_ERROR;
@@ -55,7 +56,6 @@ qfile_open(int *filename, QfileMode_t mode) {
 
 /**
  * Closes the file opened in the qfile module.
- * @param[out] file: the pointer to the @c FILE to be closed.
  * @return #Q_OK or #Q_ERROR
  */
 int
@@ -79,12 +79,12 @@ int
 qfile_qdatameta_write(Qdatameta_t *datameta) {
 	size_t datameta_data_type_size;
 	size_t data_written_count;
-	if (qfile_mode != QFILE_MODE_READ) {
+	if (qfile_mode != QFILE_MODE_WRITE) {
 		return Q_ERROR;
 	}
 	
-	if ((datameta_data_type_size = qdata_type_size_get(datameta->type)
-				== Q_DEFAULT_TYPE_SIZE)) {
+	if ((datameta_data_type_size = qdata_type_size_get(datameta->type))
+				== Q_DEFAULT_TYPE_SIZE) {
 		return Q_ERROR;
 	}
 	
@@ -92,7 +92,8 @@ qfile_qdatameta_write(Qdatameta_t *datameta) {
 			datameta_data_type_size,
 			datameta->count,
 			qfile_ptr);
-	
+
+	printf("%i, %i, %i\n", datameta_data_type_size, data_written_count, datameta->count);	
 	if (data_written_count < datameta->count) {
 		return Q_ERROR;
 	}

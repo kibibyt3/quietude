@@ -5,6 +5,7 @@
  */
 
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "qdefs.h"
 
@@ -52,6 +53,7 @@ size_t
 qdata_type_size_get(QdataType_t data_type) {
 	switch (data_type) {
 	case QDATA_TYPE_INT:
+		printf("%i, %zu\n", data_type, sizeof(int));
 		return sizeof(int);
 	case QDATA_TYPE_FLOAT:
 		return sizeof(float);

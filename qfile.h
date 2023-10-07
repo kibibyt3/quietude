@@ -37,7 +37,7 @@ typedef enum QfileMode_t {
 } QfileMode_t;
 
 /** Open a file for qfile */
-extern int qfile_open(int*, QfileMode_t);
+extern int qfile_open(char*, QfileMode_t);
 
 /** Close a file for qfile */
 extern int qfile_close(void);
