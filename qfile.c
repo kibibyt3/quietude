@@ -93,7 +93,6 @@ qfile_qdatameta_write(Qdatameta_t *datameta) {
 			datameta->count,
 			qfile_ptr);
 
-	printf("%i, %i, %i\n", datameta_data_type_size, data_written_count, datameta->count);	
 	if (data_written_count < datameta->count) {
 		return Q_ERROR;
 	}
@@ -114,8 +113,8 @@ qfile_qdatameta_read(Qdatameta_t *datameta) {
 		return Q_ERROR;
 	}
 
-	if ((datameta_data_type_size = qdata_type_size_get(datameta->type)
-				== Q_DEFAULT_TYPE_SIZE)) {
+	if ((datameta_data_type_size = qdata_type_size_get(datameta->type))
+				== Q_DEFAULT_TYPE_SIZE) {
 		return Q_ERROR;
 	}
 
