@@ -15,11 +15,15 @@
  * @param[in] data:  pointer to allocated memory that stores the data
  * @param[in] type:  type of @c data
  * @return newly created #Qdatameta_t or @c NULL pointer 
+ * @allocs{1} for returned pointer.
  */ 
 Qdatameta_t*
 qdatameta_create(Qdata_t* data, QdataType_t type, size_t count) {
 	Qdatameta_t *datametap; 
 	datametap = calloc(1, sizeof(*datametap));
+	if (datametap == NULL) {
+		return NULL;
+	}
 	datametap->datap = data;
 	datametap->count = count;
 	datametap->type = type;
@@ -27,16 +31,36 @@ qdatameta_create(Qdata_t* data, QdataType_t type, size_t count) {
 }
 
 /**
+ * Destory a #Qdatameta_t.
+ * Ensure its member @c datap is already free'd!
+ * @param[out] datameta: #Qdatameta_t to free from memory
+ */
+void
+qdatameta_destroy(Qdatameta_t *datameta) {
+	free(datameta);
+}
+
+/**
  * Create a #Qdata_t.
  * @param[in] type: the type of the #Qdata_t
  * @param[in] count: the amount of each @c type
  * @return pointer to newly created #Qdata_t
+ * @allocs{1} for returned pointer.
  */
 Qdata_t*
-qdata_create(QdataType_t type, size_t count){
+qdata_empty_create(QdataType_t type, size_t count){
 	Qdata_t *datap;
 	datap = calloc(count, qdata_type_size_get(type));
 	return datap;
+}
+
+/**
+ * Destroy a #Qdata_t.
+ * @param[out] data: #Qdata_t to free from memory.
+ */
+void
+qdata_destroy(Qdata_t *data) {
+	free(data);
 }
 
 /**
@@ -53,7 +77,6 @@ size_t
 qdata_type_size_get(QdataType_t data_type) {
 	switch (data_type) {
 	case QDATA_TYPE_INT:
-		printf("%i, %zu\n", data_type, sizeof(int));
 		return sizeof(int);
 	case QDATA_TYPE_FLOAT:
 		return sizeof(float);

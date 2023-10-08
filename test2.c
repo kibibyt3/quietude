@@ -1,3 +1,4 @@
+/*@ignore@*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -26,3 +27,4 @@ int main(int argc, char** argv) {
 	printf("%c%c%c%c%c", ip[0], ip[1], ip[2], ip[3], ip[4]);
 	return 0;
 }
+/*@end@*/

@@ -20,7 +20,7 @@
  * Pointer to the current active file.
  * Modify via #QfileOpen() and #QfileClose().
  */
-static FILE *qfile_ptr;
+/*@null@*/static FILE *qfile_ptr;
 
 /** Current #QfileMode_t */
 static QfileMode_t qfile_mode = QFILE_MODE_INACTIVE;
@@ -60,10 +60,13 @@ qfile_open(char *filename, QfileMode_t mode) {
  */
 int
 qfile_close() {
+	if (qfile_ptr == NULL) {
+		return Q_ERROR;
+	}
 	if (qfile_mode == QFILE_MODE_INACTIVE) {
 		return Q_ERROR;
 	}
-	if (fclose(qfile_ptr) == EOF){
+	if (fclose(qfile_ptr) == EOF) {
 		return Q_ERROR;
 	}
 	qfile_mode = QFILE_MODE_INACTIVE;
@@ -79,6 +82,10 @@ int
 qfile_qdatameta_write(Qdatameta_t *datameta) {
 	size_t datameta_data_type_size;
 	size_t data_written_count;
+	
+	if (qfile_ptr == NULL) {
+		return Q_ERROR;
+	}
 	if (qfile_mode != QFILE_MODE_WRITE) {
 		return Q_ERROR;
 	}
@@ -109,6 +116,11 @@ int
 qfile_qdatameta_read(Qdatameta_t *datameta) {
 	size_t data_read_count;
 	size_t datameta_data_type_size;
+	
+	if (qfile_ptr == NULL) {
+		return Q_ERROR;
+	}
+	
 	if (qfile_mode != QFILE_MODE_READ) {
 		return Q_ERROR;
 	}

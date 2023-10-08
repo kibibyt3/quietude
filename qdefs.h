@@ -54,14 +54,22 @@ typedef struct Qdatameta_t {
 
 
 
-/** Create a #Qdatameta_t  */
-extern Qdatameta_t *qdatameta_create(Qdata_t*, QdataType_t, size_t);
+/** Create a #Qdatameta_t    */
+/*@external@*/
+extern /*@null@*/ Qdatameta_t *qdatameta_create(/*@returned@*/Qdata_t*, QdataType_t, size_t);
 
-/** Destroy a #Qdatameta_t */
-extern Qdatameta_t *qdatameta_destroy(Qdatameta_t*);
+/** Destroy a #Qdatameta_t   */
+/*@external@*/
+extern void qdatameta_destroy(Qdatameta_t*);
 
-/** Create a #Qdata_t      */
-extern Qdata_t     *qdata_create(QdataType_t, size_t count);
+/** Create an empty #Qdata_t */
+/*@external@*/
+extern Qdata_t     *qdata_empty_create(QdataType_t, size_t count);
+
+/** Destroy a #Qdata_t       */
+/*@external@*/
+extern void         qdata_destroy(Qdata_t*);
 
 /** Get the size of a #QdataType_t */
+/*@external@*/
 extern size_t       qdata_type_size_get(QdataType_t);

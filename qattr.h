@@ -41,8 +41,8 @@ typedef enum QattrKey_t {
  * Type for holding attribute pairs.
  */
 typedef struct Qattr_t {
-	QattrKey_t    key;    /**< Key to address the value by */
-	Qdatameta_t  *valuep; /**< Value to hold the proper data for the attribute */
+	            QattrKey_t    key;    /**< Key to address the value by */
+	/*@shared@*/Qdatameta_t  *valuep; /**< Value to hold the proper data for the attribute */
 } Qattr_t;
 
 /**
@@ -58,13 +58,17 @@ typedef struct QattrList_t {
 
 
 /** Returns a newly-created attr list of a given size */
-extern QattrList_t* qattr_list_create(size_t);
+/*@external@*/
+extern /*@null@*//*@out@*/QattrList_t* qattr_list_create(size_t);
 
 /** Frees a given qattr_list from memory */
-extern int qattr_list_destroy(QattrList_t*);
+/*@external@*/
+extern int qattr_list_destroy(/*@out@*//*@owned@*/QattrList_t*);
 
 /** Returns the value associated with the given key in the given AttrList */
-extern Qdatameta_t* qattr_list_value_get(QattrList_t*, QattrKey_t);
+/*@external@*/
+extern /*@null@*//*@shared@*/Qdatameta_t* qattr_list_value_get(QattrList_t*, QattrKey_t);
 
 /** Sets a #QattrKey_t/#Qdatameta_t pair in the given AttrList */
-extern int qattr_list_attr_set(QattrList_t*, QattrKey_t, Qdatameta_t*);
+/*@external@*/
+extern int qattr_list_attr_set(QattrList_t*, QattrKey_t, /*@shared@*/Qdatameta_t*);

@@ -17,20 +17,29 @@
  * Create a #QattrList_t
  * Allocates memory for a new #QattrList_t of a given size.
  * @param[in] count: the number of #Qattr_t to allocate memory for
- * @return pointer to a newly allocated #QattrList_t
+ * @return pointer to a newly allocated #QattrList_t or @c NULL upon failure
+ * @allocs{2} for returned pointer and its attrp member.
  */
 QattrList_t*
 qattr_list_create(size_t count){
-	assert(count < SIZE_MAX);
+	/*@i1@*/assert(count < SIZE_MAX);
 	QattrList_t *qattr_listp;
 	qattr_listp        = calloc(1, sizeof(*qattr_listp));
+	if (qattr_listp == NULL) {
+		return NULL;
+	}
 	qattr_listp->attrp = calloc(count, sizeof(*(qattr_listp->attrp)));
-	assert(qattr_listp->attrp != NULL);
+	if (qattr_listp->attrp == NULL){
+		free(qattr_listp);
+		return NULL;
+	}
+
 	qattr_listp->count = count;
 	/* Initialize index_ok to zero because it is the first available index */
 	qattr_listp->index_ok = (size_t) 0;
 	return qattr_listp;
 }
+
 
 /**
  * Destroy a #QattrList_t
@@ -43,6 +52,7 @@ qattr_list_destroy(QattrList_t *qattr_list) {
 	return Q_OK;
 }
 
+
 /**
  * Fetch an attribute value
  * Fetches the value associated with a #QattrKey_t in a #QattrList_t.
@@ -51,15 +61,22 @@ qattr_list_destroy(QattrList_t *qattr_list) {
  * @return #Qdatameta_t containing the value or @c NULL if the key doesn't exist.
  */ 
 Qdatameta_t*
-qattr_list_value_get(QattrList_t* attr_list, QattrKey_t attr_key) {	
+qattr_list_value_get(QattrList_t* attr_list, QattrKey_t attr_key) {
+
+	Qdatameta_t *value = NULL;
+	if (attr_list == NULL) {
+		return NULL;
+	}
 	/* We need only iterate through those elements which have been properly added */
 	for (int i = 0; i < (int) (attr_list->index_ok); i++){
 		if (attr_list->attrp[i].key == attr_key){
-			return attr_list->attrp[i].valuep;
+			value = attr_list->attrp[i].valuep;
+			break;
 		}
 	}
-	return NULL;
+	return value;
 }
+
 
 /**
  * Add key/value pair to a #QattrList_t.

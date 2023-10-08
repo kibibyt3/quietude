@@ -1,3 +1,4 @@
+/*@ignore@*/
 #include <stdint.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -11,13 +12,15 @@
 #define COUNT 5
 #define FILENAME "test.sav"
 
-int main(int argc, char** argv) {
-
+int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	int *p;
 	int *p2;
+	int *out;
 
 	p = calloc(COUNT, sizeof(*p));
 	p2 = calloc(COUNT, sizeof(*p2));
+	assert(p != NULL);
+	assert(p2 != NULL);
 
 	int r;
 
@@ -27,9 +30,6 @@ int main(int argc, char** argv) {
 
 	Qdatameta_t *datameta;
 	Qdatameta_t *datameta2;
-	Qdata_t     *data;
-
-	data = qdata_create(QDATA_TYPE_INT, COUNT);
 
 	datameta  = qdatameta_create((Qdata_t *) p, QDATA_TYPE_INT, (size_t) COUNT);
 	datameta2 = qdatameta_create((Qdata_t *) p2, QDATA_TYPE_INT, (size_t) COUNT);
@@ -51,9 +51,14 @@ int main(int argc, char** argv) {
 	r = qfile_qdatameta_read(datameta2);
 	assert(r != Q_ERROR);
 
-	p2 = (int *) datameta2->datap;
+	out = (int *) datameta2->datap;
 
-	printf("%i, %i, %i, %i, %i", p2[0], p2[1], p2[2], p2[3], p2[4]);
-	
+	printf("%i, %i, %i, %i, %i", out[0], out[1], out[2], out[3], out[4]);
+
+	free(datameta->datap);
+	free(datameta2->datap);
+	free(datameta);
+	free(datameta2);
 	return 0;
 }
+/*@end@*/
