@@ -15,7 +15,7 @@
 typedef enum QattrKey_t {
 
 	/* GENERAL ATTRIBUTE KEYS         */
-	QATTR_KEY_NAME = 1,                  /**< name of object */
+	QATTR_KEY_NAME = Q_ENUM_VALUE_START, /**< name of object */
 	QATTR_KEY_DESCRIPTION_BRIEF,         /**< brief description of object */
 	QATTR_KEY_DESCRIPTION_LONG,          /**< long description of object  */
 	/* QWALK-EXCLUSIVE ATTRIBUTE KEYS */ 

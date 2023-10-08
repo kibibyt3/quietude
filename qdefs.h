@@ -8,17 +8,23 @@
 #define Q_OK     0 /**< General OK return code for Q */
 #define Q_ERROR -1 /**< General ERROR return code for Q */
 
-
 /** Returned by #qdata_type_size_get if the type doesn't exist */
 #define Q_DEFAULT_TYPE_SIZE 0
 
+/**
+ * The value of the first enum constant in an enum declaration.
+ * This is to facilitate checking for undefined enums, since they will default
+ * to 0 upon initialization.
+ */
+#define Q_ENUM_VALUE_START  1
 
 /**
  * Type for representing data types.
  * Used primarily for error-checking and casting when data type is unknown.
  */
 typedef enum QdataType_t {
-	QDATA_TYPE_INT = 1, /**< int type   */
+	/** int type */
+	QDATA_TYPE_INT = Q_ENUM_VALUE_START,
 	QDATA_TYPE_FLOAT,   /**< float type */
 	QDATA_TYPE_STRING,  /**< int* type (when used to represent characters) */
 
@@ -40,7 +46,7 @@ typedef void Qdata_t;
 typedef struct Qdatameta_t {
 	
 	/** Pointer to the beginning of the data compoment of the #Qdatameta_t */
-	Qdata_t    *datap; 
+	/*@shared@*/Qdata_t    *datap; 
 	
 	/**
 	 * Number of elements in data.
@@ -56,20 +62,20 @@ typedef struct Qdatameta_t {
 
 /** Create a #Qdatameta_t    */
 /*@external@*/
-extern /*@null@*/ Qdatameta_t *qdatameta_create(/*@returned@*/Qdata_t*, QdataType_t, size_t);
+extern          /*@null@*/Qdatameta_t *qdatameta_create(/*@shared@*/Qdata_t*, QdataType_t, size_t);
 
 /** Destroy a #Qdatameta_t   */
 /*@external@*/
-extern void qdatameta_destroy(Qdatameta_t*);
+extern                    void         qdatameta_destroy(/*@owned@*/Qdatameta_t*);
 
 /** Create an empty #Qdata_t */
 /*@external@*/
-extern Qdata_t     *qdata_empty_create(QdataType_t, size_t count);
+extern /*@null@*//*@out@*/Qdata_t     *qdata_empty_create(QdataType_t, size_t count);
 
 /** Destroy a #Qdata_t       */
 /*@external@*/
-extern void         qdata_destroy(Qdata_t*);
+extern                    void         qdata_destroy(/*@owned@*/Qdata_t*);
 
 /** Get the size of a #QdataType_t */
 /*@external@*/
-extern size_t       qdata_type_size_get(QdataType_t);
+extern                    size_t      qdata_type_size_get(QdataType_t);

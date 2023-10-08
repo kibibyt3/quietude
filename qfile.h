@@ -10,7 +10,8 @@
  * i.e., what module it belongs to and the format of its data.
  */
 typedef enum QfileType_t {
-	QFILE_TYPE_WALK_RAW = 1, /**< Raw qwalk file type */
+	/** Raw qwalk file type */
+	QFILE_TYPE_WALK_RAW = Q_ENUM_VALUE_START,
 	QFILE_TYPE_TALK_RAW,     /**< Raw qtalk file type */
 	QFILE_TYPE_CLI_RAW,      /**< Raw qcli  file type */
 	QFILE_TYPE_SAIL_RAW,     /**< Raw qsail file type */
@@ -25,9 +26,10 @@ typedef enum QfileType_t {
  * Mode of a qfile
  */
 typedef enum QfileMode_t {
-	QFILE_MODE_READ = 1, /** Read mode  */
-	QFILE_MODE_WRITE,    /** Write mode */
-	QFILE_MODE_INACTIVE, /** File isn't open */
+	/** Read mode  */
+	QFILE_MODE_READ = Q_ENUM_VALUE_START, 
+	QFILE_MODE_WRITE,    /**< Write mode */
+	QFILE_MODE_INACTIVE, /**< File isn't open */
 
 	/**
 	 * Number of modes.

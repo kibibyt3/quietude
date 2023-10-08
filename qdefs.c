@@ -19,8 +19,8 @@
  */ 
 Qdatameta_t*
 qdatameta_create(Qdata_t* data, QdataType_t type, size_t count) {
-	Qdatameta_t *datametap; 
-	datametap = calloc(1, sizeof(*datametap));
+	/*@shared@*/Qdatameta_t *datametap; 
+	datametap = calloc((size_t) 1, sizeof(*datametap));
 	if (datametap == NULL) {
 		return NULL;
 	}

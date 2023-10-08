@@ -24,7 +24,7 @@ QattrList_t*
 qattr_list_create(size_t count){
 	/*@i1@*/assert(count < SIZE_MAX);
 	QattrList_t *qattr_listp;
-	qattr_listp        = calloc(1, sizeof(*qattr_listp));
+	qattr_listp        = calloc((size_t) 1, sizeof(*qattr_listp));
 	if (qattr_listp == NULL) {
 		return NULL;
 	}
@@ -91,7 +91,7 @@ qattr_list_attr_set(QattrList_t *attr_list, QattrKey_t attr_key, Qdatameta_t *da
 	size_t index_free = attr_list->index_ok; /* To ease readability */
 	
 	/* Validate attr_key */
-	if (attr_key < 1 || attr_key > QATTR_KEY_COUNT) {
+	if (attr_key < (QattrKey_t) Q_ENUM_VALUE_START || attr_key > QATTR_KEY_COUNT) {
 		return Q_ERROR;
 	}
 
