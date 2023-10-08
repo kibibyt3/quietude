@@ -9,13 +9,17 @@
 
 /** Type for the various modes the game can play in. */
 typedef enum Mode_t {
-	MODE_T_INIT = 1,    /**< Initialization mode */
+	/** Initialization mode */	
+	MODE_T_INIT = Q_ENUM_VALUE_START,    
 	MODE_T_EXIT,        /**< Exit mode */
-	MODE_T_WALK,
-	MODE_T_TALK,
-	MODE_T_CLI,
-	MODE_T_SAIL,
-	MODE_T_COUNT = MODE_T_SAIL /**< MUST BE CHANGED IF MODE_T_SAIL IS NOT THE LAST ENUM CONSTANT! */
+	MODE_T_WALK,        /**< Walk mode */
+	MODE_T_TALK,        /**< Talk mode */
+	MODE_T_CLI,         /**< CLI  mode */
+	MODE_T_SAIL,        /**< Sail mode */
+	/**
+	 * Number of allowed values for #Mode_t. 
+	 * Must be set to equal the final enum constant */
+	MODE_T_COUNT = MODE_T_SAIL
 } Mode_t;
 
 /**
@@ -24,18 +28,22 @@ typedef enum Mode_t {
  * changed and data exchanged between modes simultaneously.
  */
 typedef struct ModeSwitchData_t {
-	Mode_t       mode; /**< mode to switch to */
-	Qdatameta_t* datameta; /**< datameta to pass to the next mode, if applicable */
+	            Mode_t       mode;     /**< mode to switch to */
+	/*@shared@*/Qdatameta_t *datameta; /**< datameta to pass to the next mode, if applicable */
 } ModeSwitchData_t;
 
 /** Initialize mode module.         */
-extern int               mode_init(void);
+/*@external@*/
+extern           int               mode_init(void);
 
 /** Exit mode module.               */
-extern int               mode_exit(void);
+/*@external@*/
+extern           int               mode_exit(void);
 
 /** Switch to a different mode      */
-extern int               mode_switch(ModeSwitchData_t*, Mode_t);
+/*@external@*/
+extern           int               mode_switch(ModeSwitchData_t*, Mode_t);
 
 /** Pass a tick in the current mode */
-extern ModeSwitchData_t *mode_tick(Mode_t);
+/*@external@*/
+extern /*@null@*/ModeSwitchData_t *mode_tick(Mode_t);

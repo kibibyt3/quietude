@@ -4,11 +4,16 @@
  */
 
 #include <assert.h>
+#include <stddef.h>
 
 #include "qdefs.h"
 
 #include "mode.h"
-
+#include "qattr.h"
+#include "qwalk.h"
+#include "qsail.h"
+#include "qcli.h"
+#include "qtalk.h"
 
 
 /**
@@ -63,6 +68,10 @@ mode_switch(ModeSwitchData_t *mode_data_next, Mode_t mode_prev) {
 		case MODE_T_SAIL:
 			qsail_end();
 			break;
+		case MODE_T_INIT:
+			return Q_ERROR;
+		case MODE_T_EXIT:
+			return Q_ERROR;
 		}
 	}
 
@@ -81,6 +90,10 @@ mode_switch(ModeSwitchData_t *mode_data_next, Mode_t mode_prev) {
 		case MODE_T_SAIL:
 			qsail_init(mode_data_next->datameta);
 			break;
+		case MODE_T_INIT:
+			return Q_ERROR;
+		case MODE_T_EXIT:
+			return Q_ERROR;
 		}	
 	}
 
@@ -96,7 +109,7 @@ mode_switch(ModeSwitchData_t *mode_data_next, Mode_t mode_prev) {
  * next tick is also returned in the #ModeSwitchData_t*.
  * @param[in] mode: the specific mode to tick forward.
  * @return switch data with the name of the next mode and data to pass to 
- * the next mode, if applicable.
+ * the next mode, if applicable; or NULL if an error occurs.
  */
 ModeSwitchData_t*
 mode_tick(Mode_t mode){
@@ -116,6 +129,10 @@ mode_tick(Mode_t mode){
 	case MODE_T_SAIL:
 		mode_switch_data = qsail_tick();
 		break;
+	case MODE_T_INIT:
+		return NULL;
+	case MODE_T_EXIT:
+		return NULL;
 	}
 
 	return mode_switch_data;
