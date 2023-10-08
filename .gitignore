@@ -1,5 +1,3 @@
-*.[oa]
 *~
-docs/
-test
-test.sav
+tree-gen.sh
+saves
