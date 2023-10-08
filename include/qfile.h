@@ -5,6 +5,14 @@
 
 
 
+#define QFILE_SAVES_DIR "saves"
+#define QFILE_WALK_NAME "qwalk.dat"
+#define QFILE_TALK_NAME "qtalk.dat"
+#define QFILE_CLI_NAME  "qcli.dat"
+#define QFILE_SAIL_NAME "qsail.dat"
+
+
+
 /**
  * Type of a q file.
  * i.e., what module it belongs to and the format of its data.
