@@ -3,14 +3,14 @@ LINT.c = splint
 
 CFLAGS = -O0 -g3 -Wall -Wstrict-prototypes -Wmissing-prototypes -Wshadow -Wconversion 
 
-OBJECTS = qfile.o qattr.o test.o qdefs.o mode.o
+OBJECTS = ./src/qfile.o ./src/qattr.o ./src/test.o ./src/qdefs.o ./src/mode.o
 SOURCES = $(OBJECTS:.o=.c)
 
-all:
-	echo $(LINT.c)
+all: $(OBJECTS)
+	$(CC) $(CFLAGS) -o $@ $^
 
 clean:
-	$(RM) *.o test test2
+	$(RM) src/*.o test
 
 .PHONY: docs
 docs:
@@ -18,8 +18,5 @@ docs:
 
 lint:
 	$(LINT.c) -checks $(SOURCES)
-
-test: $(OBJECTS)
-	$(CC) $(CFLAGS) -o $@ $^
 
 $(OBJECTS): %.o: %.c
