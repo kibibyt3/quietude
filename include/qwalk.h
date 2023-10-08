@@ -16,7 +16,7 @@
 typedef struct QwalkObject_t {
 	int coord_y;                  /**< X coord of object */
 	int coord_x;                  /**< Y coord of object */
-	QattrList_t *attr_list; /**< #QattrList_t pointer for attributes of object */
+	QattrList_t *attr_list;       /**< #QattrList_t pointer for attributes of object */
 } QwalkObject_t;
 
 /**

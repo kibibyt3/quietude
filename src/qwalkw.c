@@ -11,24 +11,30 @@
 #include "qwalk.h"
 #include "qattr.c"
 
-/** Pointer to all #IOTile_t to be displayed on-screen */  
-static IOTile_t *tiles; 
+/** Pointer to current #QwalkField_t */
+/*@owned@*/static QwalkField_t *walk_field;
 
 /** Whether the qwalk module is currently initialized  */
-static bool      isinit = false; 
+           static bool          isinit = false; 
 
 
 
 /**
  * Initialize the qwalk module.
- * Upon a successful inititialization, set #isinit to @c true.
- * @param[in] datameta: pointer to the #Qdatameta_t sent by the previous mode.
+ * Upon a successful inititialization, set #isinit to @c true. #walk_field is
+ * updated.
+ * @param[in] datameta: pointer to the #Qdatameta_t sent by the previous mode 
+ * Should be a #QwalkField_t.
  * @return #Q_OK or #Q_ERROR
  */ 
 int
 qwalk_init(Qdatameta_t* datameta) {
 	assert(isinit == false);
 	isinit = true;
+	if (datameta == NULL) {
+		return Q_ERROR;
+	}
+	walk_field = (QwalkField_t *) datameta;
 	return Q_OK;
 }
 
