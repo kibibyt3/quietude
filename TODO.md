@@ -6,5 +6,5 @@
   - Note: this was implemented differently, namely by way of a new function `qdata_type_size_get`.
 - [x] Flesh out qfile
 - [x] Debug qfile
-- [ ] Finish linting work
+- [x] Finish linting work
 - [ ] Resume work on qwalk
