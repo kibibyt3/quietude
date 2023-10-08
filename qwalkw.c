@@ -9,8 +9,7 @@
 #include "qdefs.h"
 
 #include "qwalk.h"
-
-
+#include "qattr.c"
 
 /** Pointer to all #IOTile_t to be displayed on-screen */  
 static IOTile_t *tiles; 

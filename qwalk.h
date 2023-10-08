@@ -3,6 +3,7 @@
  * qwalk module header file. Depends on qdefs.h and stdint.h.
  */
 
+
 #define QWALK_AREA_SIZE_Y 25  /**< Y dimension for the qwalk field */
 #define QWALK_AREA_SIZE_X 50  /**< X dimension for the qwalk field */
 
@@ -34,13 +35,13 @@ typedef struct QwalkField_t {
 } QwalkField_t;
 
 /** Initialize the qwalk module              */
-extern int              qwalk_init(Qdatameta_t*);
+extern int               qwalk_init(Qdatameta_t *);
 
 /** Safely exit the qwalk module             */
-extern int              qwalk_end(void);
+extern int               qwalk_end(void);
 
 /** Pass a tick in the qwalk module          */
-extern ModeSwitchData_t qwalk_tick(void);
+extern ModeSwitchData_t *qwalk_tick(void);
 
 
 
