@@ -8,6 +8,7 @@
 #include "qdefs.h"
 #include "qattr.h"
 #include "qfile.h"
+#include "mode.h"
 
 #define COUNT 5
 #define FILENAME "test.sav"
