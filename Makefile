@@ -10,7 +10,7 @@ all:
 	echo $(LINT.c)
 
 clean:
-	rm *.o
+	$(RM) *.o test test2
 
 .PHONY: docs
 docs:
