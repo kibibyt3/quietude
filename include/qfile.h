@@ -5,11 +5,12 @@
 
 
 
-#define QFILE_SAVES_DIR "saves"
-#define QFILE_WALK_NAME "qwalk.dat"
-#define QFILE_TALK_NAME "qtalk.dat"
-#define QFILE_CLI_NAME  "qcli.dat"
-#define QFILE_SAIL_NAME "qsail.dat"
+
+#define QFILE_SAVES_DIR "saves"     /**< Directory in which to store saves */
+#define QFILE_WALK_NAME "qwalk.dat" /**< Filename for qwalk save data      */
+#define QFILE_TALK_NAME "qtalk.dat" /**< Filename for qtalk save data      */
+#define QFILE_CLI_NAME  "qcli.dat"  /**< Filename for qcli  save data      */
+#define QFILE_SAIL_NAME "qsail.dat" /**< Filename for qsail save data      */
 
 
 
