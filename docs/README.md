@@ -4,7 +4,6 @@
 │   ├── directory-info.txt
 │   └── README.md
 ├── Doxyfile
-├── error.log
 ├── include
 │   ├── iodefs.h
 │   ├── mode.h
@@ -31,8 +30,7 @@
 │   ├── qwalkw.c
 │   ├── README.md
 │   └── test.c
-├── test.sav
 └── TODO.md
 
-4 directories, 30 files
+4 directories, 28 files
 ```
