@@ -6,7 +6,7 @@
 
 
 /** Initialize qcli     */
-extern int               qcli_init(Qdatameta_t *);
+extern int               qcli_init(const Qdatameta_t *);
 
 /** Safely exit qcli    */
 extern int               qcli_end(void);

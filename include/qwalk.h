@@ -63,7 +63,7 @@ typedef struct QwalkField_t {
 
 
 /** Initialize the qwalk module              */
-extern           int               qwalk_init(Qdatameta_t *);
+extern           int               qwalk_init(const Qdatameta_t *);
 
 /** Safely exit the qwalk module             */
 extern           int               qwalk_end(void);
@@ -75,10 +75,10 @@ extern /*@null@*/ModeSwitchData_t *qwalk_tick(void);
 
 
 /** Get the y coordinate of a #QwalkObject_t */
-extern int               qwalk_object_coord_y_get(QwalkObject_t*);
+extern int               qwalk_object_coord_y_get(const QwalkObject_t*);
 
 /** Get the x coordinate of a #QwalkObject_t */
-extern int               qwalk_object_coord_x_get(QwalkObject_t*);
+extern int               qwalk_object_coord_x_get(const QwalkObject_t*);
 
 /** Get the #QattrList_t of a #QwalkObject_t */
-extern QattrList_t      *qwalk_object_attr_list_get(QwalkObject_t*);
+extern QattrList_t      *qwalk_object_attr_list_get(const QwalkObject_t*);

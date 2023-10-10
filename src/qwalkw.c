@@ -27,8 +27,8 @@
  * @return #Q_OK or #Q_ERROR
  */ 
 int
-qwalk_init(Qdatameta_t* datameta) {
-	assert(isinit == false);
+qwalk_init(const Qdatameta_t* datameta) {
+	assert(isinit == false)
 	isinit = true;
 	if (datameta == NULL) {
 		return Q_ERROR;

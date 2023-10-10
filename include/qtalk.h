@@ -4,7 +4,7 @@
  */
 
 /** Initialize qtalk     */
-extern int               qtalk_init(Qdatameta_t *);
+extern int               qtalk_init(const Qdatameta_t *);
 
 /** Safely exit qtalk    */
 extern int               qtalk_end(void);

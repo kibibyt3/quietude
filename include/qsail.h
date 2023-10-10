@@ -4,7 +4,7 @@
  */  
 
 /** Initialize qsail     */
-extern int               qsail_init(Qdatameta_t *);
+extern int               qsail_init(const Qdatameta_t *);
 
 /** Safely exit qsail    */
 extern int               qsail_end(void);

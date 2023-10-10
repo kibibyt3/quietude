@@ -57,7 +57,7 @@ extern int qfile_close(void);
 
 /** Write a #Qdata_t to a file  */
 /*@external@*/
-extern int qfile_qdatameta_write(Qdatameta_t*);
+extern int qfile_qdatameta_write(const Qdatameta_t*);
 
 /** Read a #Qdata_t from a file */
 /*@external@*/

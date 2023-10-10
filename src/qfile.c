@@ -79,7 +79,7 @@ qfile_close() {
  * @return #Q_OK or #Q_ERROR
  */
 int
-qfile_qdatameta_write(Qdatameta_t *datameta) {
+qfile_qdatameta_write(const Qdatameta_t *datameta) {
 	size_t datameta_data_type_size;
 	size_t data_written_count;
 	
