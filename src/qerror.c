@@ -14,21 +14,31 @@
 
  
 
-/** String for #QERROR_NULL_POINTER_UNEXPECTED */
+/** String for #QERROR_NULL_POINTER_UNEXPECTED    */
 #define QERROR_STRING_NULL_POINTER_UNEXPECTED \
 	"Encountered unexpected NULL pointer"
-/** String for #QERROR_NULL_VALUE_UNEXPECTED */
+
+/** String for #QERROR_NULL_VALUE_UNEXPECTED      */
 #define QERROR_STRING_NULL_VALUE_UNEXPECTED \
 	"Encountered unexpect NULL value"
-/** String for #QERROR_ENUM_CONSTANT_INVALID */
+
+/** String for #QERROR_ENUM_CONSTANT_INVALID      */
 #define QERROR_STRING_ENUM_CONSTANT_INVALID \
 	"Invalid enum constant encountered"
+
 /** String for #QERROR_ENUM_CONSTANT_INVALID_ZERO */
 #define QERROR_STRING_ENUM_CONSTANT_INVALID_ZERO \
 	"Enum constant likely never explicitly defined"
+
+/** String for #QERROR_MODULE_UNINITIALIZED       */
+#define QERROR_STRING_MODULE_UNINITIALIZED \
+	"Module not properly initialized"
+
 /** String for a meta error where #QERROR is passed a nonexistent #Qerror_t */
 #define QERROR_STRING_QERROR_USAGE \
 	"Error in invocation of QERROR; error does not exist"
+
+
 
 /**
  * Internal version of #QERROR.
@@ -56,6 +66,9 @@ qerror_internal(Qerror_t error, const char *file, const char *func, int line) {
 		break;
 	case QERROR_ENUM_CONSTANT_INVALID_ZERO:
 		fprintf(stderr, QERROR_STRING_ENUM_CONSTANT_INVALID_ZERO);
+		break;
+	case QERROR_MODULE_UNINITIALIZED:
+		fprintf(stderr, QERROR_STRING_MODULE_UNINITIALIZED);
 		break;
 	default:
 		fprintf(stderr, QERROR_STRING_QERROR_USAGE);

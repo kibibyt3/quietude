@@ -7,11 +7,13 @@
 
 
 /**
- * Print a #Qerror_t and error information to @c stderr.
+ * Print a #Qerror_t and its info to @c stderr if an expression is @c true.
+ * @param[in] check: the expression whose truth is to be checked
  * @param[in] error: the error whose corresponding message should be printed to
  * @c stdout.
  */
-#define QERROR(error) qerror_internal((error), __FILE__, __func__, __LINE__)
+#define Q_IFERROR(check, error) \
+	if ((check)) {qerror_internal((error), __FILE__, __func__, __LINE__);}
 
 
 
@@ -31,11 +33,14 @@ typedef enum Qerror_t {
 	/** Error for an @c enum constant set to zero */
 	QERROR_ENUM_CONSTANT_INVALID_ZERO,
 
+	/** Error for an uninitialized module         */
+	QERROR_MODULE_UNINITIALIZED,
+
 	/**
 	 * Amount of possible errors.
 	 * Set equal to the final enum constant.
 	 */
-	QERROR_COUNT = QERROR_ENUM_CONSTANT_INVALID_ZERO
+	QERROR_COUNT = QERROR_MODULE_UNINITIALIZED
 } Qerror_t;
 
 

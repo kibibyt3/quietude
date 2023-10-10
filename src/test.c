@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <stdbool.h>
 
 #include "qdefs.h"
 #include "qattr.h"
@@ -27,11 +28,12 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	assert(p != NULL);
 	assert(p2 != NULL);
 
-	QERROR(QERROR_NULL_POINTER_UNEXPECTED);
-	QERROR(QERROR_NULL_VALUE_UNEXPECTED);
-	QERROR(QERROR_ENUM_CONSTANT_INVALID);
-	QERROR(QERROR_ENUM_CONSTANT_INVALID_ZERO);
-	QERROR(0);
+	Q_IFERROR(true, QERROR_NULL_POINTER_UNEXPECTED);
+	Q_IFERROR(true, QERROR_NULL_VALUE_UNEXPECTED);
+	Q_IFERROR((1 == 2), QERROR_ENUM_CONSTANT_INVALID);
+	Q_IFERROR((1 == 1), QERROR_ENUM_CONSTANT_INVALID_ZERO);
+	Q_IFERROR(1 == 1 && 2 == 2, QERROR_MODULE_UNINITIALIZED);
+	Q_IFERROR(true, 0);
 	int r;
 
 	for (int i = 0, val = 1; i < COUNT; i++, val *= 2) {
