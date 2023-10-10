@@ -8,7 +8,11 @@
 #include "qdefs.h"
 #include "qattr.h"
 #include "qfile.h"
+#include "qerror.h"
+
+/*
 #include "mode.h"
+*/
 
 #define COUNT 5
 #define FILENAME "test.sav"
@@ -23,6 +27,11 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	assert(p != NULL);
 	assert(p2 != NULL);
 
+	QERROR(QERROR_NULL_POINTER_UNEXPECTED);
+	QERROR(QERROR_NULL_VALUE_UNEXPECTED);
+	QERROR(QERROR_ENUM_CONSTANT_INVALID);
+	QERROR(QERROR_ENUM_CONSTANT_INVALID_ZERO);
+	QERROR(0);
 	int r;
 
 	for (int i = 0, val = 1; i < COUNT; i++, val *= 2) {
