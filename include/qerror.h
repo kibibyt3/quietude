@@ -46,6 +46,6 @@ typedef enum Qerror_t {
 
 
 /**
- * Internal version of #QERROR that the macro invokes.
+ * Internal version of #Q_IFERROR that the macro invokes.
  */
 extern void qerror_internal(Qerror_t, const char *, const char *, int line);

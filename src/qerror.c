@@ -34,15 +34,15 @@
 #define QERROR_STRING_MODULE_UNINITIALIZED \
 	"Module not properly initialized"
 
-/** String for a meta error where #QERROR is passed a nonexistent #Qerror_t */
+/** String for a meta error where #Q_IFERROR is passed a nonexistent #Qerror_t */
 #define QERROR_STRING_QERROR_USAGE \
 	"Error in invocation of QERROR; error does not exist"
 
 
 
 /**
- * Internal version of #QERROR.
- * Should only be invoked indirectly by #QERROR.
+ * Internal version of #Q_IFERROR.
+ * Should only be invoked indirectly by #Q_IFERROR.
  * @param[in] error: the error whose corresponding message should be printed to
  * @c stderr.
  * @param[in] file: the filename to print in the error message
