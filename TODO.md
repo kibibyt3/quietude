@@ -7,4 +7,5 @@
 - [x] Flesh out qfile
 - [x] Debug qfile
 - [x] Finish linting work
+- [ ] Rewrite qattr such that it controls its qdatameta pointers. If necessary, make a separate version of qdatameta\_t for the sake of indirect control.
 - [ ] Resume work on qwalk
