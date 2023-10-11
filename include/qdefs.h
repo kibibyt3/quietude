@@ -8,8 +8,11 @@
 #define Q_OK     0 /**< General OK return code for Q */
 #define Q_ERROR -1 /**< General ERROR return code for Q */
 
-/** Returned by #qdata_type_size_get if the type doesn't exist */
-#define Q_DEFAULT_TYPE_SIZE 0
+/** Returned by functions that return @c size_t if an error occurs */
+#define Q_ERRORCODE_SIZE 0
+
+/** Returned by functions that return an internal enum if an error occurs */
+#define Q_ERRORCODE_ENUM -1
 
 /**
  * The value of the first enum constant in an enum declaration.
@@ -46,7 +49,7 @@ typedef void Qdata_t;
 typedef struct Qdatameta_t {
 	
 	/** Pointer to the beginning of the data compoment of the #Qdatameta_t */
-	/*@shared@*/Qdata_t    *datap; 
+	/*@owned@*/Qdata_t    *datap; 
 	
 	/**
 	 * Number of elements in data.
@@ -54,28 +57,26 @@ typedef struct Qdatameta_t {
 	 */
 	size_t      count; 
 	
-	QdataType_t type; /**< Type of the data. */
+	QdataType_t type;    /**< Type of the data. */
 } Qdatameta_t;
 
 
 
 
 /** Create a #Qdatameta_t    */
-/*@external@*/
-extern          /*@null@*/Qdatameta_t *qdatameta_create(/*@shared@*/Qdata_t*, QdataType_t, size_t);
+extern /*@null@*//*@partial@*/Qdatameta_t *qdatameta_create(QdataType_t, size_t);
 
 /** Destroy a #Qdatameta_t   */
-/*@external@*/
-extern                    void         qdatameta_destroy(/*@owned@*/Qdatameta_t*);
+extern void qdatameta_destroy(/*@only@*/Qdatameta_t *);
 
-/** Create an empty #Qdata_t */
-/*@external@*/
-extern /*@null@*//*@out@*/Qdata_t     *qdata_empty_create(QdataType_t, size_t count);
+/** Get the datap member from a #Qdatameta_t */
+extern /*@observer@*//*@null@*/Qdata_t *qdatameta_datap_get(const Qdatameta_t *);
 
-/** Destroy a #Qdata_t       */
-/*@external@*/
-extern                    void         qdata_destroy(/*@owned@*/Qdata_t*);
+/** Get the count member from a #Qdatameta_t */
+extern size_t qdatameta_count_get(const Qdatameta_t *);
+
+/** Get the type member from a #Qdatameta_t  */
+extern QdataType_t qdatameta_type_get(const Qdatameta_t *);
 
 /** Get the size of a #QdataType_t */
-/*@external@*/
-extern                    size_t      qdata_type_size_get(QdataType_t);
+extern size_t qdata_type_size_get(QdataType_t);

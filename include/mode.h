@@ -28,8 +28,8 @@ typedef enum Mode_t {
  * changed and data exchanged between modes simultaneously.
  */
 typedef struct ModeSwitchData_t {
-	            Mode_t       mode;     /**< mode to switch to */
-	/*@shared@*/Qdatameta_t *datameta; /**< datameta to pass to the next mode, if applicable */
+  Mode_t       mode;     /**< mode to switch to */
+	Qdatameta_t *datameta; /**< datameta to pass to the next mode, if applicable */
 } ModeSwitchData_t;
 
 /** Initialize mode module.         */

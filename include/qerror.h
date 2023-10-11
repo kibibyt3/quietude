@@ -13,7 +13,16 @@
  * @c stdout.
  */
 #define Q_IFERROR(check, error) \
-	if ((check)) {qerror_internal((error), __FILE__, __func__, __LINE__);}
+	if ((check)) {qerror_internal((Qerror_t) (error), __FILE__, __func__, __LINE__);}
+
+/**
+ * Print a #Qerror_t and its info to @c stderr.
+ * @param[in] error: the error whose corresponding message should be printed to
+ * @c stdout.
+ */
+#define Q_ERRORFOUND(error) \
+	qerror_internal((error), __FILE__, __func__, __LINE__)
+
 
 
 

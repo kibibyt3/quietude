@@ -91,7 +91,7 @@ qfile_qdatameta_write(const Qdatameta_t *datameta) {
 	}
 	
 	if ((datameta_data_type_size = qdata_type_size_get(datameta->type))
-				== Q_DEFAULT_TYPE_SIZE) {
+				== Q_ERRORCODE_SIZE) {
 		return Q_ERROR;
 	}
 	
@@ -126,7 +126,7 @@ qfile_qdatameta_read(Qdatameta_t *datameta) {
 	}
 
 	if ((datameta_data_type_size = qdata_type_size_get(datameta->type))
-				== Q_DEFAULT_TYPE_SIZE) {
+				== Q_ERRORCODE_SIZE) {
 		return Q_ERROR;
 	}
 

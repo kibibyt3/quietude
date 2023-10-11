@@ -1,4 +1,3 @@
-/*@ignore@*/
 #include <stdint.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -16,37 +15,34 @@
 */
 
 #define COUNT 5
-#define FILENAME "test.sav"
+#define FILENAME "saves/test.sav"
 
 int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
-	int *p;
-	int *p2;
-	int *out;
 
-	p = calloc(COUNT, sizeof(*p));
-	p2 = calloc(COUNT, sizeof(*p2));
-	assert(p != NULL);
-	assert(p2 != NULL);
-
-	Q_IFERROR(true, QERROR_NULL_POINTER_UNEXPECTED);
-	Q_IFERROR(true, QERROR_NULL_VALUE_UNEXPECTED);
-	Q_IFERROR((1 == 2), QERROR_ENUM_CONSTANT_INVALID);
-	Q_IFERROR((1 == 1), QERROR_ENUM_CONSTANT_INVALID_ZERO);
-	Q_IFERROR(1 == 1 && 2 == 2, QERROR_MODULE_UNINITIALIZED);
+	Q_IFERROR(true, (Qerror_t) QERROR_NULL_POINTER_UNEXPECTED);
+	Q_IFERROR(true, (Qerror_t) QERROR_NULL_VALUE_UNEXPECTED);
+	Q_IFERROR((1 == 2), (Qerror_t) QERROR_ENUM_CONSTANT_INVALID);
+	Q_IFERROR((1 == 1), (Qerror_t) QERROR_ENUM_CONSTANT_INVALID_ZERO);
+	Q_IFERROR(1 == 1 && 2 == 2, (Qerror_t) QERROR_MODULE_UNINITIALIZED);
 	Q_IFERROR(true, 0);
+	
 	int r;
 
-	for (int i = 0, val = 1; i < COUNT; i++, val *= 2) {
-		p[i] = val;
-	}
 
 	Qdatameta_t *datameta;
 	Qdatameta_t *datameta2;
 
-	datameta  = qdatameta_create((Qdata_t *) p, QDATA_TYPE_INT, (size_t) COUNT);
-	datameta2 = qdatameta_create((Qdata_t *) p2, QDATA_TYPE_INT, (size_t) COUNT);
+	datameta  = qdatameta_create(QDATA_TYPE_INT, (size_t) COUNT);
+	datameta2 = qdatameta_create(QDATA_TYPE_INT, (size_t) COUNT);
 	assert(datameta != NULL);
 	assert(datameta2 != NULL);
+
+	((int *)(datameta->datap))[0] = 1;
+	((int *)(datameta->datap))[1] = 2;
+	((int *)(datameta->datap))[2] = 4;
+	((int *)(datameta->datap))[3] = 8;
+	((int *)(datameta->datap))[4] = 16;
+
 
 	r = qfile_open(FILENAME, QFILE_MODE_WRITE);
 	assert(r != Q_ERROR);
@@ -63,14 +59,12 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	r = qfile_qdatameta_read(datameta2);
 	assert(r != Q_ERROR);
 
-	out = (int *) datameta2->datap;
-
-	printf("%i, %i, %i, %i, %i", out[0], out[1], out[2], out[3], out[4]);
-
-	free(datameta->datap);
-	free(datameta2->datap);
-	free(datameta);
-	free(datameta2);
+	int *val = (int *) qdatameta_datap_get(datameta2);
+	assert(val != NULL);
+	printf("%i, %i, %i, %i, %i\n", val[0], val[1], val[2], val[3], val[4]);
+	
+	printf("%i, %i\n", (int) qdatameta_type_get(datameta2), (int) qdatameta_count_get(datameta2));
+	qdatameta_destroy(datameta);
+	qdatameta_destroy(datameta2);
 	return 0;
 }
-/*@end@*/
