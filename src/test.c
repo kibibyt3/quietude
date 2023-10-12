@@ -19,13 +19,15 @@
 
 int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 
+	printf("\n-----BEGIN PHONY ERRORS-----\n");
 	Q_IFERROR(true, (Qerror_t) QERROR_NULL_POINTER_UNEXPECTED);
 	Q_IFERROR(true, (Qerror_t) QERROR_NULL_VALUE_UNEXPECTED);
 	Q_IFERROR((1 == 2), (Qerror_t) QERROR_ENUM_CONSTANT_INVALID);
 	Q_IFERROR((1 == 1), (Qerror_t) QERROR_ENUM_CONSTANT_INVALID_ZERO);
 	Q_IFERROR(1 == 1 && 2 == 2, (Qerror_t) QERROR_MODULE_UNINITIALIZED);
 	Q_IFERROR(true, 0);
-	
+	printf("------END PHONY ERRORS------\n\n\n");
+
 	int r;
 
 
