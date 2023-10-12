@@ -75,6 +75,7 @@ ModeSwitchData_t *
 qwalk_tick() {
 	QwalkCommand_t    cmd;
 	ModeSwitchData_t *switch_data;
+	int               i;
 	cmd = qwalk_input_subtick();
 	if ((cmd < Q_ENUM_VALUE_START) || (cmd > Q_WALK_COMMAND_COUNT)) {
 		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
@@ -87,7 +88,8 @@ qwalk_tick() {
 		return NULL;
 	}
 	
-	assert(qwalk_output_subtick() != Q_ERROR);
+	i = qwalk_output_subtick();
+	assert(i != Q_ERROR);
 	
 	return switch_data;
 }

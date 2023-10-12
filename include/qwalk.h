@@ -73,6 +73,17 @@ extern /*@null@*/ModeSwitchData_t *qwalk_tick(void);
 
 
 
+/** Execute the subtick step of executing the game logic */
+extern /*@null@*/ModeSwitchData_t *qwalk_logic_subtick(QwalkField_t *, QwalkCommand_t);
+
+
+/** Execute the subtick step of taking an input */
+extern           QwalkCommand_t    qwalk_input_subtick();
+
+/** Execute the subtick step of updating the screen */
+extern           int               qwalk_output_subtick();
+
+
 
 /** Get the y coordinate of a #QwalkObject_t */
 extern int               qwalk_object_coord_y_get(const QwalkObject_t*);

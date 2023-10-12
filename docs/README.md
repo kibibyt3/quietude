@@ -26,7 +26,7 @@
 │   ├── qdefs.c
 │   ├── qerror.c
 │   ├── qfile.c
-│   ├── qwalki.c
+│   ├── qwalkio.c
 │   ├── qwalkl.c
 │   ├── qwalkw.c
 │   ├── README.md

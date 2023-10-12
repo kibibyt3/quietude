@@ -9,7 +9,7 @@ This directory holds the source files for Q.
 ├── qdefs.c
 ├── qerror.c
 ├── qfile.c
-├── qwalki.c
+├── qwalkio.c
 ├── qwalkl.c
 ├── qwalkw.c
 ├── README.md
