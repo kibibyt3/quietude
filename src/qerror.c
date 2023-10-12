@@ -14,43 +14,47 @@
 
  
 
-/** String for #QERROR_NULL_POINTER_UNEXPECTED     */
+/** String for #QERROR_NULL_POINTER_UNEXPECTED           */
 #define QERROR_STRING_NULL_POINTER_UNEXPECTED \
 	"Encountered unexpected NULL pointer"
 
-/** String for #QERROR_NULL_VALUE_UNEXPECTED       */
+/** String for #QERROR_NULL_VALUE_UNEXPECTED             */
 #define QERROR_STRING_NULL_VALUE_UNEXPECTED \
 	"Encountered unexpect NULL value"
 
-/** String for #QERROR_ENUM_CONSTANT_INVALID       */
+/** String for #QERROR_ENUM_CONSTANT_INVALID             */
 #define QERROR_STRING_ENUM_CONSTANT_INVALID \
 	"Invalid enum constant encountered"
 
-/** String for #QERROR_ENUM_CONSTANT_INVALID_ZERO  */
+/** String for #QERROR_ENUM_CONSTANT_INVALID_ZERO        */
 #define QERROR_STRING_ENUM_CONSTANT_INVALID_ZERO \
 	"Enum constant likely never explicitly defined"
 
-/** String for #QERROR_PARAMETER_INVALID           */
+/** String for #QERROR_PARAMETER_INVALID                 */
 #define QERROR_STRING_PARAMETER_INVALID \
 	"Invalid parameter"
 
-/** String for #QERROR_MODULE_INITIALIZED          */
+/** String for #QERROR_MODULE_INITIALIZED                */
 #define QERROR_STRING_MODULE_INITIALIZED \
 	"Module initialized (did you already initialize this module?)"
 
-/** String for #QERROR_MODULE_UNINITIALIZED        */
+/** String for #QERROR_MODULE_UNINITIALIZED              */
 #define QERROR_STRING_MODULE_UNINITIALIZED \
 	"Module not properly initialized"
 
-/** String for #QERROR_FILE_MODE                   */
+/** String for #QERROR_FILE_MODE                         */
 #define QERROR_STRING_FILE_MODE \
 	"Tried to operate on a file that was opened in an incompatible mode"
 
-/** String for #QERROR_QDATAMETA_TYPE_INCOMPATIBLE */
+/** String for #QERROR_QDATAMETA_TYPE_INCOMPATIBLE       */
 #define QERROR_STRING_QDATAMETA_TYPE_INCOMPATIBLE \
-	"Qdatameta type is incompatible with its cast"
+	"Qdatameta usage is incompatible with its type"
 
-/** String for #QERROR_ERRORVAL                    */
+/** String for #QERROR_QDATAMETA_TYPE_COUNT_INCOMPATIBLE */
+#define QERROR_STRING_QDATAMETA_TYPE_COUNT_INCOMPATIBLE \
+	"Qdatameta_t members type and size disagree"
+
+/** String for #QERROR_ERRORVAL                          */
 #define QERROR_STRING_ERRORVAL \
 	"An error value was caught returning from a function"
 
@@ -99,6 +103,12 @@ qerror_internal(Qerror_t error, const char *file, const char *func, int line) {
 		break;
 	case QERROR_FILE_MODE:
 		fprintf(stderr, QERROR_STRING_FILE_MODE);
+		break;
+	case QERROR_QDATAMETA_TYPE_INCOMPATIBLE:
+		fprintf(stderr, QERROR_STRING_QDATAMETA_TYPE_INCOMPATIBLE);
+		break;
+	case QERROR_QDATAMETA_TYPE_COUNT_INCOMPATIBLE:
+		fprintf(stderr, QERROR_STRING_QDATAMETA_TYPE_COUNT_INCOMPATIBLE);
 		break;
 	case QERROR_ERRORVAL:
 		fprintf(stderr, QERROR_STRING_ERRORVAL);
