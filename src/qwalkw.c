@@ -7,6 +7,7 @@
 #include <assert.h>
 
 #include "qdefs.h"
+#include "qerror.h"
 
 #include "qwalk.h"
 #include "qattr.c"
@@ -22,18 +23,29 @@
  * Initialize the qwalk module.
  * Upon a successful inititialization, set #isinit to @c true. #walk_field is
  * updated.
- * @param[in] datameta: pointer to the #Qdatameta_t sent by the previous mode 
- * Should be a #QwalkField_t.
+ * @param[in] datameta: pointer to the #Qdatameta_t sent by the previous mode.
+ * `free`'d in the event of a successful execution. Must contain a
+ * #QwalkField_t.
  * @return #Q_OK or #Q_ERROR
  */ 
 int
 qwalk_init(const Qdatameta_t* datameta) {
-	assert(isinit == false)
-	isinit = true;
-	if (datameta == NULL) {
+	if (isinit == true) {
+		Q_ERRORFOUND(QERROR_MODULE_INITIALIZED);
 		return Q_ERROR;
 	}
-	walk_field = (QwalkField_t *) datameta;
+	isinit = true;
+	if (datameta == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+	if (datameta->type != QDATA_TYPE_WALK_FIELD) {
+		Q_ERRORFOUND(QERROR_QDATAMETA_TYPE_INCOMPATIBLE);
+		return Q_ERROR;
+	}
+	walk_field = (QwalkField_t *) datameta->datap;
+	free(datameta);
+
 	return Q_OK;
 }
 
@@ -44,7 +56,11 @@ qwalk_init(const Qdatameta_t* datameta) {
  */ 
 int
 qwalk_end() {
-	assert(isinit == true);
+	if (isinit == false) {
+		Q_ERRORFOUND(QERROR_MODULE_UNINITIALIZED);
+		return Q_ERROR;
+	}
+	free(walk_field);
 	isinit = false;
 	return Q_OK;
 }
@@ -61,13 +77,18 @@ qwalk_tick() {
 	ModeSwitchData_t *switch_data;
 	cmd = qwalk_input_subtick();
 	if ((cmd < Q_ENUM_VALUE_START) || (cmd > Q_WALK_COMMAND_COUNT)) {
+		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 		return NULL;
 	}
+	
 	switch_data = qwalk_logic_subtick(walk_field, cmd);
 	if (switch_data == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return NULL;
 	}
-	qwalk_output_subtick();
+	
+	assert(qwalk_output_subtick() != Q_ERROR);
+	
 	return switch_data;
 }
 
@@ -80,6 +101,7 @@ qwalk_tick() {
 int
 qwalk_object_coord_y_get(const QwalkObject_t *walk_object) {
 	if (walk_object == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
 	}
 	return walk_object->coord_y;
@@ -94,6 +116,7 @@ qwalk_object_coord_y_get(const QwalkObject_t *walk_object) {
 int
 qwalk_object_coord_x_get(const QwalkObject_t *walk_object) {
 	if (walk_object == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
 	}
 	return walk_object->coord_x;
@@ -109,6 +132,7 @@ qwalk_object_coord_x_get(const QwalkObject_t *walk_object) {
 QattrList_t*
 qwalk_object_attr_list_get(const QwalkObject_t *walk_object) {
 	if (walk_object == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return NULL;
 	}	
 	return walk_object->attr_list;

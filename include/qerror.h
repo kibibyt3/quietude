@@ -30,29 +30,32 @@
  * Internal error for Q.
  */
 typedef enum Qerror_t {
-	/** Error for unexpected @c null pointer                     */
+	/** Error for unexpected @c null pointer                        */
 	QERROR_NULL_POINTER_UNEXPECTED = Q_ENUM_VALUE_START,
 
-	/** Error for unexpected @c null value                       */
+	/** Error for unexpected @c null value                          */
 	QERROR_NULL_VALUE_UNEXPECTED,
 
-	/** Error for invalid @c enum constant                       */
+	/** Error for invalid @c enum constant                          */
 	QERROR_ENUM_CONSTANT_INVALID,
 
-	/** Error for an @c enum constant set to zero                */
+	/** Error for an @c enum constant set to zero                   */
 	QERROR_ENUM_CONSTANT_INVALID_ZERO,
 
-	/** Error for an impossible parameter                        */
+	/** Error for an impossible parameter                           */
 	QERROR_PARAMETER_INVALID,
 
-	/** Error for an already-initialized module                  */
+	/** Error for an already-initialized module                     */
 	QERROR_MODULE_INITIALIZED,
 
-	/** Error for an uninitialized module                        */
+	/** Error for an uninitialized module                           */
 	QERROR_MODULE_UNINITIALIZED,
 
-	/** Error for violating internal file read/write permissions */
+	/** Error for violating internal file read/write permissions    */
 	QERROR_FILE_MODE,
+
+	/** Error for a #Qdatameta_t that is incompatible with its cast */
+	QERROR_QDATAMETA_TYPE_INCOMPATIBLE,
 
 	/**
 	 * Catch-all error to propogate error values
