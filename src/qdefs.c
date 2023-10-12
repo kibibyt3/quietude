@@ -28,8 +28,8 @@ qdatameta_create(QdataType_t type, size_t count) {
 	}
 	datap = calloc(count, qdata_type_size_get(type));
 	if (datap == NULL) {
-		free(datameta);
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		free(datameta);
 		return NULL;
 	}
 	datameta->datap = datap;
@@ -69,6 +69,7 @@ qdata_type_size_get(QdataType_t data_type) {
 	case QDATA_TYPE_STRING:
 		return sizeof(int);
 	default:
+		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 		return Q_ERRORCODE_SIZE;
 	}
 }

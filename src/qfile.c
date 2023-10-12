@@ -13,6 +13,7 @@
 #include <stdlib.h>
 
 #include "qdefs.h"
+#include "qerror.h"
 
 #include "qfile.h"
 
@@ -36,6 +37,7 @@ static QfileMode_t qfile_mode = QFILE_MODE_INACTIVE;
 int
 qfile_open(char *filename, QfileMode_t mode) {
 	if (qfile_mode != QFILE_MODE_INACTIVE) {
+		Q_ERRORFOUND(QERROR_MODULE_UNINITIALIZED);
 		return Q_ERROR;
 	}
 	if (mode == QFILE_MODE_WRITE) {
@@ -44,10 +46,12 @@ qfile_open(char *filename, QfileMode_t mode) {
 	} else if (mode == QFILE_MODE_READ) {
 		qfile_ptr = fopen(filename, "r");
 		qfile_mode = QFILE_MODE_READ;
-	} else {
+	} else{
+		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
 		return Q_ERROR;
 	}
 	if (qfile_ptr == NULL){
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		qfile_mode = QFILE_MODE_INACTIVE;
 		return Q_ERROR;
 	}
@@ -61,12 +65,15 @@ qfile_open(char *filename, QfileMode_t mode) {
 int
 qfile_close() {
 	if (qfile_ptr == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
 	}
 	if (qfile_mode == QFILE_MODE_INACTIVE) {
+		Q_ERRORFOUND(QERROR_FILE_MODE);
 		return Q_ERROR;
 	}
 	if (fclose(qfile_ptr) == EOF) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return Q_ERROR;
 	}
 	qfile_mode = QFILE_MODE_INACTIVE;
@@ -84,14 +91,17 @@ qfile_qdatameta_write(const Qdatameta_t *datameta) {
 	size_t data_written_count;
 	
 	if (qfile_ptr == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
 	}
 	if (qfile_mode != QFILE_MODE_WRITE) {
+		Q_ERRORFOUND(QERROR_FILE_MODE);
 		return Q_ERROR;
 	}
 	
 	if ((datameta_data_type_size = qdata_type_size_get(datameta->type))
 				== Q_ERRORCODE_SIZE) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return Q_ERROR;
 	}
 	
@@ -101,6 +111,7 @@ qfile_qdatameta_write(const Qdatameta_t *datameta) {
 			qfile_ptr);
 
 	if (data_written_count < datameta->count) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return Q_ERROR;
 	}
 	return Q_OK;
@@ -118,15 +129,18 @@ qfile_qdatameta_read(Qdatameta_t *datameta) {
 	size_t datameta_data_type_size;
 	
 	if (qfile_ptr == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
 	}
 	
 	if (qfile_mode != QFILE_MODE_READ) {
+		Q_ERRORFOUND(QERROR_FILE_MODE);
 		return Q_ERROR;
 	}
 
 	if ((datameta_data_type_size = qdata_type_size_get(datameta->type))
 				== Q_ERRORCODE_SIZE) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return Q_ERROR;
 	}
 
@@ -136,6 +150,7 @@ qfile_qdatameta_read(Qdatameta_t *datameta) {
 			qfile_ptr);
 	
 	if (data_read_count < datameta->count) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return Q_ERROR;
 	}
 	return Q_OK;

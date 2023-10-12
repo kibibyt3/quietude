@@ -23,14 +23,15 @@
  */
 QattrList_t*
 qattr_list_create(size_t count){
-	/*@i1@*/assert(count < SIZE_MAX);
 	QattrList_t *qattr_listp;
 	qattr_listp        = calloc((size_t) 1, sizeof(*qattr_listp));
 	if (qattr_listp == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return NULL;
 	}
 	qattr_listp->attrp = calloc(count, sizeof(*(qattr_listp->attrp)));
 	if (qattr_listp->attrp == NULL){
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		free(qattr_listp);
 		return NULL;
 	}
@@ -57,9 +58,7 @@ qattr_list_destroy(QattrList_t *qattr_list) {
 	}
 
 	free(qattr_list->attrp);
-	qattr_list->attrp = NULL;
 	free(qattr_list);
-	qattr_list = NULL;
 	return Q_OK;
 }
 
@@ -76,6 +75,7 @@ qattr_list_value_get(QattrList_t* attr_list, QattrKey_t attr_key) {
 
 	Qdatameta_t *value = NULL;
 	if (attr_list == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return NULL;
 	}
 	/* We need only iterate through those elements which have been properly added */
@@ -89,7 +89,7 @@ qattr_list_value_get(QattrList_t* attr_list, QattrKey_t attr_key) {
 }
 
 
-/**
+/*
  * Remove a #Qattr_t from a #QattrList_t.
  * The @c valuep member of the #Qattr_t is set to be equal to @c NULL and the @c
  * key member to #QATTR_KEY_EMPTY when an error does not occur.
