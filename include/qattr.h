@@ -27,8 +27,8 @@ typedef enum QattrKey_t {
 	/* QSAIL_EXCLUSIVE ATTRIBUTE KEYS */
 
 	/* INTERNAL ATTRIBUTE KEYS        */
-	QATTR_KEY_DEBUG,                    /**< Test attribute for debugging */
-	
+	QATTR_KEY_EMPTY,                     /**< key for an empty (i.e. @c NULL) attribute */
+	QATTR_KEY_DEBUG,                     /**< test key for debugging                    */
 	/**
 	 * Number of allowed values for #QattrKey_t.
 	 * Must be defined via the second-to-last enum.
@@ -42,7 +42,7 @@ typedef enum QattrKey_t {
  */
 typedef struct Qattr_t {
 	QattrKey_t    key;    /**< Key to address the value by */
-	Qdatameta_t  *valuep; /**< Value to hold the proper data for the attribute */
+	/*@owned@*/Qdatameta_t  *valuep; /**< Value to hold the proper data for the attribute */
 } Qattr_t;
 
 /**
@@ -51,24 +51,25 @@ typedef struct Qattr_t {
  */
 typedef struct QattrList_t {
 	size_t   count;    /**< The number of #Qattr_t in the list                */
-	Qattr_t *attrp;    /**< The actual collection of #Qattr_t                 */
+	/*@only@*/Qattr_t *attrp;    /**< The actual collection of #Qattr_t                 */
 	size_t   index_ok; /**< The earliest index of attrp that isn't yet in use */
 } QattrList_t;
 
 
 
 /** Returns a newly-created attr list of a given size */
-/*@external@*/
-extern /*@null@*//*@out@*/QattrList_t* qattr_list_create(size_t);
+extern /*@null@*//*@partial@*/QattrList_t* qattr_list_create(size_t);
 
-/** Frees a given qattr_list from memory */
-/*@external@*/
-extern int qattr_list_destroy(/*@out@*//*@owned@*/QattrList_t*);
+/** Frees a given #Qattr_list_t from memory */
+extern int qattr_list_destroy(/*@only@*/QattrList_t*);
+
+/*
+** Transfers control of a #Qattr_t to the caller *
+extern *@null@*Qdatameta_t *qattr_list_attr_remove(QattrList_t *, QattrKey_t);
+*/
 
 /** Returns the value associated with the given key in the given AttrList */
-/*@external@*/
-extern /*@null@*/Qdatameta_t* qattr_list_value_get(QattrList_t*, QattrKey_t);
+extern /*@null@*//*@dependent@*/Qdatameta_t *qattr_list_value_get(/*@returned@*/QattrList_t *, QattrKey_t)/*@*/;
 
 /** Sets a #QattrKey_t/#Qdatameta_t pair in the given AttrList */
-/*@external@*/
-extern int qattr_list_attr_set(QattrList_t*, QattrKey_t, Qdatameta_t*);
+extern int qattr_list_attr_set(QattrList_t*, QattrKey_t, /*@keep@*/Qdatameta_t*);

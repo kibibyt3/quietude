@@ -62,9 +62,30 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	int *val = (int *) qdatameta_datap_get(datameta2);
 	assert(val != NULL);
 	printf("%i, %i, %i, %i, %i\n", val[0], val[1], val[2], val[3], val[4]);
+	val = NULL;
+
+	QattrList_t *attr_list;
+	attr_list = qattr_list_create((size_t) 1);
+	assert(attr_list != NULL);
+	r = qattr_list_attr_set(attr_list, QATTR_KEY_NAME, datameta2);
+	assert(r != Q_ERROR);
+	datameta2 = NULL;	
+	Qdatameta_t *datameta3;
 	
-	printf("%i, %i\n", (int) qdatameta_type_get(datameta2), (int) qdatameta_count_get(datameta2));
+	datameta3 = qattr_list_value_get(attr_list, QATTR_KEY_NAME);
+	
+	val = (int *) qdatameta_datap_get(datameta3);
+	assert(val != NULL);
+	printf("%i, %i, %i, %i, %i\n", val[0], val[1], val[2], val[3], val[4]);
+	val = NULL;
+	size_t s;
+	QdataType_t data_type;
+	data_type = qdatameta_type_get(datameta);
+	s = qdatameta_count_get(datameta);
+	printf("%i, %i\n", (int) s, (int) data_type);
+	r = qattr_list_destroy(attr_list);
+	assert(r != Q_ERROR);
 	qdatameta_destroy(datameta);
-	qdatameta_destroy(datameta2);
+	datameta = NULL;
 	return 0;
 }

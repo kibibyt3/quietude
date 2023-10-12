@@ -40,6 +40,7 @@ qdatameta_create(QdataType_t type, size_t count) {
 
 /**
  * Destory a #Qdatameta_t.
+ * This includes its @c datap member.
  * @param[out] datameta: #Qdatameta_t to free from memory
  */
 void
