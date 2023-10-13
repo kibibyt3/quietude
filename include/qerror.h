@@ -30,11 +30,14 @@
  * Internal error for Q.
  */
 typedef enum Qerror_t {
-	/** Error for unexpected @c null pointer                               */
+	/** Error for unexpected @c NULL pointer                               */
 	QERROR_NULL_POINTER_UNEXPECTED = Q_ENUM_VALUE_START,
 
-	/** Error for unexpected @c null value                                 */
+	/** Error for unexpected @c NULL value                                 */
 	QERROR_NULL_VALUE_UNEXPECTED,
+
+	/** Error for an unexpected zero value                                 */
+	QERROR_ZERO_VALUE_UNEXPECTED,
 
 	/** Error for an unexpected negative value                             */
 	QERROR_NEGATIVE_VALUE_UNEXPECTED,
