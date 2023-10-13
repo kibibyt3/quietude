@@ -31,14 +31,14 @@ ModeSwitchData_t *
 qwalk_logic_subtick(QwalkField_t *walk_field, QwalkCommand_t walk_command)
 /*@modifies *walk_field@*/ {
 	
-	/**
+	/*
 	 * Dynamic array of every #QwalkObject_t #QobjType_t #Qattr_t.
 	 * Indexes are assumed to be in lockstep with walk_field.
 	 */
 	QobjType_t *obj_types;
 	obj_types = qwalk_logic_walk_field_sanitize(walk_field);
 
-	/** Pointer to the memory that holds the player #QwalkObject_t */
+	/* Pointer to the memory that holds the player #QwalkObject_t */
 	QwalkObject_t *player = NULL;
 
 
