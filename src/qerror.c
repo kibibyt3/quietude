@@ -20,7 +20,11 @@
 
 /** String for #QERROR_NULL_VALUE_UNEXPECTED             */
 #define QERROR_STRING_NULL_VALUE_UNEXPECTED \
-	"Encountered unexpect NULL value"
+	"Encountered unexpected NULL value"
+
+/** String for #QERROR_NEGATIVE_VALUE_UNEXPECTED         */
+#define QERROR_STRING_NEGATIVE_VALUE_UNEXPECTED \
+	"Encountered unexpected negative value"
 
 /** String for #QERROR_ENUM_CONSTANT_INVALID             */
 #define QERROR_STRING_ENUM_CONSTANT_INVALID \
@@ -85,6 +89,9 @@ qerror_internal(Qerror_t error, const char *file, const char *func, int line) {
 		break;
 	case QERROR_NULL_VALUE_UNEXPECTED:
 		fprintf(stderr, QERROR_STRING_NULL_VALUE_UNEXPECTED);
+		break;
+	case QERROR_NEGATIVE_VALUE_UNEXPECTED:
+		fprintf(stderr, QERROR_STRING_NEGATIVE_VALUE_UNEXPECTED);
 		break;
 	case QERROR_ENUM_CONSTANT_INVALID:
 		fprintf(stderr, QERROR_STRING_ENUM_CONSTANT_INVALID);

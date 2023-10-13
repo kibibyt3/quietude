@@ -36,6 +36,9 @@ typedef enum Qerror_t {
 	/** Error for unexpected @c null value                                 */
 	QERROR_NULL_VALUE_UNEXPECTED,
 
+	/** Error for an unexpected negative value                             */
+	QERROR_NEGATIVE_VALUE_UNEXPECTED,
+
 	/** Error for invalid @c enum constant                                 */
 	QERROR_ENUM_CONSTANT_INVALID,
 
