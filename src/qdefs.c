@@ -66,8 +66,12 @@ qdata_type_size_get(QdataType_t data_type) {
 		return sizeof(int);
 	case QDATA_TYPE_FLOAT:
 		return sizeof(float);
-	case QDATA_TYPE_STRING:
+	case QDATA_TYPE_INT_STRING:
 		return sizeof(int);
+	case QDATA_TYPE_CHAR_STRING:
+		return sizeof(char);
+	case QDATA_TYPE_QOBJECT_TYPE:
+		return sizeof(QobjType_t);
 	default:
 		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 		return Q_ERRORCODE_SIZE;
