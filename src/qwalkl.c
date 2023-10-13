@@ -17,13 +17,10 @@
 
 
 
-/** Error-check a #QwalkField_t and create an array of every #QobjType_t therein */
 static /*@null@*/QobjType_t *qwalk_logic_walk_field_sanitize(/*@in@*/QwalkField_t *)/*@*/;
 
-/** Safely destory a dynamic #QobjType_t array */
 static void qwalk_logic_qobj_type_destroy(/*@only@*/QobjType_t *);
 
-/** Find a specific #QwalkObject_t by its #QobjType_t */
 static int qwalk_logic_find_qobj_index(QobjType_t *obj_types_parse, QobjType_t obj_type_search)/*@*/;
 
 
