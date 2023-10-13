@@ -38,6 +38,10 @@
 #define QERROR_STRING_ENUM_CONSTANT_INVALID_ZERO \
 	"Enum constant likely never explicitly defined"
 
+/** String for #QERROR_INDEX_OUTOFRANGE                  */
+#define QERROR_STRING_INDEX_OUTOFRANGE \
+	"Index is out of range"
+
 /** String for #QERROR_PARAMETER_INVALID                 */
 #define QERROR_STRING_PARAMETER_INVALID \
 	"Invalid parameter"
@@ -105,6 +109,9 @@ qerror_internal(Qerror_t error, const char *file, const char *func, int line) {
 		break;
 	case QERROR_ENUM_CONSTANT_INVALID_ZERO:
 		fprintf(stderr, QERROR_STRING_ENUM_CONSTANT_INVALID_ZERO);
+		break;
+	case QERROR_INDEX_OUTOFRANGE:
+		fprintf(stderr, QERROR_STRING_INDEX_OUTOFRANGE);
 		break;
 	case QERROR_PARAMETER_INVALID:
 		fprintf(stderr, QERROR_STRING_PARAMETER_INVALID);
