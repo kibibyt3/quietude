@@ -121,7 +121,7 @@ qwalk_logic_walk_field_sanitize(QwalkField_t *walk_field) {
 
 
 /**
- * Safely destory a dynamic #QobjType_t array
+ * Safely destory a dynamic #QobjType_t array.
  * @param[out] obj_types: array to destroy
  */
 void
@@ -132,7 +132,7 @@ qwalk_logic_qobj_type_destroy(QobjType_t *obj_types) {
 
 
 /**
- * Find the index of a #QwalkObject_t according to a #QobjType_t search query
+ * Find the index of a #QwalkObject_t according to a #QobjType_t search query.
  * The #QobjType_t is assumed to be occur either once or zero times; if an
  * object occurs more than once, this function will fail.
  * @param[in] obj_types_parse: QobjType_t array to parse
