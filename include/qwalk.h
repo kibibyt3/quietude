@@ -11,7 +11,7 @@
 #define QWALK_AREA_SIZE (QWALK_AREA_SIZE_Y * QWALK_AREA_SIZE_X)
 
 /** Minimum x/y coordinate value on a #QwalkField_t */
-#define QWALK_AREA_MINIMUM_COORD 0
+#define QWALK_AREA_COORD_MINIMUM 0
 
 
 /**
@@ -20,10 +20,16 @@
  * I/O submodule translates raw input into commands.
  */
 typedef enum QwalkCommand_t {
-	QWALK_COMMAND_MOVE_NORTH = Q_ENUM_VALUE_START, /**< Move north */
-	QWALK_COMMAND_MOVE_EAST,                       /**< Move east  */
-	QWALK_COMMAND_MOVE_SOUTH,                      /**< Move south */
-	QWALK_COMMAND_MOVE_WEST,                       /**< Move west  */
+	
+	/** Minimum value for a move command */
+	QWALK_COMMAND_MOVE_MIN = Q_ENUM_VALUE_START,
+	QWALK_COMMAND_MOVE_NORTH, /**< Move north */
+	QWALK_COMMAND_MOVE_EAST,  /**< Move east  */
+	QWALK_COMMAND_MOVE_SOUTH, /**< Move south */
+	QWALK_COMMAND_MOVE_WEST,  /**< Move west  */
+	/** Maximum value for a move command */
+	QWALK_COMMAND_MOVE_MAX = QWALK_COMMAND_MOVE_WEST,
+	
 	/** Pass a tick without taking an action*/
 	QWALK_COMMAND_WAIT,                            
 
@@ -51,7 +57,7 @@ typedef struct QwalkObject_t {
  */
 typedef struct QwalkField_t {
 	/** Pointer to the collection of #QwalkObject_t present on the field */
-	QwalkObject_t *objects;
+	QwalkObject_t **objects;
 
 	/*
 	 * For future implementations when there will be more than one field vvv
@@ -87,12 +93,20 @@ extern           QwalkCommand_t    qwalk_input_subtick();
 extern           int               qwalk_output_subtick();
 
 
+/** Get a specific #QwalkObject_t * from a #QwalkField_t */
+extern /*@null@*/QwalkObject_t    *qwalk_field_object_get(QwalkField_t *, int)/*@*/;
+
+/** Set the y coordinate of a #QwalkObject_t */
+extern           int               qwalk_object_coord_y_set(QwalkObject_t *, int);
+
+/** Set the x coordinate of a #QwalkObject_t */
+extern           int               qwalk_object_coord_x_set(QwalkObject_t *, int);
 
 /** Get the y coordinate of a #QwalkObject_t */
-extern int               qwalk_object_coord_y_get(const QwalkObject_t*);
+extern int               qwalk_object_coord_y_get(const QwalkObject_t *)/*@*/;
 
 /** Get the x coordinate of a #QwalkObject_t */
-extern int               qwalk_object_coord_x_get(const QwalkObject_t*);
+extern int               qwalk_object_coord_x_get(const QwalkObject_t *)/*@*/;
 
 /** Get the #QattrList_t of a #QwalkObject_t */
-extern QattrList_t      *qwalk_object_attr_list_get(const QwalkObject_t*);
+extern QattrList_t      *qwalk_object_attr_list_get(const QwalkObject_t *)/*@*/;

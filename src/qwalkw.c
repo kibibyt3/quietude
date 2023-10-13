@@ -97,40 +97,93 @@ qwalk_tick() {
 
 
 /**
- * Get the y coordinate of a #QwalkObject_t
+ * Get a specific #QwalkObject_t * from a #QwalkField_t.
+ * @param[in] walk_field: walk_field to search inside of
+ * @param[in] index: index to find
+ * @return desired #QwalkObject_t or @c NULL.
+ */
+QwalkObject_t *
+qwalk_field_object_get(QwalkField_t *walk_field, int index) {
+	if (walk_field == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return NULL;
+	}
+	if (index >= (QWALK_AREA_SIZE + QWALK_AREA_COORD_MINIMUM)) {
+		Q_ERRORFOUND(QERROR_INDEX_OUTOFRANGE);
+		return NULL;
+	}
+	return walk_field->objects[index];
+}
+
+
+/**
+ * Set the y coordinate of a #QwalkObject_t.
  * @param[in] walk_object: pointer to #QwalkObject_t in question
- * @return y coordinate or #Q_ERROR if @c walk_object is @c NULL
+ * @param[in] coord:       value to set the y coordinate to
+ * @return #Q_OK or #Q_ERROR
+ */
+int
+qwalk_object_coord_y_set(const QwalkObject_t *walk_object, int coord) {
+	if (walk_object == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+	walk_object->coord_y = coord;
+	return Q_OK;
+}
+
+
+/**
+ * Set the y coordinate of a #QwalkObject_t
+ * @param[in] walk_object: pointer to #QwalkObject_t in question
+ * @param[in] coord:       value to set the x coordinate to
+ * @return #Q_OK or #Q_ERROR
+ */
+int
+qwalk_object_coord_x_set(const QwalkObject_t *walk_object, int coord) {
+	if (walk_object == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+	walk_object->coord_x = coord;
+	return Q_OK;
+}
+
+
+/**
+ * Get the y coordinate of a #QwalkObject_t.
+ * @param[in] walk_object: pointer to #QwalkObject_t in question
+ * @return y coordinate or #Q_ERRORCODE_INT if an error occurs
  */
 int
 qwalk_object_coord_y_get(const QwalkObject_t *walk_object) {
 	if (walk_object == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return Q_ERROR;
+		return Q_ERRORCODE_INT;
 	}
 	return walk_object->coord_y;
 }
 
 
 /**
- * Get the x coordinate of a #QwalkObject_t
+ * Get the x coordinate of a #QwalkObject_t.
  * @param[in] walk_object: pointer to #QwalkObject_t in question
- * @return x coordinate or #Q_ERROR if @c walk_object is @c NULL
+ * @return x coordinate or #Q_ERRORCODE_INT if an error occurs
  */
 int
 qwalk_object_coord_x_get(const QwalkObject_t *walk_object) {
 	if (walk_object == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return Q_ERROR;
+		return Q_ERRORCODE_INT;
 	}
 	return walk_object->coord_x;
 }
 
 
 /**
- * Get the #QattrList_t of a #QwalkObject_t
+ * Get the #QattrList_t of a #QwalkObject_t.
  * @param[in] walk_object: pointer to #QwalkObject_t in question
- * @return #QattrList_t of all object's #Qattr_t or @c NULL if @c walk_object is
- * @c NULL
+ * @return #QattrList_t of all object's #Qattr_t or @c NULL if an error occurs.
  */
 QattrList_t*
 qwalk_object_attr_list_get(const QwalkObject_t *walk_object) {
@@ -140,3 +193,5 @@ qwalk_object_attr_list_get(const QwalkObject_t *walk_object) {
 	}	
 	return walk_object->attr_list;
 }
+
+
