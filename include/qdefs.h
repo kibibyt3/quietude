@@ -83,22 +83,22 @@ typedef enum QdataType_t {
 typedef enum QobjType_t {
 
 	/** Player type */
-	Q_OBJ_TYPE_PLAYER = Q_ENUM_VALUE_START,
+	QOBJ_TYPE_PLAYER = Q_ENUM_VALUE_START,
 
-	Q_OBJ_TYPE_TREE,  /**< Tree type */
+	QOBJ_TYPE_TREE,  /**< Tree type */
 	
 	/**
 	 * Empty type
 	 * Default type for an object that lacks any specificity. Treated in-game as
 	 * an empty space that is readily traversed, like a patch of short grass.
 	 */
-	Q_OBJ_TYPE_EMPTY,
+	QOBJ_TYPE_EMPTY,
 
 	/**
 	 * Number of available object types
 	 * Must be defined via the final proper enum constant
 	 */
-	Q_OBJ_TYPE_COUNT = Q_OBJ_TYPE_EMPTY
+	QOBJ_TYPE_COUNT = QOBJ_TYPE_EMPTY
 
 } QobjType_t;
 
