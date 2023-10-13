@@ -19,7 +19,7 @@
 
 /**
  * Pointer to the current active file.
- * Modify via #QfileOpen() and #QfileClose().
+ * Modify via #qfile_open() and #qfile_close().
  */
 /*@null@*/static FILE *qfile_ptr;
 
