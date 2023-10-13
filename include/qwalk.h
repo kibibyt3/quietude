@@ -4,12 +4,14 @@
  */
 
 
-#define QWALK_AREA_SIZE_Y 25  /**< Y dimension for the qwalk field */
-#define QWALK_AREA_SIZE_X 50  /**< X dimension for the qwalk field */
+#define QWALK_AREA_SIZE_Y 25  /**< Y dimension for a #QwalkField_t */
+#define QWALK_AREA_SIZE_X 50  /**< X dimension for a #QwalkField_t */
 
 /** Area of the qwalk field */
 #define QWALK_AREA_SIZE (QWALK_AREA_SIZE_Y * QWALK_AREA_SIZE_X)
 
+/** Minimum x/y coordinate value on a #QwalkField_t */
+#define QWALK_AREA_MINIMUM_COORD 0
 
 
 /**
@@ -55,6 +57,7 @@ typedef struct QwalkField_t {
 	 * For future implementations when there will be more than one field vvv
 	   		QwalkMetaCoord_t meta_coord_x;
 	   		QwalkMetaCoord_t meta_coord_y;
+	 *
 	*/
 
 } QwalkField_t;
