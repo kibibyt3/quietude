@@ -15,9 +15,12 @@
 typedef enum QattrKey_t {
 
 	/* GENERAL ATTRIBUTE KEYS         */
-	QATTR_KEY_NAME = Q_ENUM_VALUE_START, /**< name of object */
-	QATTR_KEY_DESCRIPTION_BRIEF,         /**< brief description of object */
-	QATTR_KEY_DESCRIPTION_LONG,          /**< long description of object  */
+	
+	/** #QobjType_t object type */ 
+	QATTR_KEY_QOBJECT_TYPE = Q_ENUM_VALUE_START,
+	QATTR_KEY_NAME,                       /**< name of object */
+	QATTR_KEY_DESCRIPTION_BRIEF,          /**< brief description of object */
+	QATTR_KEY_DESCRIPTION_LONG,           /**< long description of object  */
 	/* QWALK-EXCLUSIVE ATTRIBUTE KEYS */ 
 
 	/* QTALK-EXCLUSIVE ATTRIBUTE KEYS */
@@ -51,7 +54,7 @@ typedef struct Qattr_t {
  */
 typedef struct QattrList_t {
 	size_t   count;    /**< The number of #Qattr_t in the list                */
-	/*@only@*/Qattr_t *attrp;    /**< The actual collection of #Qattr_t                 */
+	/*@only@*/Qattr_t *attrp;    /**< The actual collection of #Qattr_t       */
 	size_t   index_ok; /**< The earliest index of attrp that isn't yet in use */
 } QattrList_t;
 
@@ -69,7 +72,7 @@ extern *@null@*Qdatameta_t *qattr_list_attr_remove(QattrList_t *, QattrKey_t);
 */
 
 /** Returns the value associated with a key in a #QattrList_t */
-extern /*@null@*//*@dependent@*/Qdatameta_t *qattr_list_value_get(/*@returned@*/QattrList_t *, QattrKey_t)/*@*/;
+extern /*@null@*//*@observer@*/Qdatameta_t *qattr_list_value_get(/*@returned@*/QattrList_t *, QattrKey_t)/*@*/;
 
 /** Sets a #QattrKey_t/#Qdatameta_t pair in the given #QattrList_t */
 extern int qattr_list_attr_set(QattrList_t*, QattrKey_t, /*@keep@*/Qdatameta_t*);
