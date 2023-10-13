@@ -9,20 +9,33 @@
 #define Q_OK     0          /**< Generic OK return code for Q    */
 #define Q_ERROR -1          /**< Generic ERROR return code for Q */
 
-/** Generic error for functions that otherwise return a meaningful @c int */
-#define Q_ERRORCODE_INT -1
+
 
 /**
- * Not found error for functions that search for an @c int
- * Namely in the event that the value cannot be found. This error should be
- * handled gracefully; it's an expected and normal part of Q and is therefore
- * expected to be non-fatal. If encountering this value is indicative of a fatal
- * error, the onus is on the caller to deal with this, as this code is
- * especially used for generic utility functions. This does furthermore mean
- * that @c qerror functions and macros <i>should not</i> be called in tandem
- * with returning this value!
+ * @defgroup ExpectedErrors Expected errors
+ * Errors that are expected to come up in normal operation; that is to say,
+ * the returning of these errorcodes is intentional and should not be considered
+ * buggy behaviour. They <i>may</i> nonetheless be checked for in the event a
+ * circumstance should not happen, but the returning of these should, for
+ * instance, never invoke #Q_ERRORFOUND().
+ */
+
+/**
+ * @ingroup ExpectedErrors
+ * Expected error code for functions that attempt and fail to modify something.
+ */
+#define Q_ERROR_NOCHANGE -2
+
+/**
+ * @ingroup ExpectedErrors
+ * Not found expected error for functions that search for an @c int.
  */
 #define Q_ERRORCODE_INT_NOTFOUND -2
+
+
+
+/** Generic error for functions that otherwise return a meaningful @c int */
+#define Q_ERRORCODE_INT -1
 
 /** Returned by functions that return @c size_t if an error occurs */
 #define Q_ERRORCODE_SIZE 0
@@ -73,8 +86,6 @@ typedef enum QdataType_t {
 	 */
 	QDATA_TYPE_COUNT = QDATA_TYPE_QOBJECT_TYPE
 } QdataType_t;
-
-
 
 
 /**
