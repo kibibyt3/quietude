@@ -48,7 +48,7 @@ qwalk_logic_subtick(QwalkField_t *walk_field, QwalkCommand_t walk_command)
 
 
 /**
- * Error-check a #QwalkField_t and create an array of every #QobjType_t therein 
+ * Error-check a #QwalkField_t and create an array of every #QobjType_t therein.
  * This is for ease of future indexing and to sanitize inputs to dispose of the
  * need for excessive error-checking code; i.e., this function's params and
  * return value are assumed to be error-free if a non-`NULL` value is returned.
