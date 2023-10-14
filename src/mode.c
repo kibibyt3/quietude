@@ -104,36 +104,42 @@ mode_switch(ModeSwitchData_t *mode_data_next, Mode_t mode_prev) {
  * Cause a tick to pass.
  * Acts as an interface to the relevant tick functions in each module. Tracks
  * whether the tick function wants to switch control to a different module
- * by keeping the name of the mode for the next tick in @c mode_switch_data.
+ * by keeping the name of the mode for the next tick.
  * If modes are to be changed by the next tick, the datameta to pass to the
- * next tick is also returned in the #ModeSwitchData_t*.
+ * next tick is also given.
  * @param[in] mode: the specific mode to tick forward.
- * @return switch data with the name of the next mode and data to pass to 
- * the next mode, if applicable; or NULL if an error occurs.
+ * @param[out] switch_data: #ModeSwitchData_t with the name of the next mode
+ * and data to pass to  the next mode, if applicable.
+ * @return #Q_OK or #Q_ERROR
  */
-ModeSwitchData_t*
-mode_tick(Mode_t mode){
+int
+mode_tick(Mode_t mode, ModeSwitchData_t *switch_data){
 	ModeSwitchData_t *mode_switch_data;
+	int r;
 	
 	/* Pass the tick and aquire its mode switch data */
 	switch (mode){
 	case MODE_T_WALK:
-		mode_switch_data = qwalk_tick();
+		r = qwalk_tick(switch_data);
 		break;
 	case MODE_T_TALK:
-		mode_switch_data = qtalk_tick();
+		r = qtalk_tick(switch_data);
 		break;
 	case MODE_T_CLI:
-		mode_switch_data = qcli_tick();
+		r = qcli_tick(switch_data);
 		break;
 	case MODE_T_SAIL:
-		mode_switch_data = qsail_tick();
+		r = qsail_tick(switch_data);
 		break;
 	case MODE_T_INIT:
-		return NULL;
+		return Q_ERROR;
 	case MODE_T_EXIT:
-		return NULL;
+		return Q_ERROR;
 	}
 
-	return mode_switch_data;
+	if (r == Q_ERROR) {
+		return Q_ERROR;
+	}
+
+	return Q_OK;
 }

@@ -69,30 +69,30 @@ qwalk_end() {
 
 /**
  * Pass a tick in qwalk.
- * @return #ModeSwitchData_t for determining and executing the mode for the
- * next tick.
+ * @param[out] switch_data: #ModeSwitchData_t to update for determining and
+ * executing the mode for the next tick.
+ * @return #Q_OK or #Q_ERROR
  */
-ModeSwitchData_t *
-qwalk_tick() {
+int
+qwalk_tick(ModeSwitchData_t *switch_data) {
 	QwalkCommand_t    cmd;
-	ModeSwitchData_t *switch_data;
 	int               i;
 	cmd = qwalk_input_subtick();
 	if ((cmd < Q_ENUM_VALUE_START) || (cmd > Q_WALK_COMMAND_COUNT)) {
 		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
-		return NULL;
+		return Q_ERROR;
 	}
 	
-	switch_data = qwalk_logic_subtick(walk_field, cmd);
-	if (switch_data == NULL) {
+	i = qwalk_logic_subtick(walk_field, cmd, switch_data);
+	if (i == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return NULL;
+		return Q_ERROR;
 	}
 	
 	i = qwalk_output_subtick();
 	assert(i != Q_ERROR);
 	
-	return switch_data;
+	return Q_OK;
 }
 
 
