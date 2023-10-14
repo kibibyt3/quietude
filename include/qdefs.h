@@ -96,20 +96,16 @@ typedef enum QobjType_t {
 	/** Player type */
 	QOBJ_TYPE_PLAYER = Q_ENUM_VALUE_START,
 
-	QOBJ_TYPE_TREE,  /**< Tree type */
+	QOBJ_TYPE_GRASS, /**< A patch of grass */
+	QOBJ_TYPE_TREE,  /**< A tree           */
 	
-	/**
-	 * Empty type
-	 * Default type for an object that lacks any specificity. Treated in-game as
-	 * an empty space that is readily traversed, like a patch of short grass.
-	 */
-	QOBJ_TYPE_EMPTY,
+	QOBJ_TYPE_VOID,  /**< Type for entirely empty space */
 
 	/**
 	 * Number of available object types
 	 * Must be defined via the final proper enum constant
 	 */
-	QOBJ_TYPE_COUNT = QOBJ_TYPE_EMPTY
+	QOBJ_TYPE_COUNT = QOBJ_TYPE_VOID
 
 } QobjType_t;
 
