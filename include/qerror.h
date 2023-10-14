@@ -48,7 +48,7 @@ typedef enum Qerror_t {
 	/** Error for an @c enum constant set to zero                          */
 	QERROR_ENUM_CONSTANT_INVALID_ZERO,
 
-	/* Error for indexing a location that does not exist                   */
+	/** Error for indexing a location that does not exist                  */
 	QERROR_INDEX_OUTOFRANGE,
 
 	/** Error for an impossible parameter                                  */
