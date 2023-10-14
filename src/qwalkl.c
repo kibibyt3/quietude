@@ -165,11 +165,6 @@ qwalk_logic_subtick(QwalkField_t *walk_field, QwalkCommand_t walk_command, ModeS
 	switch_data->mode = MODE_T_WALK;
 
 	return Q_OK;
-}
-
-
-
-
 
 	qwalk_logic_qobj_type_destroy(obj_types);
 	obj_types = NULL;
