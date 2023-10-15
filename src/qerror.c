@@ -18,6 +18,10 @@
 #define QERROR_STRING_NULL_POINTER_UNEXPECTED \
 	"Encountered unexpected NULL pointer"
 
+/** String for #QERROR_NONNULL_POINTER_UNEXPECTED        */
+#define QERROR_STRING_NONNULL_POINTER_UNEXPECTED \
+	"Encountered unexpected non-NULL pointer"
+
 /** String for #QERROR_NULL_VALUE_UNEXPECTED             */
 #define QERROR_STRING_NULL_VALUE_UNEXPECTED \
 	"Encountered unexpected NULL value"
@@ -94,6 +98,9 @@ qerror_internal(Qerror_t error, const char *file, const char *func, int line) {
 	switch (error) {
 	case QERROR_NULL_POINTER_UNEXPECTED:
 		fprintf(stderr, QERROR_STRING_NULL_POINTER_UNEXPECTED);
+		break;
+	case QERROR_NONNULL_POINTER_UNEXPECTED:
+		fprintf(stderr, QERROR_STRING_NONNULL_POINTER_UNEXPECTED);
 		break;
 	case QERROR_NULL_VALUE_UNEXPECTED:
 		fprintf(stderr, QERROR_STRING_NULL_VALUE_UNEXPECTED);
