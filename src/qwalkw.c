@@ -16,10 +16,10 @@
 #include "qwalk.h"
 
 /** Pointer to current #QwalkLayer_t */
-/*@owned@*/static QwalkArea_t *walk_area_curr;
+/*@owned@*//*@null@*/static QwalkArea_t *walk_area_curr = NULL;
 
 /** Whether the qwalk module is currently initialized  */
-           static bool          isinit = false; 
+static bool          isinit = false; 
 
 
 /**
@@ -35,18 +35,27 @@ int
 qwalk_init(Qdatameta_t* datameta) {
 	if (isinit == true) {
 		Q_ERRORFOUND(QERROR_MODULE_INITIALIZED);
+		free(datameta);
 		return Q_ERROR;
 	}
 	isinit = true;
 	if (datameta == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		free(datameta);
 		return Q_ERROR;
 	}
 	if (datameta->type != QDATA_TYPE_QWALK_AREA) {
 		Q_ERRORFOUND(QERROR_QDATAMETA_TYPE_INCOMPATIBLE);
+		free(datameta);
+		return Q_ERROR;
+	}
+	if (walk_area_curr != NULL) {
+		Q_ERRORFOUND(QERROR_NONNULL_POINTER_UNEXPECTED);
+		free(datameta);
 		return Q_ERROR;
 	}
 	walk_area_curr = (QwalkArea_t *) datameta->datap;
+	datameta->datap = NULL;
 	free(datameta);
 
 	return Q_OK;
@@ -59,13 +68,46 @@ qwalk_init(Qdatameta_t* datameta) {
  */ 
 int
 qwalk_end() {
+	int returncode = Q_OK;
+
+	/*
+	 * ensure walk_area_curr and its two members aren't NULL and free them if
+	 * possible
+	 */
 	if (isinit == false) {
 		Q_ERRORFOUND(QERROR_MODULE_UNINITIALIZED);
 		return Q_ERROR;
 	}
+
+	if (walk_area_curr == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+	
+	if (walk_area_curr->layer_earth == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		returncode = Q_ERROR;
+	} else {
+		if (walk_area_curr->layer_earth->objects == NULL) {
+			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+			returncode = Q_ERROR;
+		} else {
+			free(walk_area_curr->layer_earth);
+		}
+		free(walk_area_curr->layer_earth);
+	}
+
+	if (walk_area_curr->layer_floater == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		returncode = Q_ERROR;
+	} else {
+		free(walk_area_curr->layer_floater);
+	}
+
 	free(walk_area_curr);
+	walk_area_curr = NULL;
 	isinit = false;
-	return Q_OK;
+	return returncode;
 }
 
 

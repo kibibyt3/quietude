@@ -79,7 +79,7 @@ typedef struct QwalkArea_t {
 
 
 /** Initialize the qwalk module              */
-extern           int               qwalk_init(Qdatameta_t *);
+extern           int               qwalk_init(/*@only@*/Qdatameta_t *);
 
 /** Safely exit the qwalk module             */
 extern           int               qwalk_end(void);
