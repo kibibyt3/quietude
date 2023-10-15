@@ -193,7 +193,7 @@ qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command, ModeSwi
  * If the location to attempt to move to is valid, the move occurs. Otherwise,
  * the old coordinates remain and nothing is changed.
  * @param[out] walk_layer: walk_layer to operate on
- * @param[in]  index:      index in #walk_layer of the object to attempt to move
+ * @param[in]  index:      index in walk_layer of the object to attempt to move
  * @param[in] direction:   #Qdirection_t to attempt to move in
  * @return #Q_OK, #Q_ERROR_NOCHANGE if the attempt to move resulted in illegal
  * behaviour (e.g. passing through walls), or #Q_ERROR.
