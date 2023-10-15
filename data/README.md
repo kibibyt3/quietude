@@ -3,7 +3,9 @@ This directory holds the data files for Q.
 
 ```
 .
-└── README.md
+├── README.md
+└── world
+    └── demo.txt
 
-1 directory, 1 file
+2 directories, 2 files
 ```
