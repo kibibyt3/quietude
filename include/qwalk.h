@@ -92,34 +92,51 @@ extern int qwalk_tick(ModeSwitchData_t *);
 /** Execute the subtick step of executing the game logic */
 extern int qwalk_logic_subtick(QwalkArea_t *, QwalkCommand_t, ModeSwitchData_t *);
 
-/** Execute the subtick step of taking an input */
+/** Execute the subtick step of taking an input          */
 extern           QwalkCommand_t    qwalk_input_subtick(void);
 
-/** Execute the subtick step of updating the screen */
+/** Execute the subtick step of updating the screen      */
 extern           int               qwalk_output_subtick(void);
 
 
-/** Get the layer_earth member from a #QwalkArea_t   */
+
+/** Get the layer_earth member from a #QwalkArea_t       */
 extern /*@null@*/QwalkLayer_t      *qwalk_area_layer_earth_get(const QwalkArea_t *)/*@*/;
 
-/** Get the layer_floater member from a #QwalkArea_t */
+/** Get the layer_floater member from a #QwalkArea_t     */
 extern /*@null@*/QwalkLayer_t      *qwalk_area_layer_floater_get(const QwalkArea_t *)/*@*/;
 
+/** Create a #QwalkLayer_t                               */
+extern /*@null@*//*@out@*/QwalkLayer_t      *qwalk_layer_create(void);
+ 
+/** Destory a #QwalkLayer_t                              */
+extern           int                qwalk_layer_destroy(/*@only@*/QwalkLayer_t *);
 
-/** Get a specific #QwalkObj_t * from a #QwalkLayer_t */
-extern /*@null@*/QwalkObj_t    *qwalk_layer_object_get(const QwalkLayer_t *, int)/*@*/;
+/** Add a #QwalkObj_t * to a #QwalkLayer_t *             */
+extern           int                qwalk_layer_object_set(/*@out@*/QwalkLayer_t *, QwalkObj_t *, int);
 
-/** Set the y coordinate of a #QwalkObj_t */
+/** Get a specific #QwalkObj_t * from a #QwalkLayer_t *  */
+extern /*@null@*/QwalkObj_t        *qwalk_layer_object_get(const QwalkLayer_t *, int)/*@*/;
+
+
+
+/** Create a #QwalkObj_t                                 */
+extern /*@null@*/QwalkObj_t        *qwalk_obj_create(int, int, /*@only@*/QattrList_t *);
+
+/** Destory a #QwalkObj_t                                */
+extern           int                qwalk_obj_destroy(/*@only@*/QwalkObj_t *);
+
+/** Set the y coordinate of a #QwalkObj_t                */
 extern           int               qwalk_object_coord_y_set(QwalkObj_t *, int);
 
-/** Set the x coordinate of a #QwalkObj_t */
+/** Set the x coordinate of a #QwalkObj_t                */
 extern           int               qwalk_object_coord_x_set(QwalkObj_t *, int);
 
-/** Get the y coordinate of a #QwalkObj_t */
+/** Get the y coordinate of a #QwalkObj_t                */
 extern int               qwalk_object_coord_y_get(const QwalkObj_t *)/*@*/;
 
-/** Get the x coordinate of a #QwalkObj_t */
+/** Get the x coordinate of a #QwalkObj_t                */
 extern int               qwalk_object_coord_x_get(const QwalkObj_t *)/*@*/;
 
-/** Get the #QattrList_t of a #QwalkObj_t */
+/** Get the #QattrList_t of a #QwalkObj_t                */
 extern QattrList_t      *qwalk_object_attr_list_get(const QwalkObj_t *)/*@*/;

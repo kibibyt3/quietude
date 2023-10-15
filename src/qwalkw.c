@@ -181,6 +181,80 @@ QwalkLayer_t
 
 
 /**
+ * Create an empty #QwalkLayer_t and set its contents to @c NULL.
+ * @return new #QwalkLayer_t or @c NULL upon failure.
+ * @allocs{2} for the new walk_layer and its objects member
+ */
+QwalkLayer_t *
+qwalk_layer_create() {
+	QwalkLayer_t *walk_layer;
+	walk_layer = calloc(1, sizeof(*walk_layer));
+	walk_layer->objects = calloc(QWALK_LAYER_SIZE, sizeof(*(walk_layer->objects)));
+	if (walk_layer == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+	return walk_layer;
+}
+
+/**
+ * Destroy a #QwalkLayer_t and its contents.
+ * @return #Q_OK or #Q_ERROR.
+ * @note
+ * Relies on the fact that @c calloc() automatically initializes memory to 0,
+ * which compares equal to @c NULL.
+ */
+int
+qwalk_layer_destroy(QwalkLayer_t *walk_layer) {
+	int returnval = Q_OK;
+	if (walk_layer == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+	if (walk_layer->objects == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		free(walk_layer);
+		return Q_ERROR;
+	}
+	for (int i = 0; i < QWALK_LAYER_SIZE; i++) {
+		if (walk_layer->objects[i] != NULL) {
+			qwalk_obj_destroy(walk_layer->objects[i]);
+			walk_layer->objects[i] = NULL;
+		} else {
+			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+			returnval = Q_ERROR;
+		}
+	}
+	free(walk_layer->objects);
+	free(walk_layer);
+	return returnval;
+}
+
+
+/**
+ * Set an object in a #QwalkLayer_t.
+ * @param[out] walk_layer: relevant #QwalkLayer_t.
+ * @param[out] walk_obj:   #QwalkObj_t to give to @p walk_layer.
+ * @param[in]  index:      index in @p walk_layer to set @p walk_obj to.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+qwalk_layer_object_set(QwalkLayer_t *walk_layer, QwalkObj_t *walk_obj, int index) {
+	if ((walk_layer == NULL) || (walk_obj == NULL)) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		if (walk_obj != NULL) {
+			if (qwalk_obj_destroy(walk_obj) == Q_ERROR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+			}
+		}
+		return Q_ERROR;
+	}
+	walk_layer->objects[index] = walk_obj;
+	return Q_OK;
+}
+
+
+/**
  * Get a specific #QwalkObj_t * from a #QwalkLayer_t.
  * @param[in] walk_layer: walk_layer to search inside of
  * @param[in] index: index to find
@@ -199,6 +273,51 @@ qwalk_layer_object_get(const QwalkLayer_t *walk_layer, int index) {
 	return walk_layer->objects[index];
 }
 
+
+/**
+ * Create a #QwalkObj_t.
+ * @param[in]  y:          y coord of returned #QwalkObj_t.
+ * @param[in]  x:          x coord of returned #QwalkObj_t.
+ * @param[out] attr_list: #QattrList_t of returned #QwalkObj_t.
+ */
+QwalkObj_t *
+qwalk_obj_create(int y, int x, QattrList_t *attr_list) {
+	QwalkObj_t *walk_obj;
+	if (attr_list == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return NULL;
+	}
+	walk_obj = calloc(1, sizeof(walk_obj));
+	if (walk_obj == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		if (qattr_list_destroy(attr_list) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+		}
+		return NULL;
+	}
+	return walk_obj;
+}
+
+
+/**
+ * Destroy a #QwalkObj_t and its contents.
+ * @param[in] walk_obj: #QwalkObj_t to destroy.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+qwalk_obj_destroy(QwalkObj_t *walk_obj) {
+	if (walk_obj == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+	if ((qattr_list_destroy(walk_obj->attr_list)) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		free(walk_obj);
+		return Q_ERROR;
+	}
+	free(walk_obj);
+	return Q_OK;
+}
 
 /**
  * Set the y coordinate of a #QwalkObj_t.
