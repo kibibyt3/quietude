@@ -5,13 +5,15 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include <assert.h>
 
 #include "qdefs.h"
 #include "qerror.h"
 
+#include "mode.h"
+#include "qattr.h"
 #include "qwalk.h"
-#include "qattr.c"
 
 /** Pointer to current #QwalkLayer_t */
 /*@owned@*/static QwalkArea_t *walk_area_curr;
@@ -30,7 +32,7 @@
  * @return #Q_OK or #Q_ERROR
  */ 
 int
-qwalk_init(const Qdatameta_t* datameta) {
+qwalk_init(Qdatameta_t* datameta) {
 	if (isinit == true) {
 		Q_ERRORFOUND(QERROR_MODULE_INITIALIZED);
 		return Q_ERROR;
@@ -40,7 +42,7 @@ qwalk_init(const Qdatameta_t* datameta) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
 	}
-	if (datameta->type != QDATA_TYPE_WALK_FIELD) {
+	if (datameta->type != QDATA_TYPE_QWALK_AREA) {
 		Q_ERRORFOUND(QERROR_QDATAMETA_TYPE_INCOMPATIBLE);
 		return Q_ERROR;
 	}
@@ -77,8 +79,10 @@ int
 qwalk_tick(ModeSwitchData_t *switch_data) {
 	QwalkCommand_t    cmd;
 	int               i;
-	cmd = qwalk_input_subtick();
-	if ((cmd < Q_ENUM_VALUE_START) || (cmd > Q_WALK_COMMAND_COUNT)) {
+//	cmd = qwalk_input_subtick();
+	cmd = (QwalkCommand_t) 1; //TODO: remove this!!!
+	
+	if ((cmd < Q_ENUM_VALUE_START) || (cmd > QWALK_COMMAND_COUNT)) {
 		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 		return Q_ERROR;
 	}
@@ -89,7 +93,7 @@ qwalk_tick(ModeSwitchData_t *switch_data) {
 		return Q_ERROR;
 	}
 	
-	i = qwalk_output_subtick();
+//	i = qwalk_output_subtick();
 	assert(i != Q_ERROR);
 	
 	return Q_OK;
@@ -102,7 +106,7 @@ qwalk_tick(ModeSwitchData_t *switch_data) {
  * @return walk_area->layer_earth or @c NULL if an error occurs.
  */
 QwalkLayer_t
-*qwalk_area_layer_earth_get(QwalkArea_t *walk_area) {
+*qwalk_area_layer_earth_get(const QwalkArea_t *walk_area) {
 	if (walk_area == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return NULL;
@@ -121,7 +125,7 @@ QwalkLayer_t
  * @return walk_area->layer_floater or @c NULL if an error occurs.
  */
 QwalkLayer_t
-*qwalk_area_layer_floater_get(QwalkArea_t *walk_area) {
+*qwalk_area_layer_floater_get(const QwalkArea_t *walk_area) {
 	if (walk_area == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return NULL;
@@ -141,7 +145,7 @@ QwalkLayer_t
  * @return desired #QwalkObj_t or @c NULL.
  */
 QwalkObj_t *
-qwalk_layer_object_get(QwalkLayer_t *walk_layer, int index) {
+qwalk_layer_object_get(const QwalkLayer_t *walk_layer, int index) {
 	if (walk_layer == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return NULL;
@@ -161,7 +165,7 @@ qwalk_layer_object_get(QwalkLayer_t *walk_layer, int index) {
  * @return #Q_OK or #Q_ERROR
  */
 int
-qwalk_object_coord_y_set(const QwalkObj_t *walk_object, int coord) {
+qwalk_object_coord_y_set(QwalkObj_t *walk_object, int coord) {
 	if (walk_object == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
@@ -178,7 +182,7 @@ qwalk_object_coord_y_set(const QwalkObj_t *walk_object, int coord) {
  * @return #Q_OK or #Q_ERROR
  */
 int
-qwalk_object_coord_x_set(const QwalkObj_t *walk_object, int coord) {
+qwalk_object_coord_x_set(QwalkObj_t *walk_object, int coord) {
 	if (walk_object == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;

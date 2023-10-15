@@ -13,8 +13,9 @@
 #include "qdefs.h"
 #include "qerror.h"
 
-#include "qwalk.h"
+#include "mode.h"
 #include "qattr.h"
+#include "qwalk.h"
 
 
 /**
@@ -83,22 +84,19 @@ static /*@null@*/QwalkObj_t *qwalk_logic_layer_coord_occupant_get(QwalkLayer_t *
 
 static /*@null@*/QobjType_t *qwalk_logic_walk_layer_sanitize(/*@in@*/QwalkLayer_t *)/*@*/;
 
-static void qwalk_logic_qobj_type_destroy(/*@only@*/QobjType_t *);
+static           void        qwalk_logic_qobj_type_destroy(/*@only@*/QobjType_t *);
 
-static int qwalk_logic_find_qobj_index(QobjType_t *obj_types_parse, QobjType_t obj_type_search)/*@*/;
+static           int         qwalk_logic_find_qobj_index(QobjType_t *obj_types_parse, QobjType_t obj_type_search)/*@*/;
 
-static Qdirection_t qwalk_logic_command_move_to_direction(QwalkCommand_t)/*@*/;
+static                       Qdirection_t qwalk_logic_command_move_to_direction(QwalkCommand_t)/*@*/;
 
-static int qwalk_logic_coords_arevalid(int, int);
+static           bool qwalk_logic_coords_arevalid(int, int);
 
 
 
 int
 qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command, ModeSwitchData_t *switch_data)
 /*@modifies walk_area->layer_earth->objects walk_area->layer_floater->objects *switch_data@*/ {
-	
-	/* Pointer to the memory that holds the player #QwalkObj_t */
-	QwalkObj_t *player = NULL;
 	
 	/* Index of the player in walk_layer and obj_types */
 	int player_index;
@@ -114,15 +112,16 @@ qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command, ModeSwi
 	QobjType_t *obj_types_layer_earth;
 	QobjType_t *obj_types_layer_floater;
 
-	obj_types_layer_earth = qwalk_logic_walk_layer_sanitize(walk_area->layer_earth);
+
+	obj_types_layer_earth = qwalk_logic_walk_layer_sanitize(qwalk_area_layer_earth_get(walk_area));
 	if (obj_types_layer_earth == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
 	}
 	
-	obj_types_layer_floater = qwalk_logic_walk_layer_sanitize(walk_area->layer_floater);
+	obj_types_layer_floater = qwalk_logic_walk_layer_sanitize(qwalk_area_layer_floater_get(walk_area));
 	if (obj_types_layer_floater == NULL) {
-		qwalk_logic_obj_type_destroy(obj_types_layer_earth);
+		qwalk_logic_qobj_type_destroy(obj_types_layer_earth);
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
 	}
@@ -133,11 +132,11 @@ qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command, ModeSwi
 	 * Very possible bug could arise here if there are multiple players! This code
 	 * assumes there's either 1 or 0 players on the map!
 	 */
-	player_index = qwalk_logic_find_qobj_index(obj_types_layer_floater, QOBJ_PLAYER);
+	player_index = qwalk_logic_find_qobj_index(obj_types_layer_floater, QOBJ_TYPE_PLAYER);
 	if (player_index == Q_ERRORCODE_INT) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		qwalk_logic_obj_type_destroy(obj_types_layer_earth);
-		qwalk_logic_obj_type_destory(obj_types_layer_floater);
+		qwalk_logic_qobj_type_destroy(obj_types_layer_earth);
+		qwalk_logic_qobj_type_destroy(obj_types_layer_floater);
 		return Q_ERROR;
 	}
 	if (player_index == Q_ERRORCODE_INT_NOTFOUND) {
@@ -147,27 +146,29 @@ qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command, ModeSwi
 		 * query. This is impossible; we must have a player.
 		 */
 		Q_ERRORFOUND(QERROR_ZERO_VALUE_UNEXPECTED);
-		qwalk_logic_obj_type_destroy(obj_types_layer_earth);
-		qwalk_logic_obj_type_destory(obj_types_layer_floater);
+		qwalk_logic_qobj_type_destroy(obj_types_layer_earth);
+		qwalk_logic_qobj_type_destroy(obj_types_layer_floater);
 		return Q_ERROR;
 	}
 
 
 	/* check for & handle movement commands */
-	if ((cmd >= QWALK_COMMAND_MOVE_MIN) && (cmd <= QWALK_COMMAND_MOVE_MAX)) {
+	if ((walk_command >= QWALK_COMMAND_MOVE_MIN) && (walk_command <= QWALK_COMMAND_MOVE_MAX)) {
 		
-		player_direction = qwalk_logic_command_move_to_direction(cmd);
+		player_direction = qwalk_logic_command_move_to_direction(walk_command);
 		if (player_direction == Q_ERRORCODE_ENUM) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
-			qwalk_logic_obj_type_destroy(obj_types_layer_earth);
-			qwalk_logic_obj_type_destory(obj_types_layer_floater);
+			qwalk_logic_qobj_type_destroy(obj_types_layer_earth);
+			qwalk_logic_qobj_type_destroy(obj_types_layer_floater);
 			return Q_ERROR;
 		}
 
-		if ( qwalk_logic_object_move(walk_area, player_index, player_direction)  ==  NULL ) {
+		if (qwalk_logic_obj_move(qwalk_area_layer_floater_get(walk_area),
+				player_index, player_direction)
+				==  Q_ERROR ) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
-			qwalk_logic_obj_type_destroy(obj_types_layer_earth);
-			qwalk_logic_obj_type_destory(obj_types_layer_floater);
+			qwalk_logic_qobj_type_destroy(obj_types_layer_earth);
+			qwalk_logic_qobj_type_destroy(obj_types_layer_floater);
 			return Q_ERROR;
 		}
 	}
@@ -175,10 +176,13 @@ qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command, ModeSwi
 	/* in future, this secion will handle checking whether the mode must change */
 	switch_data->mode = MODE_T_WALK;
 
-	return Q_OK;
+	qwalk_logic_qobj_type_destroy(obj_types_layer_earth);
+	obj_types_layer_earth = NULL;
+	
+	qwalk_logic_qobj_type_destroy(obj_types_layer_floater);
+	obj_types_layer_floater = NULL;
 
-	qwalk_logic_qobj_type_destroy(obj_types);
-	obj_types = NULL;
+	return Q_OK;
 }
 
 
@@ -204,21 +208,21 @@ qwalk_logic_obj_move(QwalkLayer_t *walk_layer, int index, Qdirection_t direction
 	int x_new;
 	
 	/* Previous occupant of the square to move walk_layer[index] to */
-	QwalkObject_t *coord_occupant_old;
+	QwalkObj_t *coord_occupant_old;
 
 	/* The object trying to move, i.e. walk_layer[index] */
-	QwalkObject_t *coord_occupant_mover;
+	QwalkObj_t *coord_occupant_mover;
 
 	coord_occupant_mover = qwalk_layer_object_get(walk_layer, index);
 
 	y_old = qwalk_object_coord_y_get(coord_occupant_mover);
-	x_old = qwalk_object_coord_y_get(coord_occupant_mover);
+	x_old = qwalk_object_coord_x_get(coord_occupant_mover);
  	
 	y_new = y_old;
 	x_new = x_old;
 
 	/* modify the coords and check if they're allowed */
-	switch (Qdirection_t) {
+	switch (direction) {
 	case QDIRECTION_NORTH:
 		y_new = y_old + (QDIRECTION_MULTIPLIER_DEFAULT * QDIRECTION_NORTH_Y_MULTIPLICAND);
 		break;
@@ -241,7 +245,7 @@ qwalk_logic_obj_move(QwalkLayer_t *walk_layer, int index, Qdirection_t direction
 
 	coord_occupant_old = qwalk_logic_layer_coord_occupant_get(walk_layer, y_new, x_new);
 
-	qwalk_logic_obj_locs_trade(coord_occupant_mover, coord_occupant_old);
+	qwalk_logic_objs_locs_trade(coord_occupant_mover, coord_occupant_old);
 
 	return Q_OK;
 }
@@ -276,7 +280,8 @@ qwalk_logic_objs_locs_trade(QwalkObj_t *mover, QwalkObj_t *movend)
 	 */
 	attr_list_buffer = mover->attr_list;
 	mover->attr_list = movend->attr_list;
-	movend_attr->attr_list = attr_list_buffer;
+	movend->attr_list = attr_list_buffer;
+	return Q_OK;
 }
 
 
@@ -349,10 +354,11 @@ qwalk_logic_layer_coord_occupant_get(QwalkLayer_t *walk_layer, int y, int x) {
  * @param[in] walk_layer: #QwalkLayer_t to parse and proof-read 
  * @return Dynamic #QobjType_t array or @c NULL if an error was encountered
  */
-QobjType_t
+QobjType_t *
 qwalk_logic_walk_layer_sanitize(QwalkLayer_t *walk_layer) {
 	QattrList_t           *attr_list;
 	Qdatameta_t           *datameta_object_type;
+	QobjType_t            *object_type;
 
 	/*@only@*/QobjType_t  *obj_types;
 	obj_types = calloc(QWALK_LAYER_SIZE, sizeof(*obj_types));
@@ -365,11 +371,11 @@ qwalk_logic_walk_layer_sanitize(QwalkLayer_t *walk_layer) {
 
 	for (int i = 0; i < QWALK_LAYER_SIZE; i++) {
 		
-		if ((walk_layer->objects[i]).x < QWALK_LAYER_COORD_MINIMUM) {
+		if (walk_layer->objects[i]->coord_x < QWALK_LAYER_COORD_MINIMUM) {
 			Q_ERRORFOUND(QERROR_NEGATIVE_VALUE_UNEXPECTED);
 			return NULL;
 		}
-		if ((walk_layer->objects[i]).y < QWALK_LAYER_COORD_MINIMUM) {
+		if (walk_layer->objects[i]->coord_y < QWALK_LAYER_COORD_MINIMUM) {
 			Q_ERRORFOUND(QERROR_NEGATIVE_VALUE_UNEXPECTED);
 			return NULL;
 		}
@@ -378,7 +384,7 @@ qwalk_logic_walk_layer_sanitize(QwalkLayer_t *walk_layer) {
 		 * TODO: in future, implement an interface function to nab the attr_list
 		 * that we can mark with the splint observer annotation!
 		 */
-		attr_list            = walk_layer->objects[i].attr_list;
+		attr_list            = walk_layer->objects[i]->attr_list;
 		if (attr_list == NULL) {
 			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 			return NULL;
@@ -389,30 +395,31 @@ qwalk_logic_walk_layer_sanitize(QwalkLayer_t *walk_layer) {
 			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 			return NULL;
 		}
-		if (qdatameta_type_get(datameta_name) != QDATA_TYPE_OBJECT_TYPE) {
+		if (qdatameta_type_get(datameta_object_type) != QDATA_TYPE_QOBJECT_TYPE) {
 			Q_ERRORFOUND(QERROR_QDATAMETA_TYPE_INCOMPATIBLE);
 			return NULL;
 		}
 		
-		name = (QobjType_t *) qdatameta_datap_get(datameta_name);
-		if (name == NULL) {
+		/* ensure QATTR_KEY_OBJECT_TYPE has size of exactly 1 */
+		if (qdatameta_count_get(datameta_object_type) != 1) {
+			Q_ERRORFOUND(QERROR_QDATAMETA_TYPE_COUNT_INCOMPATIBLE);
+			return NULL;
+		}
+
+		object_type = (QobjType_t *) qdatameta_datap_get(datameta_object_type);
+		if (object_type == NULL) {
 			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 			return NULL;
 		}
-		/* ensure QATTR_KEY_OBJECT_TYPE has size of exactly 1 */
-		if (qdatameta_count_get != 1) {
-			Q_ERRORFOUND(QERROR_QDATAMETA_TYPE_SIZE_INCOMPATIBLE);
-			return NULL;
-		}
 		
-		obj_types[i] = name;
+		obj_types[i] = *object_type;
 	}
 	return obj_types;
 }
 
 
 /**
- * Safely destory a dynamic #QobjType_t array.
+ * Safely destroy a dynamic #QobjType_t array.
  * @param[out] obj_types: array to destroy
  */
 void
@@ -442,7 +449,7 @@ qwalk_logic_find_qobj_index(QobjType_t *obj_types_parse, QobjType_t obj_type_sea
 	if (obj_type_search < Q_ENUM_VALUE_START) {
 		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID_ZERO);
 		return Q_ERRORCODE_INT;
-	} else if (obj_type_search > Q_OBJ_TYPE_COUNT) {
+	} else if (obj_type_search > QOBJ_TYPE_COUNT) {
 		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 		return Q_ERRORCODE_INT;
 	}

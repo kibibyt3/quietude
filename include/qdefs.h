@@ -78,6 +78,7 @@ typedef enum QdataType_t {
 	QDATA_TYPE_CHAR_STRING,
 	
 	/* typedeffed types */
+	QDATA_TYPE_QWALK_AREA,   /**< #QwalkArea_t     */
 	QDATA_TYPE_QOBJECT_TYPE, /**< #QobjType_t type */
 
 	/**

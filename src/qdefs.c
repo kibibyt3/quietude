@@ -10,6 +10,10 @@
 #include "qdefs.h"
 #include "qerror.h"
 
+#include "mode.h"
+#include "qattr.h"
+#include "qwalk.h"
+
 /**
  * Create a #Qdatameta_t.
  * @param[in] type:  type of @c data
@@ -70,6 +74,8 @@ qdata_type_size_get(QdataType_t data_type) {
 		return sizeof(int);
 	case QDATA_TYPE_CHAR_STRING:
 		return sizeof(char);
+	case QDATA_TYPE_QWALK_AREA:
+		return sizeof(QwalkArea_t);
 	case QDATA_TYPE_QOBJECT_TYPE:
 		return sizeof(QobjType_t);
 	default:
