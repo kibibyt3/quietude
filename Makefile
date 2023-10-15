@@ -4,7 +4,7 @@ LINT.c = splint
 CFLAGS = -I include -O0 -g3 -Wall -Wstrict-prototypes -Wmissing-prototypes -Wshadow -Wconversion
 LINTFLAGS = -I include -checks
 
-OBJECTS = ./src/qfile.o ./src/qattr.o ./src/test.o ./src/qdefs.o ./src/qerror.o ./src/qwalkw.o ./src/qwalkl.c
+OBJECTS = ./src/qfile.o ./src/qattr.o ./src/test.o ./src/qdefs.o ./src/qerror.o ./src/qwalkw.o ./src/qwalkl.o
 SOURCES = $(OBJECTS:.o=.c)
 
 all: test
