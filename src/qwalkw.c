@@ -76,32 +76,33 @@ qwalk_end() {
 	 */
 	if (isinit == false) {
 		Q_ERRORFOUND(QERROR_MODULE_UNINITIALIZED);
+	}
+
+	if (walk_area_curr != NULL) {
+		Q_ERRORFOUND(QERROR_NONNULL_POINTER_UNEXPECTED);
+	} else {
 		return Q_ERROR;
 	}
 
-	if (walk_area_curr == NULL) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return Q_ERROR;
-	}
-	
+
 	if (walk_area_curr->layer_earth == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		returncode = Q_ERROR;
 	} else {
-		if (walk_area_curr->layer_earth->objects == NULL) {
-			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-			returncode = Q_ERROR;
-		} else {
-			free(walk_area_curr->layer_earth);
+		if ((qwalk_layer_destroy(walk_area_curr->layer_earth)) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
 		}
-		free(walk_area_curr->layer_earth);
+		walk_area_curr->layer_earth = NULL;
 	}
 
 	if (walk_area_curr->layer_floater == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		returncode = Q_ERROR;
 	} else {
-		free(walk_area_curr->layer_floater);
+		if ((qwalk_layer_destroy(walk_area_curr->layer_floater)) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+		}
+		walk_area_curr->layer_floater = NULL;
 	}
 
 	free(walk_area_curr);
@@ -124,11 +125,15 @@ qwalk_tick(ModeSwitchData_t *switch_data) {
 //	cmd = qwalk_input_subtick();
 	cmd = (QwalkCommand_t) 1; //TODO: remove this!!!
 	
-	if ((cmd < Q_ENUM_VALUE_START) || (cmd > QWALK_COMMAND_COUNT)) {
+	if (walk_area_curr == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+	if ((cmd < (QwalkCommand_t) Q_ENUM_VALUE_START) || (cmd > QWALK_COMMAND_COUNT)) {
 		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 		return Q_ERROR;
 	}
-	
+		
 	i = qwalk_logic_subtick(walk_area_curr, cmd, switch_data);
 	if (i == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);

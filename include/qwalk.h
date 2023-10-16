@@ -101,10 +101,10 @@ extern           int               qwalk_output_subtick(void);
 
 
 /** Get the layer_earth member from a #QwalkArea_t       */
-extern /*@null@*/QwalkLayer_t      *qwalk_area_layer_earth_get(const QwalkArea_t *)/*@*/;
+extern /*@null@*//*@observer@*/QwalkLayer_t      *qwalk_area_layer_earth_get(const /*@returned@*/QwalkArea_t *)/*@*/;
 
 /** Get the layer_floater member from a #QwalkArea_t     */
-extern /*@null@*/QwalkLayer_t      *qwalk_area_layer_floater_get(const QwalkArea_t *)/*@*/;
+extern /*@null@*//*@observer@*/QwalkLayer_t      *qwalk_area_layer_floater_get(const /*@returned@*/QwalkArea_t *)/*@*/;
 
 /** Create a #QwalkLayer_t                               */
 extern /*@null@*//*@out@*/QwalkLayer_t      *qwalk_layer_create(void);
