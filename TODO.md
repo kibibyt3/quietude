@@ -15,3 +15,4 @@
 - [ ] complete qwalkio rough draft
   - [ ] give qwalkio a cursory debugging
 - [ ] thoroughly debug the entirety of qwalk
+- [ ] look into using the `/*@abstract@*/` `splint` annotation
