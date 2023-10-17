@@ -76,28 +76,27 @@ typedef enum Qdirection_t {
 
 
 
-static           int         qwalk_logic_obj_move(QwalkLayer_t *, int, Qdirection_t);
+static           int         qwalk_logic_obj_move(/*@null@*/QwalkLayer_t *, int, Qdirection_t);
 
-static           int         qwalk_logic_objs_locs_trade(QwalkObj_t *, QwalkObj_t *);
+static           int         qwalk_logic_objs_locs_trade(/*@null@*/QwalkObj_t *, /*@null@*/QwalkObj_t *);
 
-static /*@null@*/QwalkObj_t *qwalk_logic_layer_coord_occupant_get(QwalkLayer_t *, int, int);
+static /*@null@*//*@observer@*/QwalkObj_t *qwalk_logic_layer_coord_occupant_get(/*@null@*/QwalkLayer_t *, int, int);
 
-static /*@null@*/QobjType_t *qwalk_logic_walk_layer_sanitize(/*@in@*/QwalkLayer_t *)/*@*/;
+static /*@null@*//*@out@*/QobjType_t *qwalk_logic_walk_layer_sanitize(QwalkLayer_t *)/*@*/;
 
 static           void        qwalk_logic_qobj_type_destroy(/*@only@*/QobjType_t *);
 
-static           int         qwalk_logic_find_qobj_index(QobjType_t *obj_types_parse, QobjType_t obj_type_search)/*@*/;
+static           int         qwalk_logic_find_qobj_index(/*@null@*/QobjType_t *, QobjType_t)/*@*/;
 
 static                       Qdirection_t qwalk_logic_command_move_to_direction(QwalkCommand_t)/*@*/;
 
-static           bool qwalk_logic_coords_arevalid(int, int);
+static           bool qwalk_logic_coords_arevalid(int, int)/*@*/;
 
 
 
 int
-qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command, ModeSwitchData_t *switch_data)
-/*@modifies walk_area->layer_earth->objects walk_area->layer_floater->objects *switch_data@*/ {
-	
+qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command, ModeSwitchData_t *switch_data) {
+
 	/* Index of the player in walk_layer and obj_types */
 	int player_index;
 
@@ -112,6 +111,10 @@ qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command, ModeSwi
 	QobjType_t *obj_types_layer_earth;
 	QobjType_t *obj_types_layer_floater;
 
+	if (walk_area == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
 
 	obj_types_layer_earth = qwalk_logic_walk_layer_sanitize(qwalk_area_layer_earth_get(walk_area));
 	if (obj_types_layer_earth == NULL) {
@@ -156,7 +159,7 @@ qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command, ModeSwi
 	if ((walk_command >= QWALK_COMMAND_MOVE_MIN) && (walk_command <= QWALK_COMMAND_MOVE_MAX)) {
 		
 		player_direction = qwalk_logic_command_move_to_direction(walk_command);
-		if (player_direction == Q_ERRORCODE_ENUM) {
+		if ((int) player_direction == Q_ERRORCODE_ENUM) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 			qwalk_logic_qobj_type_destroy(obj_types_layer_earth);
 			qwalk_logic_qobj_type_destroy(obj_types_layer_floater);
@@ -199,8 +202,7 @@ qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command, ModeSwi
  * behaviour (e.g. passing through walls), or #Q_ERROR.
  */
 int
-qwalk_logic_obj_move(QwalkLayer_t *walk_layer, int index, Qdirection_t direction)
-/*@modifies *walk_object@*/ {
+qwalk_logic_obj_move(QwalkLayer_t *walk_layer, int index, Qdirection_t direction) {
 	int y_old;
 	int x_old;
 
@@ -265,11 +267,13 @@ qwalk_logic_obj_move(QwalkLayer_t *walk_layer, int index, Qdirection_t direction
  * The parent #QwalkLayer_t of each parameter <i>must</i> be the same. 
  */
 int
-qwalk_logic_objs_locs_trade(QwalkObj_t *mover, QwalkObj_t *movend)
-	/*@modifies mover->attr_list movend->attr_list@*/ {
+qwalk_logic_objs_locs_trade(QwalkObj_t *mover, QwalkObj_t *movend) {
 	QattrList_t *attr_list_buffer;
-	if ((mover == NULL) || (mover->attr_list == NULL)
-			|| (movend == NULL) || (movend->attr_list == NULL)) {
+	if ((mover == NULL) || (movend == NULL)) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+	if ((mover->attr_list == NULL) || (movend->attr_list == NULL)) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
 	}
@@ -361,11 +365,16 @@ qwalk_logic_walk_layer_sanitize(QwalkLayer_t *walk_layer) {
 	QobjType_t            *object_type;
 
 	/*@only@*/QobjType_t  *obj_types;
-	obj_types = calloc(QWALK_LAYER_SIZE, sizeof(*obj_types));
+	obj_types = calloc((size_t) QWALK_LAYER_SIZE, sizeof(*obj_types));
 
+	if (obj_types == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return NULL;
+	}
 	/* parse starting from the outside and travelling to the inside */
 	if (walk_layer == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		free(obj_types);
 		return NULL;
 	}
 
@@ -373,10 +382,12 @@ qwalk_logic_walk_layer_sanitize(QwalkLayer_t *walk_layer) {
 		
 		if (walk_layer->objects[i]->coord_x < QWALK_LAYER_COORD_MINIMUM) {
 			Q_ERRORFOUND(QERROR_NEGATIVE_VALUE_UNEXPECTED);
+			free(obj_types);
 			return NULL;
 		}
 		if (walk_layer->objects[i]->coord_y < QWALK_LAYER_COORD_MINIMUM) {
 			Q_ERRORFOUND(QERROR_NEGATIVE_VALUE_UNEXPECTED);
+			free(obj_types);
 			return NULL;
 		}
     
@@ -387,28 +398,33 @@ qwalk_logic_walk_layer_sanitize(QwalkLayer_t *walk_layer) {
 		attr_list            = walk_layer->objects[i]->attr_list;
 		if (attr_list == NULL) {
 			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+			free(obj_types);
 			return NULL;
 		}
 		
 		datameta_object_type = qattr_list_value_get(attr_list, QATTR_KEY_QOBJECT_TYPE);
 		if (datameta_object_type == NULL) {
 			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+			free(obj_types);
 			return NULL;
 		}
 		if (qdatameta_type_get(datameta_object_type) != QDATA_TYPE_QOBJECT_TYPE) {
 			Q_ERRORFOUND(QERROR_QDATAMETA_TYPE_INCOMPATIBLE);
+			free(obj_types);
 			return NULL;
 		}
 		
 		/* ensure QATTR_KEY_OBJECT_TYPE has size of exactly 1 */
-		if (qdatameta_count_get(datameta_object_type) != 1) {
+		if (qdatameta_count_get(datameta_object_type) != (size_t) 1) {
 			Q_ERRORFOUND(QERROR_QDATAMETA_TYPE_COUNT_INCOMPATIBLE);
+			free(obj_types);
 			return NULL;
 		}
 
 		object_type = (QobjType_t *) qdatameta_datap_get(datameta_object_type);
 		if (object_type == NULL) {
 			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+			free(obj_types);
 			return NULL;
 		}
 		
@@ -446,7 +462,7 @@ qwalk_logic_find_qobj_index(QobjType_t *obj_types_parse, QobjType_t obj_type_sea
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERRORCODE_INT;
 	}
-	if (obj_type_search < Q_ENUM_VALUE_START) {
+	if (obj_type_search < (QobjType_t) Q_ENUM_VALUE_START) {
 		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID_ZERO);
 		return Q_ERRORCODE_INT;
 	} else if (obj_type_search > QOBJ_TYPE_COUNT) {

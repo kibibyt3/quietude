@@ -193,12 +193,35 @@ QwalkLayer_t
 QwalkLayer_t *
 qwalk_layer_create() {
 	QwalkLayer_t *walk_layer;
-	walk_layer = calloc(1, sizeof(*walk_layer));
-	walk_layer->objects = calloc(QWALK_LAYER_SIZE, sizeof(*(walk_layer->objects)));
+	walk_layer = calloc((size_t) 1, sizeof(*walk_layer));
 	if (walk_layer == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return NULL;
 	}
+	walk_layer->objects = calloc((size_t) QWALK_LAYER_SIZE, sizeof(*(walk_layer->objects)));
+	if (walk_layer->objects == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		free(walk_layer);
+		return NULL;
+	}
+	for (int i = 0; i < QWALK_LAYER_SIZE; i++) {
+		walk_layer->objects[i] = calloc((size_t) 1, sizeof(*(walk_layer->objects[i])));
+				
+		/*
+		 * if a walk_layer->objects[] fails allocation, deallocate its predecessors
+		 * and return @c NULL
+		 */ 
+		if (walk_layer->objects[i] == NULL) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			for (int j = 0; j < i; j++) {
+				free(walk_layer->objects[j]);
+			}
+			free(walk_layer->objects);
+			free(walk_layer);
+			return NULL;
+		}
+	}
+
 	return walk_layer;
 }
 
@@ -212,6 +235,7 @@ qwalk_layer_create() {
 int
 qwalk_layer_destroy(QwalkLayer_t *walk_layer) {
 	int returnval = Q_OK;
+
 	if (walk_layer == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
@@ -223,7 +247,9 @@ qwalk_layer_destroy(QwalkLayer_t *walk_layer) {
 	}
 	for (int i = 0; i < QWALK_LAYER_SIZE; i++) {
 		if (walk_layer->objects[i] != NULL) {
-			qwalk_obj_destroy(walk_layer->objects[i]);
+			if (qwalk_obj_destroy(walk_layer->objects[i]) == Q_ERROR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+			}
 			walk_layer->objects[i] = NULL;
 		} else {
 			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
@@ -251,6 +277,12 @@ qwalk_layer_object_set(QwalkLayer_t *walk_layer, QwalkObj_t *walk_obj, int index
 			if (qwalk_obj_destroy(walk_obj) == Q_ERROR) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
 			}
+		}
+		return Q_ERROR;
+	}
+	if (walk_layer->objects == NULL) {
+		if (qwalk_obj_destroy(walk_obj) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
 		}
 		return Q_ERROR;
 	}
@@ -292,7 +324,7 @@ qwalk_obj_create(int y, int x, QattrList_t *attr_list) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return NULL;
 	}
-	walk_obj = calloc(1, sizeof(walk_obj));
+	walk_obj = calloc((size_t) 1, sizeof(walk_obj));
 	if (walk_obj == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		if (qattr_list_destroy(attr_list) == Q_ERROR) {
@@ -300,6 +332,9 @@ qwalk_obj_create(int y, int x, QattrList_t *attr_list) {
 		}
 		return NULL;
 	}
+	walk_obj->coord_y = y;
+	walk_obj->coord_x = x;
+	walk_obj->attr_list = attr_list;
 	return walk_obj;
 }
 
@@ -398,7 +433,7 @@ qwalk_object_attr_list_get(const QwalkObj_t *walk_object) {
 	if (walk_object == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return NULL;
-	}	
+	}
 	return walk_object->attr_list;
 }
 
