@@ -272,6 +272,10 @@ qwalk_logic_obj_move(QwalkLayer_t *walk_layer, int index, Qdirection_t direction
 int
 qwalk_logic_objs_locs_trade(QwalkLayer_t *walk_layer, int mover_index, int movend_index) {
 	QattrList_t *attr_list_buffer;
+	if (walk_layer == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
 	if ((mover_index < 0) || (mover_index >= QWALK_LAYER_SIZE)
 			|| (movend_index < 0) || (movend_index >= QWALK_LAYER_SIZE)) {
 		Q_ERRORFOUND(QERROR_INDEX_OUTOFRANGE);

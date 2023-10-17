@@ -224,11 +224,6 @@ qwalk_layer_destroy(QwalkLayer_t *walk_layer) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
 	}
-	if (walk_layer->objects == NULL) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		free(walk_layer);
-		return Q_ERROR;
-	}
 	for (int i = 0; i < walk_layer->index_ok; i++) {
 		/* destroy each QwalkObj_t and its contents */
 		if (qattr_list_destroy(walk_layer->objects[i].attr_list) == Q_ERROR) {
