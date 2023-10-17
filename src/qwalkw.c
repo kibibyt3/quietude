@@ -33,7 +33,7 @@ static bool          isinit = false;
  */ 
 int
 qwalk_init(Qdatameta_t* datameta) {
-	if (isinit == true) {
+	if (isinit) {
 		Q_ERRORFOUND(QERROR_MODULE_INITIALIZED);
 		free(datameta);
 		return Q_ERROR;
@@ -204,24 +204,8 @@ qwalk_layer_create() {
 		free(walk_layer);
 		return NULL;
 	}
-	for (int i = 0; i < QWALK_LAYER_SIZE; i++) {
-		walk_layer->objects[i] = calloc((size_t) 1, sizeof(*(walk_layer->objects[i])));
-				
-		/*
-		 * if a walk_layer->objects[] fails allocation, deallocate its predecessors
-		 * and return @c NULL
-		 */ 
-		if (walk_layer->objects[i] == NULL) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-			for (int j = 0; j < i; j++) {
-				free(walk_layer->objects[j]);
-			}
-			free(walk_layer->objects);
-			free(walk_layer);
-			return NULL;
-		}
-	}
 
+	walk_layer->index_ok = 0;
 	return walk_layer;
 }
 
@@ -245,15 +229,10 @@ qwalk_layer_destroy(QwalkLayer_t *walk_layer) {
 		free(walk_layer);
 		return Q_ERROR;
 	}
-	for (int i = 0; i < QWALK_LAYER_SIZE; i++) {
-		if (walk_layer->objects[i] != NULL) {
-			if (qwalk_obj_destroy(walk_layer->objects[i]) == Q_ERROR) {
-				Q_ERRORFOUND(QERROR_ERRORVAL);
-			}
-			walk_layer->objects[i] = NULL;
-		} else {
-			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-			returnval = Q_ERROR;
+	for (int i = 0; i < walk_layer->index_ok; i++) {
+		/* destroy each QwalkObj_t and its contents */
+		if (qattr_list_destroy(walk_layer->objects[i].attr_list) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
 		}
 	}
 	free(walk_layer->objects);
@@ -265,176 +244,101 @@ qwalk_layer_destroy(QwalkLayer_t *walk_layer) {
 /**
  * Set an object in a #QwalkLayer_t.
  * @param[out] walk_layer: relevant #QwalkLayer_t.
- * @param[out] walk_obj:   #QwalkObj_t to give to @p walk_layer.
- * @param[in]  index:      index in @p walk_layer to set @p walk_obj to.
+ * @param[in] y: #QwalkLayer_t->coord_y.
+ * @param[in] x: #QwalkLayer_t->coord_x.
+ * @param[out] attr_list: #QwalkLayer_t->attr_list
  * @return #Q_OK or #Q_ERROR.
  */
 int
-qwalk_layer_object_set(QwalkLayer_t *walk_layer, QwalkObj_t *walk_obj, int index) {
-	if ((walk_layer == NULL) || (walk_obj == NULL)) {
+qwalk_layer_object_set(QwalkLayer_t *walk_layer, int y, int x, QattrList_t *attr_list) {
+	if ((walk_layer == NULL) || (attr_list == NULL)) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		if (walk_obj != NULL) {
-			if (qwalk_obj_destroy(walk_obj) == Q_ERROR) {
+		if (attr_list != NULL) {
+			if (qattr_list_destroy(attr_list) == Q_ERROR) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
 			}
 		}
 		return Q_ERROR;
 	}
 	if (walk_layer->objects == NULL) {
-		if (qwalk_obj_destroy(walk_obj) == Q_ERROR) {
+		if (qattr_list_destroy(attr_list) == Q_ERROR) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 		}
 		return Q_ERROR;
 	}
-	walk_layer->objects[index] = walk_obj;
+	if (walk_layer->index_ok >= QWALK_LAYER_SIZE) {
+		if (qattr_list_destroy(attr_list) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+		}
+		return Q_ERROR;
+	}
+	walk_layer->objects[walk_layer->index_ok].coord_y = y;
+	walk_layer->objects[walk_layer->index_ok].coord_x = x;
+	walk_layer->objects[walk_layer->index_ok].attr_list = attr_list;
+	walk_layer->index_ok++;
 	return Q_OK;
 }
 
 
 /**
- * Get a specific #QwalkObj_t * from a #QwalkLayer_t.
- * @param[in] walk_layer: walk_layer to search inside of
- * @param[in] index: index to find
- * @return desired #QwalkObj_t or @c NULL.
+ * Get the y coordinate of a #QwalkObj_t in a #QwalkLayer_t.
+ * @param[in] walk_object: pointer to #QwalkLayer_t in question.
+ * @param[in] index: index of #QwalkObj_t in question.
+ * @return y coordinate or #Q_ERRORCODE_INT if an error occurs
  */
-QwalkObj_t *
-qwalk_layer_object_get(const QwalkLayer_t *walk_layer, int index) {
+int
+qwalk_layer_object_coord_y_get(const QwalkLayer_t *walk_layer, int index) {
+	if (walk_layer == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERRORCODE_INT;
+	}
+	if ((index >= walk_layer->index_ok) || (index < 0)) {
+		Q_ERRORFOUND(QERROR_INDEX_OUTOFRANGE);
+		return Q_ERRORCODE_INT;
+	}
+	return walk_layer->objects[index].coord_y;
+}
+
+/**
+ * Get the x coordinate of a #QwalkObj_t in a #QwalkLayer_t.
+ * @param[in] walk_object: pointer to #QwalkLayer_t in question.
+ * @param[in] index: index of #QwalkObj_t in question.
+ * @return x coordinate or #Q_ERRORCODE_INT if an error occurs
+ */
+int
+qwalk_layer_object_coord_x_get(const QwalkLayer_t *walk_layer, int index) {
+	if (walk_layer == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERRORCODE_INT;
+	}
+	if ((index >= walk_layer->index_ok) || (index < 0)) {
+		Q_ERRORFOUND(QERROR_INDEX_OUTOFRANGE);
+		return Q_ERRORCODE_INT;
+	}
+	return walk_layer->objects[index].coord_x;
+}
+
+/**
+ * Get the #QattrList_t of a #QwalkObj_t in a #QwalkLayer_t.
+ * @param[in] walkobject: pointer to #QwalkLayer_t in question.
+ * @param[in] index: index of #QwalkObj_t in question.
+ * @return #QattrList_t or @c NULL if an error occurs
+ */
+QattrList_t *
+qwalk_layer_object_attr_list_get(const QwalkLayer_t *walk_layer, int index) {
 	if (walk_layer == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return NULL;
 	}
-	if (index >= (QWALK_LAYER_SIZE + QWALK_LAYER_COORD_MINIMUM)) {
+	if ((index >= walk_layer->index_ok) || (index < 0)) {
 		Q_ERRORFOUND(QERROR_INDEX_OUTOFRANGE);
 		return NULL;
 	}
-	return walk_layer->objects[index];
-}
-
-
-/**
- * Create a #QwalkObj_t.
- * @param[in]  y:          y coord of returned #QwalkObj_t.
- * @param[in]  x:          x coord of returned #QwalkObj_t.
- * @param[out] attr_list: #QattrList_t of returned #QwalkObj_t.
- */
-QwalkObj_t *
-qwalk_obj_create(int y, int x, QattrList_t *attr_list) {
-	QwalkObj_t *walk_obj;
-	if (attr_list == NULL) {
+	if (walk_layer->objects[index].attr_list == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return NULL;
 	}
-	walk_obj = calloc((size_t) 1, sizeof(walk_obj));
-	if (walk_obj == NULL) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-		if (qattr_list_destroy(attr_list) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-		}
-		return NULL;
-	}
-	walk_obj->coord_y = y;
-	walk_obj->coord_x = x;
-	walk_obj->attr_list = attr_list;
-	return walk_obj;
-}
-
-
-/**
- * Destroy a #QwalkObj_t and its contents.
- * @param[in] walk_obj: #QwalkObj_t to destroy.
- * @return #Q_OK or #Q_ERROR.
- */
-int
-qwalk_obj_destroy(QwalkObj_t *walk_obj) {
-	if (walk_obj == NULL) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return Q_ERROR;
-	}
-	if ((qattr_list_destroy(walk_obj->attr_list)) == Q_ERROR) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-		free(walk_obj);
-		return Q_ERROR;
-	}
-	free(walk_obj);
-	return Q_OK;
-}
-
-/**
- * Set the y coordinate of a #QwalkObj_t.
- * @param[in] walk_object: pointer to #QwalkObj_t in question
- * @param[in] coord:       value to set the y coordinate to
- * @return #Q_OK or #Q_ERROR
- */
-int
-qwalk_object_coord_y_set(QwalkObj_t *walk_object, int coord) {
-	if (walk_object == NULL) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return Q_ERROR;
-	}
-	walk_object->coord_y = coord;
-	return Q_OK;
-}
-
-
-/**
- * Set the y coordinate of a #QwalkObj_t
- * @param[in] walk_object: pointer to #QwalkObj_t in question
- * @param[in] coord:       value to set the x coordinate to
- * @return #Q_OK or #Q_ERROR
- */
-int
-qwalk_object_coord_x_set(QwalkObj_t *walk_object, int coord) {
-	if (walk_object == NULL) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return Q_ERROR;
-	}
-	walk_object->coord_x = coord;
-	return Q_OK;
-}
-
-
-/**
- * Get the y coordinate of a #QwalkObj_t.
- * @param[in] walk_object: pointer to #QwalkObj_t in question
- * @return y coordinate or #Q_ERRORCODE_INT if an error occurs
- */
-int
-qwalk_object_coord_y_get(const QwalkObj_t *walk_object) {
-	if (walk_object == NULL) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return Q_ERRORCODE_INT;
-	}
-	return walk_object->coord_y;
-}
-
-
-/**
- * Get the x coordinate of a #QwalkObj_t.
- * @param[in] walk_object: pointer to #QwalkObj_t in question
- * @return x coordinate or #Q_ERRORCODE_INT if an error occurs
- */
-int
-qwalk_object_coord_x_get(const QwalkObj_t *walk_object) {
-	if (walk_object == NULL) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return Q_ERRORCODE_INT;
-	}
-	return walk_object->coord_x;
-}
-
-
-/**
- * Get the #QattrList_t of a #QwalkObj_t.
- * @param[in] walk_object: pointer to #QwalkObj_t in question
- * @return #QattrList_t of all object's #Qattr_t or @c NULL if an error occurs.
- */
-QattrList_t*
-qwalk_object_attr_list_get(const QwalkObj_t *walk_object) {
-	if (walk_object == NULL) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return NULL;
-	}
-	return walk_object->attr_list;
+	return walk_layer->objects[index].attr_list;
 }
 
 

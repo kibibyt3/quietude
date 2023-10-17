@@ -75,4 +75,4 @@ extern *@null@*Qdatameta_t *qattr_list_attr_remove(QattrList_t *, QattrKey_t);
 extern /*@null@*//*@observer@*/Qdatameta_t *qattr_list_value_get(/*@returned@*/QattrList_t *, QattrKey_t)/*@*/;
 
 /** Sets a #QattrKey_t/#Qdatameta_t pair in the given #QattrList_t */
-extern int qattr_list_attr_set(QattrList_t*, QattrKey_t, /*@keep@*/Qdatameta_t*);
+extern int qattr_list_attr_set(QattrList_t*, QattrKey_t, /*@only@*/Qdatameta_t*);

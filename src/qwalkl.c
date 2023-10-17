@@ -78,11 +78,9 @@ typedef enum Qdirection_t {
 
 static           int         qwalk_logic_obj_move(/*@null@*/QwalkLayer_t *, int, Qdirection_t);
 
-static           int         qwalk_logic_objs_locs_trade(/*@null@*/QwalkObj_t *, /*@null@*/QwalkObj_t *);
+static           int         qwalk_logic_objs_locs_trade(/*@null@*/QwalkLayer_t *, int, int);
 
-static /*@null@*//*@observer@*/QwalkObj_t *qwalk_logic_layer_coord_occupant_get(/*@null@*/QwalkLayer_t *, int, int);
-
-static /*@null@*//*@out@*/QobjType_t *qwalk_logic_walk_layer_sanitize(QwalkLayer_t *)/*@*/;
+static /*@null@*/QobjType_t *qwalk_logic_walk_layer_sanitize(QwalkLayer_t *)/*@*/;
 
 static           void        qwalk_logic_qobj_type_destroy(/*@only@*/QobjType_t *);
 
@@ -92,7 +90,7 @@ static                       Qdirection_t qwalk_logic_command_move_to_direction(
 
 static           bool qwalk_logic_coords_arevalid(int, int)/*@*/;
 
-
+static           int  qwalk_logic_coords_to_index(int, int)/*@*/;
 
 int
 qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command, ModeSwitchData_t *switch_data) {
@@ -203,6 +201,8 @@ qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command, ModeSwi
  */
 int
 qwalk_logic_obj_move(QwalkLayer_t *walk_layer, int index, Qdirection_t direction) {
+	int r;
+	
 	int y_old;
 	int x_old;
 
@@ -210,15 +210,13 @@ qwalk_logic_obj_move(QwalkLayer_t *walk_layer, int index, Qdirection_t direction
 	int x_new;
 	
 	/* Previous occupant of the square to move walk_layer[index] to */
-	QwalkObj_t *coord_occupant_old;
+	int coord_occupant_old_index;
 
 	/* The object trying to move, i.e. walk_layer[index] */
-	QwalkObj_t *coord_occupant_mover;
+	int coord_occupant_mover_index;
 
-	coord_occupant_mover = qwalk_layer_object_get(walk_layer, index);
-
-	y_old = qwalk_object_coord_y_get(coord_occupant_mover);
-	x_old = qwalk_object_coord_x_get(coord_occupant_mover);
+	y_old = qwalk_layer_object_coord_y_get(walk_layer, index);
+	x_old = qwalk_layer_object_coord_x_get(walk_layer, index);
  	
 	y_new = y_old;
 	x_new = x_old;
@@ -245,10 +243,15 @@ qwalk_logic_obj_move(QwalkLayer_t *walk_layer, int index, Qdirection_t direction
 		return Q_ERROR_NOCHANGE; 
 	}
 
-	coord_occupant_old = qwalk_logic_layer_coord_occupant_get(walk_layer, y_new, x_new);
+	coord_occupant_mover_index = qwalk_logic_coords_to_index(y_old, x_old);
+	coord_occupant_old_index = qwalk_logic_coords_to_index(y_new, x_new);
 
-	qwalk_logic_objs_locs_trade(coord_occupant_mover, coord_occupant_old);
+	r = qwalk_logic_objs_locs_trade(walk_layer, coord_occupant_mover_index, coord_occupant_old_index);
 
+	if (r == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
 	return Q_OK;
 }
 
@@ -267,14 +270,11 @@ qwalk_logic_obj_move(QwalkLayer_t *walk_layer, int index, Qdirection_t direction
  * The parent #QwalkLayer_t of each parameter <i>must</i> be the same. 
  */
 int
-qwalk_logic_objs_locs_trade(QwalkObj_t *mover, QwalkObj_t *movend) {
+qwalk_logic_objs_locs_trade(QwalkLayer_t *walk_layer, int mover_index, int movend_index) {
 	QattrList_t *attr_list_buffer;
-	if ((mover == NULL) || (movend == NULL)) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return Q_ERROR;
-	}
-	if ((mover->attr_list == NULL) || (movend->attr_list == NULL)) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+	if ((mover_index < 0) || (mover_index >= QWALK_LAYER_SIZE)
+			|| (movend_index < 0) || (movend_index >= QWALK_LAYER_SIZE)) {
+		Q_ERRORFOUND(QERROR_INDEX_OUTOFRANGE);
 		return Q_ERROR;
 	}
 
@@ -282,68 +282,10 @@ qwalk_logic_objs_locs_trade(QwalkObj_t *mover, QwalkObj_t *movend) {
 	 * Exchange each param's attr_lists (yielding the effect of switching
 	 * places).
 	 */
-	attr_list_buffer = mover->attr_list;
-	mover->attr_list = movend->attr_list;
-	movend->attr_list = attr_list_buffer;
+	attr_list_buffer = walk_layer->objects[mover_index].attr_list;
+	walk_layer->objects[mover_index].attr_list = walk_layer->objects[movend_index].attr_list;
+	walk_layer->objects[movend_index].attr_list = attr_list_buffer;
 	return Q_OK;
-}
-
-
-/**
- * Find the current occupant of a set of coords in a #QwalkLayer_t.
- * @param[in] walk_layer: #QwalkLayer_t to search.
- * @param[in] y: y coordinate to look for.
- * @param[in] x: x coordinate to look for.
- * @return a #QwalkObj_t * containing the current occupant or @c NULL if an
- * error occurs.
- */
-QwalkObj_t *
-qwalk_logic_layer_coord_occupant_get(QwalkLayer_t *walk_layer, int y, int x) {
-	if (walk_layer == NULL) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return NULL;
-	}
-	if ((y < QWALK_LAYER_COORD_MINIMUM) || (x < QWALK_LAYER_COORD_MINIMUM)) {
-		Q_ERRORFOUND(QERROR_ZERO_VALUE_UNEXPECTED);
-		return NULL;
-	}
-	if ((y >= QWALK_LAYER_SIZE_Y) || (x >= QWALK_LAYER_SIZE_X)) {
-		Q_ERRORFOUND(QERROR_INDEX_OUTOFRANGE);
-		return NULL;
-	}
-
-	/*
-	 * Search through the entire QwalkLayer_t for the given coords
-	 * If there is one code block that could be readily optimized, it is this one.
-	 */
-
-	for (int i = 0; i < QWALK_LAYER_SIZE; i++) {
-		QwalkObj_t *walk_obj;
-		int validator_y;
-		int validator_x;
-		walk_obj = qwalk_layer_object_get(walk_layer, i);
-		
-		if (walk_obj == NULL) {
-			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-			return NULL;
-		}
-		
-		validator_y = qwalk_object_coord_y_get(walk_obj);
-		validator_x = qwalk_object_coord_x_get(walk_obj);
-
-		if ((validator_y == Q_ERRORCODE_INT) || (validator_x == Q_ERRORCODE_INT)) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-			return NULL;
-		}
-
-		if ((validator_y == y) && (validator_x == x)) {
-			return walk_obj;
-		}
-
-		walk_obj = NULL;
-	}
-
-	return NULL;
 }
 
 
@@ -380,12 +322,12 @@ qwalk_logic_walk_layer_sanitize(QwalkLayer_t *walk_layer) {
 
 	for (int i = 0; i < QWALK_LAYER_SIZE; i++) {
 		
-		if (walk_layer->objects[i]->coord_x < QWALK_LAYER_COORD_MINIMUM) {
+		if (walk_layer->objects[i].coord_x < QWALK_LAYER_COORD_MINIMUM) {
 			Q_ERRORFOUND(QERROR_NEGATIVE_VALUE_UNEXPECTED);
 			free(obj_types);
 			return NULL;
 		}
-		if (walk_layer->objects[i]->coord_y < QWALK_LAYER_COORD_MINIMUM) {
+		if (walk_layer->objects[i].coord_y < QWALK_LAYER_COORD_MINIMUM) {
 			Q_ERRORFOUND(QERROR_NEGATIVE_VALUE_UNEXPECTED);
 			free(obj_types);
 			return NULL;
@@ -395,7 +337,7 @@ qwalk_logic_walk_layer_sanitize(QwalkLayer_t *walk_layer) {
 		 * TODO: in future, implement an interface function to nab the attr_list
 		 * that we can mark with the splint observer annotation!
 		 */
-		attr_list            = walk_layer->objects[i]->attr_list;
+		attr_list            = walk_layer->objects[i].attr_list;
 		if (attr_list == NULL) {
 			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 			free(obj_types);
@@ -499,6 +441,23 @@ qwalk_logic_command_move_to_direction(QwalkCommand_t cmd) {
 	default:
 		return (Qdirection_t) Q_ERRORCODE_ENUM;
 	}
+}
+
+
+/**
+ * Convert coordinates in qwalk to an index.
+ * @param[in] y: y coordinate.
+ * @param[in] x: x coordinate.
+ * @return index
+ */
+int
+qwalk_logic_coords_to_index(int y, int x) {
+	if ((y < QWALK_LAYER_COORD_MINIMUM) || (y >= QWALK_LAYER_SIZE_Y) ||
+			(x < QWALK_LAYER_COORD_MINIMUM) || (x >= QWALK_LAYER_SIZE_Y)) {
+		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+		return Q_ERRORCODE_INT;
+	}
+	return ((y * QWALK_LAYER_SIZE_X) + x);
 }
 
 

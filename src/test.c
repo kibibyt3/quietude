@@ -92,9 +92,9 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	printf("%i, %i\n", (int) s, (int) data_type);
 
 	walk_layer_earth = qwalk_layer_create();
+	assert(walk_layer_earth != NULL);
 	walk_layer_floater = qwalk_layer_create();
-
-	QwalkObj_t *walk_obj;
+	assert(walk_layer_floater != NULL);
 
 	r = qattr_list_destroy(attr_list);
 	assert(r != Q_ERROR);
@@ -102,42 +102,45 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	attr_list = NULL;
 	QobjType_t *obj_type;
 	for (int i = 0; i < QWALK_LAYER_SIZE; i++) {
-		obj_type = calloc(1, sizeof(*obj_type));
+		obj_type = calloc((size_t) 1, sizeof(*obj_type));
 		assert(obj_type != NULL);
 		*obj_type = QOBJ_TYPE_GRASS;
 		attr_list = qattr_list_create((size_t) 1);
 		assert(attr_list != NULL);
-		datameta2 = qdatameta_create(QDATA_TYPE_QOBJECT_TYPE, 1);
-		datameta2->datap = obj_type;
+		datameta2 = qdatameta_create(QDATA_TYPE_QOBJECT_TYPE, (size_t) 1);
+		assert(datameta2 != NULL);
+		(datameta2->datap) = (Qdata_t *) obj_type;
 		obj_type = NULL;
-		qattr_list_attr_set(attr_list, QATTR_KEY_QOBJECT_TYPE, datameta2);
+		r = qattr_list_attr_set(attr_list, QATTR_KEY_QOBJECT_TYPE, datameta2);
+		assert(r != Q_ERROR);
 		assert(attr_list != NULL);
-		walk_obj = qwalk_obj_create(0, 0, attr_list);
+		r = qwalk_layer_object_set(walk_layer_earth, i, i, attr_list);
 		attr_list = NULL;
-		r = qwalk_layer_object_set(walk_layer_earth, walk_obj, i);
-		walk_obj = NULL;
 		assert(r != Q_ERROR);
 	}
 	for (int i = 0; i < QWALK_LAYER_SIZE; i++) {
-		obj_type = calloc(1, sizeof(*obj_type));
+		obj_type = calloc((size_t) 1, sizeof(*obj_type));
 		assert(obj_type != NULL);
 		*obj_type = QOBJ_TYPE_GRASS;
 		attr_list = qattr_list_create((size_t) 1);
 		assert(attr_list != NULL);
-		datameta2 = qdatameta_create(QDATA_TYPE_QOBJECT_TYPE, 1);
-		datameta2->datap = obj_type;
+		datameta2 = qdatameta_create(QDATA_TYPE_QOBJECT_TYPE, (size_t) 1);
+		assert(datameta2 != NULL);
+		datameta2->datap = (Qdata_t *) obj_type;
 		obj_type = NULL;
-		qattr_list_attr_set(attr_list, QATTR_KEY_QOBJECT_TYPE, datameta2);
+		r = qattr_list_attr_set(attr_list, QATTR_KEY_QOBJECT_TYPE, datameta2);
+		assert(r != Q_ERROR);
 		assert(attr_list != NULL);
-		walk_obj = qwalk_obj_create(0, 0, attr_list);
+		r = qwalk_layer_object_set(walk_layer_floater, i, i, attr_list);
 		attr_list = NULL;
-		r = qwalk_layer_object_set(walk_layer_floater, walk_obj, i);
-		walk_obj = NULL;
 		assert(r != Q_ERROR);
 	}
-	qwalk_layer_destroy(walk_layer_earth);
-	qwalk_layer_destroy(walk_layer_floater);
+	r = qwalk_layer_destroy(walk_layer_earth);
+	assert(r != Q_ERROR);
+	r = qwalk_layer_destroy(walk_layer_floater);
+	assert(r != Q_ERROR);
 	qdatameta_destroy(datameta);
+	assert(r != Q_ERROR);
 	datameta = NULL;
 	return 0;
 }

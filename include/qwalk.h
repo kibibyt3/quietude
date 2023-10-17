@@ -53,15 +53,12 @@ typedef struct QwalkObj_t {
 } QwalkObj_t;
 
 /**
- * This type is here merely to ensure @c splint cooperates.
- */
-typedef /*@only@*/QwalkObj_t *QwalkObjPtr_t;
-/**
  * A lone z-level of a playable area in the qwalk module.
  */
 typedef struct QwalkLayer_t {
 	/** Pointer to the collection of #QwalkObj_t present on the field */
-	/*@only@*/QwalkObjPtr_t *objects;
+	/*@only@*/QwalkObj_t *objects;
+	int index_ok; /**< next available index */
 } QwalkLayer_t;
 
 /**
@@ -111,36 +108,21 @@ extern /*@null@*//*@observer@*/QwalkLayer_t      *qwalk_area_layer_earth_get(con
 extern /*@null@*//*@observer@*/QwalkLayer_t      *qwalk_area_layer_floater_get(const/*@null@*//*@returned@*/QwalkArea_t *)/*@*/;
 
 /** Create a #QwalkLayer_t                               */
-extern /*@null@*//*@out@*/QwalkLayer_t      *qwalk_layer_create(void);
+extern /*@null@*//*@partial@*/QwalkLayer_t      *qwalk_layer_create(void);
  
 /** Destory a #QwalkLayer_t                              */
 extern           int                qwalk_layer_destroy(/*@only@*/QwalkLayer_t *);
 
 /** Add a #QwalkObj_t * to a #QwalkLayer_t *             */
-extern           int                qwalk_layer_object_set(QwalkLayer_t *, /*@only@*/QwalkObj_t *, int);
-
-/** Get a specific #QwalkObj_t * from a #QwalkLayer_t *  */
-extern /*@null@*//*@observer@*/QwalkObj_t        *qwalk_layer_object_get(/*@null@*/const QwalkLayer_t *, int)/*@*/;
+extern           int                qwalk_layer_object_set(/*@null@*/QwalkLayer_t *, int, int, /*@null@*//*@only@*/QattrList_t *);
 
 
-
-/** Create a #QwalkObj_t                                 */
-extern /*@null@*/QwalkObj_t        *qwalk_obj_create(int, int, /*@only@*//*@null@*/QattrList_t *);
-
-/** Destory a #QwalkObj_t                                */
-extern           int                qwalk_obj_destroy(/*@only@*//*@null@*/QwalkObj_t *);
-
-/** Set the y coordinate of a #QwalkObj_t                */
-extern           int               qwalk_object_coord_y_set(/*@null@*/QwalkObj_t *, int);
-
-/** Set the x coordinate of a #QwalkObj_t                */
-extern           int               qwalk_object_coord_x_set(/*@null@*/QwalkObj_t *, int);
 
 /** Get the y coordinate of a #QwalkObj_t                */
-extern int               qwalk_object_coord_y_get(/*@null@*/const QwalkObj_t *)/*@*/;
+extern int               qwalk_layer_object_coord_y_get(/*@null@*/const QwalkLayer_t *, int)/*@*/;
 
 /** Get the x coordinate of a #QwalkObj_t                */
-extern int               qwalk_object_coord_x_get(/*@null@*/const QwalkObj_t *)/*@*/;
+extern int               qwalk_layer_object_coord_x_get(/*@null@*/const QwalkLayer_t *, int)/*@*/;
 
 /** Get the #QattrList_t of a #QwalkObj_t                */
-extern /*@null@*//*@observer@*/QattrList_t *qwalk_object_attr_list_get(/*@null@*/const QwalkObj_t *)/*@*/;
+extern /*@null@*//*@observer@*/QattrList_t *qwalk_layer_object_attr_list_get(/*@null@*/const QwalkLayer_t *, int)/*@*/;
