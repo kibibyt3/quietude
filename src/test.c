@@ -94,7 +94,7 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	walk_layer_earth = qwalk_layer_create();
 	walk_layer_floater = qwalk_layer_create();
 
-	QwalkObj_t walk_obj;
+	QwalkObj_t *walk_obj;
 
 	r = qattr_list_destroy(attr_list);
 	assert(r != Q_ERROR);
