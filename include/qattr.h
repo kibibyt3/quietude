@@ -45,7 +45,7 @@ typedef enum QattrKey_t {
  */
 typedef struct Qattr_t {
 	QattrKey_t    key;    /**< Key to address the value by */
-	/*@owned@*/Qdatameta_t  *valuep; /**< Value to hold the proper data for the attribute */
+	/*@only@*/Qdatameta_t  *valuep; /**< Value to hold the proper data for the attribute */
 } Qattr_t;
 
 /**
@@ -64,7 +64,7 @@ typedef struct QattrList_t {
 extern /*@null@*//*@partial@*/QattrList_t* qattr_list_create(size_t);
 
 /** Frees a given #QattrList_t from memory */
-extern int qattr_list_destroy(/*@only@*/QattrList_t*);
+extern int qattr_list_destroy(/*@only@*/QattrList_t *);
 
 /*
 ** Transfers control of a #Qattr_t to the caller *

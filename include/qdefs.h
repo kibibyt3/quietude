@@ -127,7 +127,7 @@ typedef void Qdata_t;
 typedef struct Qdatameta_t {
 	
 	/** Pointer to the beginning of the data compoment of the #Qdatameta_t */
-	/*@owned@*/Qdata_t    *datap; 
+	/*@only@*/Qdata_t    *datap; 
 	
 	/**
 	 * Number of elements in data.

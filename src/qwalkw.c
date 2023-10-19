@@ -16,7 +16,7 @@
 #include "qwalk.h"
 
 /** Pointer to current #QwalkLayer_t */
-/*@owned@*//*@null@*/static QwalkArea_t *walk_area_curr = NULL;
+/*@only@*//*@null@*/static QwalkArea_t *walk_area_curr = NULL;
 
 /** Whether the qwalk module is currently initialized  */
 static bool          isinit = false; 
@@ -35,23 +35,23 @@ int
 qwalk_init(Qdatameta_t* datameta) {
 	if (isinit) {
 		Q_ERRORFOUND(QERROR_MODULE_INITIALIZED);
-		free(datameta);
+		qdatameta_destroy(datameta);
 		return Q_ERROR;
 	}
 	isinit = true;
 	if (datameta == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		free(datameta);
+		qdatameta_destroy(datameta);
 		return Q_ERROR;
 	}
 	if (datameta->type != QDATA_TYPE_QWALK_AREA) {
 		Q_ERRORFOUND(QERROR_QDATAMETA_TYPE_INCOMPATIBLE);
-		free(datameta);
+		qdatameta_destroy(datameta);
 		return Q_ERROR;
 	}
 	if (walk_area_curr != NULL) {
 		Q_ERRORFOUND(QERROR_NONNULL_POINTER_UNEXPECTED);
-		free(datameta);
+		qdatameta_destroy(datameta);
 		return Q_ERROR;
 	}
 	walk_area_curr = (QwalkArea_t *) datameta->datap;
@@ -230,7 +230,7 @@ qwalk_layer_destroy(QwalkLayer_t *walk_layer) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 		}
 	}
-	free(walk_layer->objects);
+	/*@i1@*/free(walk_layer->objects);
 	free(walk_layer);
 	return returnval;
 }

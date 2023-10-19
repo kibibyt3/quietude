@@ -271,7 +271,6 @@ qwalk_logic_obj_move(QwalkLayer_t *walk_layer, int index, Qdirection_t direction
  */
 int
 qwalk_logic_objs_locs_trade(QwalkLayer_t *walk_layer, int mover_index, int movend_index) {
-	QattrList_t *attr_list_buffer;
 	if (walk_layer == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
@@ -286,9 +285,11 @@ qwalk_logic_objs_locs_trade(QwalkLayer_t *walk_layer, int mover_index, int moven
 	 * Exchange each param's attr_lists (yielding the effect of switching
 	 * places).
 	 */
+	/*@only@*/QattrList_t *attr_list_buffer;
 	attr_list_buffer = walk_layer->objects[mover_index].attr_list;
 	walk_layer->objects[mover_index].attr_list = walk_layer->objects[movend_index].attr_list;
 	walk_layer->objects[movend_index].attr_list = attr_list_buffer;
+	attr_list_buffer = NULL;
 	return Q_OK;
 }
 
@@ -376,7 +377,7 @@ qwalk_logic_walk_layer_sanitize(QwalkLayer_t *walk_layer) {
 		
 		obj_types[i] = *object_type;
 	}
-	return obj_types;
+	/*@i1@*/return obj_types;
 }
 
 

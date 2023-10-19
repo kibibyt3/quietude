@@ -57,7 +57,7 @@ qattr_list_destroy(QattrList_t *qattr_list) {
 		}
 	}
 
-	free(qattr_list->attrp);
+	/*@i1@*/free(qattr_list->attrp);
 	free(qattr_list);
 	return Q_OK;
 }
