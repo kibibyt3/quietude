@@ -263,11 +263,10 @@ qwalk_logic_obj_move(QwalkLayer_t *walk_layer, int index, Qdirection_t direction
  * it at any given time; therefore, if a #QwalkObj_t moves, it must exchange
  * places with a different #QwalkObj_t, even if one of the aforementioned is
  * merely a #QOBJ_TYPE_VOID.
- * @param[out] mover:  that #QwalkObj_t which dislocates another.
- * @param[out] movend: that #QwalkObj_t which is dislocated by another.
+ * @param[out] walk_layer:  #QwalkLayer_t to operate on
+ * @param[in] mover_index:  index of that #QwalkObj_t which dislocates another.
+ * @param[in] movend_index: index of that #QwalkObj_t which is dislocated by another.
  * @return #Q_OK or #Q_ERROR.
- * @note
- * The parent #QwalkLayer_t of each parameter <i>must</i> be the same. 
  */
 int
 qwalk_logic_objs_locs_trade(QwalkLayer_t *walk_layer, int mover_index, int movend_index) {

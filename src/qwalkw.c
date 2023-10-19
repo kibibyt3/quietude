@@ -277,7 +277,7 @@ qwalk_layer_object_set(QwalkLayer_t *walk_layer, int y, int x, QattrList_t *attr
 
 /**
  * Get the y coordinate of a #QwalkObj_t in a #QwalkLayer_t.
- * @param[in] walk_object: pointer to #QwalkLayer_t in question.
+ * @param[in] walk_layer: pointer to #QwalkLayer_t in question.
  * @param[in] index: index of #QwalkObj_t in question.
  * @return y coordinate or #Q_ERRORCODE_INT if an error occurs
  */
@@ -296,7 +296,7 @@ qwalk_layer_object_coord_y_get(const QwalkLayer_t *walk_layer, int index) {
 
 /**
  * Get the x coordinate of a #QwalkObj_t in a #QwalkLayer_t.
- * @param[in] walk_object: pointer to #QwalkLayer_t in question.
+ * @param[in] walk_layer: pointer to #QwalkLayer_t in question.
  * @param[in] index: index of #QwalkObj_t in question.
  * @return x coordinate or #Q_ERRORCODE_INT if an error occurs
  */
@@ -315,7 +315,7 @@ qwalk_layer_object_coord_x_get(const QwalkLayer_t *walk_layer, int index) {
 
 /**
  * Get the #QattrList_t of a #QwalkObj_t in a #QwalkLayer_t.
- * @param[in] walkobject: pointer to #QwalkLayer_t in question.
+ * @param[in] walk_layer: pointer to #QwalkLayer_t in question.
  * @param[in] index: index of #QwalkObj_t in question.
  * @return #QattrList_t or @c NULL if an error occurs
  */
