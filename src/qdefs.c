@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <ncurses.h>
 
 #include "qdefs.h"
 #include "qerror.h"

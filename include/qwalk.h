@@ -1,6 +1,6 @@
 /**
  * @file qwalk.h
- * qwalk module header file. Depends on qdefs.h and stdint.h.
+ * qwalk module header file. Depends on qdefs.h, stdint.h, and ncurses.h.
  */
 
 
@@ -24,7 +24,8 @@ typedef enum QwalkCommand_t {
 	
 	/** Minimum value for a move command */
 	QWALK_COMMAND_MOVE_MIN = Q_ENUM_VALUE_START,
-	QWALK_COMMAND_MOVE_NORTH, /**< Move north. */
+	/** Move north. */
+	QWALK_COMMAND_MOVE_NORTH = QWALK_COMMAND_MOVE_MIN,
 	QWALK_COMMAND_MOVE_EAST,  /**< Move east.  */
 	QWALK_COMMAND_MOVE_SOUTH, /**< Move south. */
 	QWALK_COMMAND_MOVE_WEST,  /**< Move west.  */
@@ -92,6 +93,9 @@ extern int qwalk_tick(ModeSwitchData_t *);
 
 /** Execute the subtick step of executing the game logic. */
 extern int qwalk_logic_subtick(QwalkArea_t *, QwalkCommand_t, ModeSwitchData_t *);
+
+/** Initialize the I/O module.                            */
+extern           int               qwalk_io_init(WINDOW *);
 
 /** Execute the subtick step of taking an input.          */
 extern           QwalkCommand_t    qwalk_input_subtick(void);

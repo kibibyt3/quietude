@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <ncurses.h>
 
 #include "qdefs.h"
 #include "qerror.h"
@@ -92,6 +93,13 @@ static           bool qwalk_logic_coords_arevalid(int, int)/*@*/;
 
 static           int  qwalk_logic_coords_to_index(int, int)/*@*/;
 
+/**
+ * Pass a logical tick for qwalk.
+ * @param[out] walk_area: #QwalkArea_t to pass the tick on.
+ * @param[in]  walk_command: #QwalkCommand_t to execute on @p walk_area.
+ * @param[out]  switch_data: #ModeSwitchData_t to pass to the next mode tick.
+ * @return #Q_OK or #Q_ERROR.
+ */ 
 int
 qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command, ModeSwitchData_t *switch_data) {
 

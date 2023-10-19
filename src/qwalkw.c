@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <ncurses.h>
 
 #include "qdefs.h"
 #include "qerror.h"
@@ -136,6 +137,10 @@ qwalk_tick(ModeSwitchData_t *switch_data) {
 	}
 	
 	cmd = qwalk_input_subtick();
+	if (cmd == (QwalkCommand_t) Q_ERRORCODE_ENUM) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
 	if ((cmd < (QwalkCommand_t) Q_ENUM_VALUE_START) || (cmd > QWALK_COMMAND_COUNT)) {
 		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 		return Q_ERROR;

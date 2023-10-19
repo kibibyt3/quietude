@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdbool.h>
+#include <ncurses.h>
 
 #include "qdefs.h"
 #include "qattr.h"
