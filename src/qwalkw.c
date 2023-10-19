@@ -114,6 +114,7 @@ qwalk_end() {
 
 /**
  * Pass a tick in qwalk.
+ * Works in the order: output -> input -> logic
  * @param[out] switch_data: #ModeSwitchData_t to update for determining and
  * executing the mode for the next tick.
  * @return #Q_OK or #Q_ERROR
@@ -121,27 +122,31 @@ qwalk_end() {
 int
 qwalk_tick(ModeSwitchData_t *switch_data) {
 	QwalkCommand_t    cmd;
-	int               i;
-//	cmd = qwalk_input_subtick();
-	cmd = (QwalkCommand_t) 1; //TODO: remove this!!!
+	int               r;
 	
 	if (walk_area_curr == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
 	}
-	if ((cmd < (QwalkCommand_t) Q_ENUM_VALUE_START) || (cmd > QWALK_COMMAND_COUNT)) {
-		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
-		return Q_ERROR;
-	}
 		
-	i = qwalk_logic_subtick(walk_area_curr, cmd, switch_data);
-	if (i == Q_ERROR) {
+	r = qwalk_output_subtick();
+	if (r == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
 	}
 	
-//	i = qwalk_output_subtick();
-	assert(i != Q_ERROR);
+	cmd = qwalk_input_subtick();
+	if ((cmd < (QwalkCommand_t) Q_ENUM_VALUE_START) || (cmd > QWALK_COMMAND_COUNT)) {
+		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+		return Q_ERROR;
+	}
+	
+	r = qwalk_logic_subtick(walk_area_curr, cmd, switch_data);
+	if (r == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+	
 	
 	return Q_OK;
 }
