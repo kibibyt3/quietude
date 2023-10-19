@@ -40,7 +40,11 @@
 /** Returned by functions that return @c size_t if an error occurs */
 #define Q_ERRORCODE_SIZE 0
 
-/** Returned by functions that return an internal enum if an error occurs */
+/**
+ * Returned by functions that return an internal enum if an error occurs.
+ * Expected to be casted to the typedeffed enum declared to be returned by the
+ * called function.
+ */
 #define Q_ERRORCODE_ENUM -1
 
 /**
