@@ -24,14 +24,14 @@ typedef enum QwalkCommand_t {
 	
 	/** Minimum value for a move command */
 	QWALK_COMMAND_MOVE_MIN = Q_ENUM_VALUE_START,
-	QWALK_COMMAND_MOVE_NORTH, /**< Move north */
-	QWALK_COMMAND_MOVE_EAST,  /**< Move east  */
-	QWALK_COMMAND_MOVE_SOUTH, /**< Move south */
-	QWALK_COMMAND_MOVE_WEST,  /**< Move west  */
-	/** Maximum value for a move command */
+	QWALK_COMMAND_MOVE_NORTH, /**< Move north. */
+	QWALK_COMMAND_MOVE_EAST,  /**< Move east.  */
+	QWALK_COMMAND_MOVE_SOUTH, /**< Move south. */
+	QWALK_COMMAND_MOVE_WEST,  /**< Move west.  */
+	/** Maximum value for a move command. */
 	QWALK_COMMAND_MOVE_MAX = QWALK_COMMAND_MOVE_WEST,
 	
-	/** Pass a tick without taking an action*/
+	/** Pass a tick without taking an action. */
 	QWALK_COMMAND_WAIT,                            
 
 	/**
@@ -46,9 +46,9 @@ typedef enum QwalkCommand_t {
  * An object in a #QwalkLayer_t.
  */
 typedef struct QwalkObj_t {
-	int coord_y;                  /**< X coord of object */
-	int coord_x;                  /**< Y coord of object */
-	/** #QattrList_t pointer for object attributes */
+	int coord_y;                  /**< X coord of object. */
+	int coord_x;                  /**< Y coord of object. */
+	/** #QattrList_t pointer for object attributes. */
 	QattrList_t *attr_list;
 } QwalkObj_t;
 
@@ -56,17 +56,17 @@ typedef struct QwalkObj_t {
  * A lone z-level of a playable area in the qwalk module.
  */
 typedef struct QwalkLayer_t {
-	/** Pointer to the collection of #QwalkObj_t present on the field */
+	/** Pointer to the collection of #QwalkObj_t present on the field. */
 	/*@only@*/QwalkObj_t *objects;
-	int index_ok; /**< next available index */
+	int index_ok; /**< next available index. */
 } QwalkLayer_t;
 
 /**
  * A full playable area in qwalk.
  */
 typedef struct QwalkArea_t {
-	QwalkLayer_t *layer_earth;   /**< layer that's embedded in the earth  */
-	QwalkLayer_t *layer_floater; /**< layer that sits on top of the earth */
+	QwalkLayer_t *layer_earth;   /**< layer that's embedded in the earth.  */
+	QwalkLayer_t *layer_floater; /**< layer that sits on top of the earth. */
 	
 	/*
 	 * For future implementations when there will be more than one field vvv
@@ -79,50 +79,50 @@ typedef struct QwalkArea_t {
 
 
 
-/** Initialize the qwalk module              */
+/** Initialize the qwalk module.    */
 extern           int               qwalk_init(/*@only@*/Qdatameta_t *);
 
-/** Safely exit the qwalk module             */
+/** Safely exit the qwalk module.   */
 extern           int               qwalk_end(void);
 
-/** Pass a tick in the qwalk module          */
+/** Pass a tick in the qwalk module.*/
 extern int qwalk_tick(ModeSwitchData_t *);
 
 
 
-/** Execute the subtick step of executing the game logic */
+/** Execute the subtick step of executing the game logic. */
 extern int qwalk_logic_subtick(QwalkArea_t *, QwalkCommand_t, ModeSwitchData_t *);
 
-/** Execute the subtick step of taking an input          */
+/** Execute the subtick step of taking an input.          */
 extern           QwalkCommand_t    qwalk_input_subtick(void);
 
-/** Execute the subtick step of updating the screen      */
+/** Execute the subtick step of updating the screen.      */
 extern           int               qwalk_output_subtick(void);
 
 
 
-/** Get the layer_earth member from a #QwalkArea_t       */
+/** Get the layer_earth member from a #QwalkArea_t.       */
 extern /*@null@*//*@observer@*/QwalkLayer_t      *qwalk_area_layer_earth_get(const /*@null@*//*@returned@*/QwalkArea_t *)/*@*/;
 
-/** Get the layer_floater member from a #QwalkArea_t     */
+/** Get the layer_floater member from a #QwalkArea_t.     */
 extern /*@null@*//*@observer@*/QwalkLayer_t      *qwalk_area_layer_floater_get(const/*@null@*//*@returned@*/QwalkArea_t *)/*@*/;
 
-/** Create a #QwalkLayer_t                               */
+/** Create a #QwalkLayer_t.                               */
 extern /*@null@*//*@partial@*/QwalkLayer_t      *qwalk_layer_create(void);
  
-/** Destory a #QwalkLayer_t                              */
+/** Destory a #QwalkLayer_t.                              */
 extern           int                qwalk_layer_destroy(/*@only@*/QwalkLayer_t *);
 
-/** Add a #QwalkObj_t * to a #QwalkLayer_t *             */
+/** Add a #QwalkObj_t * to a #QwalkLayer_t *.             */
 extern           int                qwalk_layer_object_set(/*@null@*/QwalkLayer_t *, int, int, /*@null@*//*@only@*/QattrList_t *);
 
 
 
-/** Get the y coordinate of a #QwalkObj_t                */
+/** Get the y coordinate of a #QwalkObj_t.                */
 extern int               qwalk_layer_object_coord_y_get(/*@null@*/const QwalkLayer_t *, int)/*@*/;
 
-/** Get the x coordinate of a #QwalkObj_t                */
+/** Get the x coordinate of a #QwalkObj_t.                */
 extern int               qwalk_layer_object_coord_x_get(/*@null@*/const QwalkLayer_t *, int)/*@*/;
 
-/** Get the #QattrList_t of a #QwalkObj_t                */
+/** Get the #QattrList_t of a #QwalkObj_t.                */
 extern /*@null@*//*@observer@*/QattrList_t *qwalk_layer_object_attr_list_get(/*@null@*/const QwalkLayer_t *, int)/*@*/;
