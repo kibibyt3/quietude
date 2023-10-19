@@ -11,7 +11,8 @@
 - [x] Resume work on qwalk
 - [x] complete qwalkl rough draft
   - [ ] add read/write functionality to qwalkl
-  - [ ] give qwalkl a cursory debugging
+  - [x] give qwalkl a cursory debugging
+    - Note: a more thorough debugging was done anyway
 - [ ] complete qwalkio rough draft
   - [ ] give qwalkio a cursory debugging
 - [ ] thoroughly debug the entirety of qwalk
