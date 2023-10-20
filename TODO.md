@@ -13,7 +13,7 @@
   - [ ] add read/write functionality to qwalkl
   - [x] give qwalkl a cursory debugging
     - Note: a more thorough debugging was done anyway
-- [ ] complete qwalkio rough draft
-  - [ ] give qwalkio a cursory debugging
+- [x] complete qwalkio rough draft
+  - [x] give qwalkio a cursory debugging
 - [ ] thoroughly debug the entirety of qwalk
 - [ ] look into using the `/*@abstract@*/` `splint` annotation
