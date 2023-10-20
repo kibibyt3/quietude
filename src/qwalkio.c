@@ -5,6 +5,7 @@
 
 
 
+#include <stdlib.h>
 #include <ncurses.h>
 
 #include "qdefs.h"
@@ -16,16 +17,65 @@
 
 
 
-/** Character for #QWALK_COMMAND_MOVE_NORTH */
-#define QWALK_CH_MOVE_NORTH 'w'
-/** Character for #QWALK_COMMAND_MOVE_EAST  */
-#define QWALK_CH_MOVE_EAST  'd'
-/** Character for #QWALK_COMMAND_MOVE_SOUTH */
-#define QWALK_CH_MOVE_SOUTH 's'
-/** Character for #QWALK_COMMAND_MOVE_WEST  */
-#define QWALK_CH_MOVE_WEST  'a'
-/** Character for #QWALK_COMMAND_WAIT       */
-#define QWALK_CH_WAIT       '.'
+/**
+ * @defgroup InputChars Input characters
+ * Characters meant to be input by the user.
+ * As opposed to @ref OutputChars. Character space betwixt these two overlaps;
+ * this is intentional and acceptable behaviour.
+ */
+
+/** 
+ * @ingroup InputChars
+ * Input character for #QWALK_COMMAND_MOVE_NORTH.
+ */
+#define QWALK_ICH_MOVE_NORTH 'w'
+/** 
+ * @ingroup InputChars
+ * Input character for #QWALK_COMMAND_MOVE_EAST
+ */
+#define QWALK_ICH_MOVE_EAST  'd'
+/** 
+ * @ingroup InputChars
+ * Input character for #QWALK_COMMAND_MOVE_SOUTH
+ */
+#define QWALK_ICH_MOVE_SOUTH 's'
+/** 
+ * @ingroup InputChars
+ * Input character for #QWALK_COMMAND_MOVE_WEST
+ */
+#define QWALK_ICH_MOVE_WEST  'a'
+/** 
+ * @ingroup InputChars
+ * Input character for #QWALK_COMMAND_WAIT
+ */
+#define QWALK_ICH_WAIT       '.'
+
+
+
+/**
+ * @defgroup OutputChars Output characters
+ * Characters meant to be output to the user.
+ * As opposed to @ref InputChars. Character space betwixt these two overlaps;
+ * this is intentional and acceptable behaviour.
+ */
+
+/**
+ * @ingroup OutputChars
+ * Output character for #QOBJ_TYPE_PLAYER.
+ */
+#define QWALK_OCH_PLAYER '@'
+/**
+ * @ingroup OutputChars
+ * Output character for #QOBJ_TYPE_GRASS.
+ */
+#define QWALK_OCH_GRASS '.'
+/**
+ * @ingroup OutputChars
+ * Output character for #QOBJ_TYPE_TREE.
+ */
+#define QWALK_OCH_TREE 'T'
+
+
 
 
 
@@ -35,12 +85,13 @@
 
 
 static QwalkCommand_t qwalk_input_to_command(int)/*@*/;
+static chtype         qwalk_obj_type_to_chtype(QobjType_t)/*@*/;
 
 
 
 /**
  * Initialize the IO module of qwalk.
- * @param[out] win: @c WINDOW to set as the qwalk window
+ * @param[out] argwin: @c WINDOW to set as the qwalk window
  * @return #Q_OK or #Q_ERROR.
  */
 int
@@ -82,14 +133,86 @@ qwalk_input_subtick() {
  */
 /* TODO: create */
 int
-qwalk_output_subtick() {
+qwalk_output_subtick(const QwalkArea_t *walk_area) {
+	/*@observer@*/QattrList_t *layer_object_attr_list;
+	/*@observer@*/Qdatameta_t *datameta_value;
+	QobjType_t *obj_typep;
+	chtype outch;
+	int *coords;
+	int r;
 	if (win == NULL) {
 		Q_ERRORFOUND(QERROR_MODULE_UNINITIALIZED);
 		return Q_ERROR;
 	}
 
-	/* ... */
-
+	/*@observer@*/QwalkLayer_t *layer_earth; 
+	layer_earth = qwalk_area_layer_earth_get(walk_area);
+	if (layer_earth == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+	
+	
+	/*@observer@*/QwalkLayer_t *layer_floater; 
+	layer_floater = qwalk_area_layer_floater_get(walk_area);
+	if (layer_floater == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+	
+	/*
+	 * iterate through both layers and print their contents to the screen;
+	 * print everything on layer_earth and then print layer_floater non-void
+	 * objects
+	 */
+	for (int i = 0; i < 2; i++) {
+		for (int j = 0; j < QWALK_LAYER_SIZE; j++) {
+			if (i == 0) {
+				layer_object_attr_list = qwalk_layer_object_attr_list_get(layer_earth, j);
+			} else {
+				layer_object_attr_list = qwalk_layer_object_attr_list_get(layer_floater, j);
+			}
+			if (layer_object_attr_list == NULL) {
+				Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+				return Q_ERROR;
+			}
+	
+			datameta_value = qattr_list_value_get(layer_object_attr_list, QATTR_KEY_QOBJECT_TYPE);
+			if (datameta_value == NULL) {
+				Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+				return Q_ERROR;
+			}
+	
+			if (qdatameta_type_get(datameta_value) != QDATA_TYPE_QOBJECT_TYPE) {
+				Q_ERRORFOUND(QERROR_QDATAMETA_TYPE_INCOMPATIBLE);
+				abort();
+			}
+	
+			obj_typep = ((QobjType_t *) (qdatameta_datap_get(datameta_value)));
+			if (obj_typep == NULL) {
+				Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+				return Q_ERROR;
+			}
+			
+			/* if *obj_typep isn't an empty space, print it to the screen */
+			if (*obj_typep != QOBJ_TYPE_VOID) {
+				
+				outch = qwalk_obj_type_to_chtype(*obj_typep);
+				if (outch == (chtype) ERR) {
+					Q_ERRORFOUND(QERROR_ERRORVAL);
+					abort();
+				}
+	
+				coords = qwalk_index_to_coords(j);
+				r = mvwaddch(win, coords[0], coords[1], outch);
+				free(coords);
+				if (r != OK) {
+					Q_ERRORFOUND(QERROR_ERRORVAL);
+					return Q_ERROR;
+				}
+			}
+		}
+	}
 	return Q_OK;
 }
 
@@ -102,18 +225,49 @@ qwalk_output_subtick() {
 QwalkCommand_t
 qwalk_input_to_command(int ch) {
 	switch (ch) {
-	case QWALK_CH_MOVE_NORTH:
+	case QWALK_ICH_MOVE_NORTH:
 		return QWALK_COMMAND_MOVE_NORTH;
-	case QWALK_CH_MOVE_EAST:
+	case QWALK_ICH_MOVE_EAST:
 		return QWALK_COMMAND_MOVE_EAST;
-	case QWALK_CH_MOVE_SOUTH:
+	case QWALK_ICH_MOVE_SOUTH:
 		return QWALK_COMMAND_MOVE_SOUTH;
-	case QWALK_CH_MOVE_WEST:
+	case QWALK_ICH_MOVE_WEST:
 		return QWALK_COMMAND_MOVE_WEST;
-	case QWALK_CH_WAIT:
+	case QWALK_ICH_WAIT:
 		return QWALK_COMMAND_WAIT;
 	default:
-
+		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
 		return (QwalkCommand_t) Q_ERRORCODE_ENUM;
+	}
+}
+
+
+/**
+ * Convert a #QobjType_t to a `chtype`.
+ * #QOBJ_TYPE_VOID functions in-game as a transparent layer;
+ * @param[in] obj_type: #QobjType_t to convert.
+ * @return converted `chtype` or `ERR`.
+ * @note `ERR` is used instead of `Q_ERRORCODE_INT` or some such thing to
+ * enforce compatibility with ncurses.
+ */
+chtype
+qwalk_obj_type_to_chtype(QobjType_t obj_type) {
+	if ((obj_type < (QobjType_t) Q_ENUM_VALUE_START)
+			|| (obj_type > (QobjType_t) QOBJ_TYPE_COUNT)) {
+		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+		return (chtype) ERR; 
+	}
+	
+	/* conversion switch-case proper */
+	switch (obj_type) {
+	case QOBJ_TYPE_PLAYER:
+		return (chtype) QWALK_OCH_PLAYER;
+	case QOBJ_TYPE_GRASS:
+		return (chtype) QWALK_OCH_GRASS;
+	case QOBJ_TYPE_TREE: 
+		return (chtype) QWALK_OCH_TREE;
+	default:
+		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+		return (chtype) ERR;
 	}
 }

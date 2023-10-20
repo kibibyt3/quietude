@@ -16,11 +16,14 @@
 #include "qattr.h"
 #include "qwalk.h"
 
+
+
 /** Pointer to current #QwalkLayer_t */
 /*@only@*//*@null@*/static QwalkArea_t *walk_area_curr = NULL;
 
 /** Whether the qwalk module is currently initialized  */
 static bool          isinit = false; 
+
 
 
 /**
@@ -29,35 +32,41 @@ static bool          isinit = false;
  * is updated.
  * @param[in] datameta: pointer to the #Qdatameta_t sent by the previous mode.
  * `free`'d in the event of a successful execution. Must contain a
- * #QwalkLayer_t.
+ * #QwalkArea_t.
  * @return #Q_OK or #Q_ERROR
  */ 
 int
-qwalk_init(Qdatameta_t* datameta) {
+qwalk_init(Qdatameta_t *datameta) {
+	
 	if (isinit) {
 		Q_ERRORFOUND(QERROR_MODULE_INITIALIZED);
 		qdatameta_destroy(datameta);
 		return Q_ERROR;
 	}
+
 	isinit = true;
+	
 	if (datameta == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		qdatameta_destroy(datameta);
 		return Q_ERROR;
 	}
+	
 	if (datameta->type != QDATA_TYPE_QWALK_AREA) {
 		Q_ERRORFOUND(QERROR_QDATAMETA_TYPE_INCOMPATIBLE);
 		qdatameta_destroy(datameta);
 		return Q_ERROR;
 	}
+	
 	if (walk_area_curr != NULL) {
 		Q_ERRORFOUND(QERROR_NONNULL_POINTER_UNEXPECTED);
 		qdatameta_destroy(datameta);
 		return Q_ERROR;
 	}
+	
 	walk_area_curr = (QwalkArea_t *) datameta->datap;
 	datameta->datap = NULL;
-	free(datameta);
+	free(datameta); /* intentionally leave datap intact in walk_area_curr */
 
 	return Q_OK;
 }
@@ -130,7 +139,7 @@ qwalk_tick(ModeSwitchData_t *switch_data) {
 		return Q_ERROR;
 	}
 		
-	r = qwalk_output_subtick();
+	r = qwalk_output_subtick(walk_area_curr);
 	if (r == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
@@ -219,6 +228,7 @@ qwalk_layer_create() {
 	return walk_layer;
 }
 
+
 /**
  * Destroy a #QwalkLayer_t and its contents.
  * @return #Q_OK or #Q_ERROR.
@@ -304,6 +314,7 @@ qwalk_layer_object_coord_y_get(const QwalkLayer_t *walk_layer, int index) {
 	return walk_layer->objects[index].coord_y;
 }
 
+
 /**
  * Get the x coordinate of a #QwalkObj_t in a #QwalkLayer_t.
  * @param[in] walk_layer: pointer to #QwalkLayer_t in question.
@@ -322,6 +333,7 @@ qwalk_layer_object_coord_x_get(const QwalkLayer_t *walk_layer, int index) {
 	}
 	return walk_layer->objects[index].coord_x;
 }
+
 
 /**
  * Get the #QattrList_t of a #QwalkObj_t in a #QwalkLayer_t.
@@ -347,3 +359,37 @@ qwalk_layer_object_attr_list_get(const QwalkLayer_t *walk_layer, int index) {
 }
 
 
+/**
+ * Convert coordinates in qwalk to an index.
+ * @param[in] y: y coordinate.
+ * @param[in] x: x coordinate.
+ * @return index
+ */
+int
+qwalk_coords_to_index(int y, int x) {
+	if ((y < QWALK_LAYER_COORD_MINIMUM) || (y >= QWALK_LAYER_SIZE_Y) ||
+			(x < QWALK_LAYER_COORD_MINIMUM) || (x >= QWALK_LAYER_SIZE_Y)) {
+		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+		return Q_ERRORCODE_INT;
+	}
+	return ((y * QWALK_LAYER_SIZE_X) + x);
+}
+
+/**
+ * Convert index in qwalk to coordinates.
+ * @param[in] index: index to convert.
+ * @return @c int array in the order: y, x.
+ */
+int *
+qwalk_index_to_coords(int index) {
+	int *vals;
+	vals = calloc((size_t) 2, sizeof(*vals));
+	assert(vals != NULL);
+	if ((index >= QWALK_LAYER_SIZE) || (index < QWALK_LAYER_COORD_MINIMUM)) {
+		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+		abort();
+	}
+	vals[0] = index / QWALK_LAYER_SIZE_X;
+	vals[1] = index % QWALK_LAYER_SIZE_X;
+	return vals;
+}

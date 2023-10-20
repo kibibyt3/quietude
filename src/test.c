@@ -102,10 +102,12 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	
 	attr_list = NULL;
 	QobjType_t *obj_type;
+	
+	/* create both layers */
 	for (int i = 0; i < QWALK_LAYER_SIZE; i++) {
 		obj_type = calloc((size_t) 1, sizeof(*obj_type));
 		assert(obj_type != NULL);
-		*obj_type = QOBJ_TYPE_GRASS;
+		*obj_type = QOBJ_TYPE_VOID;
 		attr_list = qattr_list_create((size_t) 1);
 		assert(attr_list != NULL);
 		datameta2 = qdatameta_create(QDATA_TYPE_QOBJECT_TYPE, (size_t) 1);
@@ -122,20 +124,43 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	for (int i = 0; i < QWALK_LAYER_SIZE; i++) {
 		obj_type = calloc((size_t) 1, sizeof(*obj_type));
 		assert(obj_type != NULL);
-		*obj_type = QOBJ_TYPE_GRASS;
+		
+		if (i == 20) {
+			*obj_type = QOBJ_TYPE_PLAYER;
+		} else {
+			*obj_type = QOBJ_TYPE_VOID;
+		}
+
 		attr_list = qattr_list_create((size_t) 1);
 		assert(attr_list != NULL);
+		
 		datameta2 = qdatameta_create(QDATA_TYPE_QOBJECT_TYPE, (size_t) 1);
 		assert(datameta2 != NULL);
+		
 		datameta2->datap = (Qdata_t *) obj_type;
 		obj_type = NULL;
+		
 		r = qattr_list_attr_set(attr_list, QATTR_KEY_QOBJECT_TYPE, datameta2);
 		assert(r != Q_ERROR);
 		assert(attr_list != NULL);
+		
 		r = qwalk_layer_object_set(walk_layer_floater, i, i, attr_list);
 		attr_list = NULL;
 		assert(r != Q_ERROR);
 	}
+
+	Qdatameta_t *area_datameta;
+	area_datameta = qdatameta_create(QDATA_TYPE_QWALK_AREA, (size_t) 1);
+	assert(area_datameta != NULL);
+	
+	QwalkArea_t *walk_area;
+	walk_area = calloc((size_t) 1, sizeof(*walk_area));
+	assert(walk_area != NULL);
+	walk_area->layer_earth = walk_layer_earth;
+	walk_area->layer_floater = walk_layer_floater;
+	
+	area_datameta->datap = (Qdata_t *) walk_area;
+	r = qwalk_init(area_datameta);
 	r = qwalk_layer_destroy(walk_layer_earth);
 	assert(r != Q_ERROR);
 	r = qwalk_layer_destroy(walk_layer_floater);
@@ -143,5 +168,6 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	qdatameta_destroy(datameta);
 	assert(r != Q_ERROR);
 	datameta = NULL;
+	free(walk_area);
 	return 0;
 }

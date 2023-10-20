@@ -91,7 +91,6 @@ static                       Qdirection_t qwalk_logic_command_move_to_direction(
 
 static           bool qwalk_logic_coords_arevalid(int, int)/*@*/;
 
-static           int  qwalk_logic_coords_to_index(int, int)/*@*/;
 
 /**
  * Pass a logical tick for qwalk.
@@ -251,8 +250,8 @@ qwalk_logic_obj_move(QwalkLayer_t *walk_layer, int index, Qdirection_t direction
 		return Q_ERROR_NOCHANGE; 
 	}
 
-	coord_occupant_mover_index = qwalk_logic_coords_to_index(y_old, x_old);
-	coord_occupant_old_index = qwalk_logic_coords_to_index(y_new, x_new);
+	coord_occupant_mover_index = qwalk_coords_to_index(y_old, x_old);
+	coord_occupant_old_index = qwalk_coords_to_index(y_new, x_new);
 
 	r = qwalk_logic_objs_locs_trade(walk_layer, coord_occupant_mover_index, coord_occupant_old_index);
 
@@ -456,21 +455,6 @@ qwalk_logic_command_move_to_direction(QwalkCommand_t cmd) {
 }
 
 
-/**
- * Convert coordinates in qwalk to an index.
- * @param[in] y: y coordinate.
- * @param[in] x: x coordinate.
- * @return index
- */
-int
-qwalk_logic_coords_to_index(int y, int x) {
-	if ((y < QWALK_LAYER_COORD_MINIMUM) || (y >= QWALK_LAYER_SIZE_Y) ||
-			(x < QWALK_LAYER_COORD_MINIMUM) || (x >= QWALK_LAYER_SIZE_Y)) {
-		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
-		return Q_ERRORCODE_INT;
-	}
-	return ((y * QWALK_LAYER_SIZE_X) + x);
-}
 
 
 /**

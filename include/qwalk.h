@@ -101,7 +101,7 @@ extern           int               qwalk_io_init(WINDOW *);
 extern           QwalkCommand_t    qwalk_input_subtick(void);
 
 /** Execute the subtick step of updating the screen.      */
-extern           int               qwalk_output_subtick(void);
+extern           int               qwalk_output_subtick(const QwalkArea_t *);
 
 
 
@@ -130,3 +130,9 @@ extern int               qwalk_layer_object_coord_x_get(/*@null@*/const QwalkLay
 
 /** Get the #QattrList_t of a #QwalkObj_t.                */
 extern /*@null@*//*@observer@*/QattrList_t *qwalk_layer_object_attr_list_get(/*@null@*/const QwalkLayer_t *, int)/*@*/;
+
+
+
+extern int qwalk_coords_to_index(int, int)/*@*/;
+
+extern int *qwalk_index_to_coords(int)/*@*/;
