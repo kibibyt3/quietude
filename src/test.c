@@ -159,8 +159,20 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	walk_area->layer_earth = walk_layer_earth;
 	walk_area->layer_floater = walk_layer_floater;
 	
+
+	/* ncurses startup*/
+	initscr();
+	noecho();
+	curs_set(0);
+	cbreak();
+
+
 	area_datameta->datap = (Qdata_t *) walk_area;
 	r = qwalk_init(area_datameta);
+	assert(r != Q_ERROR);
+	r = qwalk_io_init(stdscr);
+	
+	/*TODO: START HERE*/qwalk_tick(
 	r = qwalk_layer_destroy(walk_layer_earth);
 	assert(r != Q_ERROR);
 	r = qwalk_layer_destroy(walk_layer_floater);
@@ -169,5 +181,6 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	assert(r != Q_ERROR);
 	datameta = NULL;
 	free(walk_area);
+	endwin();
 	return 0;
 }
