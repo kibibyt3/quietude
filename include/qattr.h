@@ -16,7 +16,10 @@ typedef enum QattrKey_t {
 
 	/* GENERAL ATTRIBUTE KEYS         */
 	
-	/** #QobjType_t object type */ 
+	/**
+	 * #QobjType_t object type
+	 * This field <i>must</i> exist in any given #QattrList_t.
+	 */ 
 	QATTR_KEY_QOBJECT_TYPE = Q_ENUM_VALUE_START,
 	QATTR_KEY_NAME,                       /**< name of object */
 	QATTR_KEY_DESCRIPTION_BRIEF,          /**< brief description of object */
