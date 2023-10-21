@@ -106,7 +106,7 @@ extern           int               qwalk_output_subtick(const QwalkArea_t *);
 
 
 /** Create a #QwalkArea_t.                                */
-extern               /*@null@*/QwalkArea_t  *qwalk_area_create(/*@only@*/QwalkLayer_t *, /*@only@*/QwalkLayer_t *);
+extern               /*@null@*//*@only@*/QwalkArea_t  *qwalk_area_create(/*@returned@*//*@keep@*/QwalkLayer_t *, /*@returned@*//*@keep@*/QwalkLayer_t *);
 
 /** Destroy a #QwalkArea_t.                               */
 extern                         int           qwalk_area_destroy(/*@only@*//*@null@*/QwalkArea_t *);

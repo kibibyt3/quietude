@@ -33,6 +33,11 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 
 	int r;
 
+	int *intstr = calloc((size_t) 5, sizeof(*intstr));
+	assert(intstr != NULL);
+	
+	int *intstr2 = calloc((size_t) 5, sizeof(*intstr2));
+	assert(intstr != NULL);
 
 	Qdatameta_t *datameta;
 	Qdatameta_t *datameta2;
@@ -40,16 +45,15 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	QwalkLayer_t *walk_layer_floater;
 	QwalkLayer_t *walk_layer_earth;
 
-	datameta  = qdatameta_create(QDATA_TYPE_INT, (size_t) COUNT);
-	datameta2 = qdatameta_create(QDATA_TYPE_INT, (size_t) COUNT);
+	intstr[0] = 1;
+	intstr[1] = 2;
+	intstr[2] = 4;
+	intstr[3] = 8;
+	intstr[4] = 16;
+	
+	datameta  = qdatameta_create((Qdata_t *) intstr, QDATA_TYPE_INT, (size_t) COUNT);
 	assert(datameta != NULL);
-	assert(datameta2 != NULL);
-
-	((int *)(datameta->datap))[0] = 1;
-	((int *)(datameta->datap))[1] = 2;
-	((int *)(datameta->datap))[2] = 4;
-	((int *)(datameta->datap))[3] = 8;
-	((int *)(datameta->datap))[4] = 16;
+	intstr = NULL;
 
 
 	r = qfile_open(FILENAME, QFILE_MODE_WRITE);
@@ -64,9 +68,12 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	r = qfile_open(FILENAME, QFILE_MODE_READ);
 	assert(r != Q_ERROR);
 
-	r = qfile_qdatameta_read(datameta2);
-	assert(r != Q_ERROR);
+	Qdata_t *rawdata;
+	rawdata = qfile_qdata_read(QDATA_TYPE_INT, (size_t) COUNT);
+	assert(rawdata != NULL);
 
+	datameta2 = qdatameta_create(rawdata, QDATA_TYPE_INT, (size_t) COUNT);
+	assert(datameta2 != NULL);
 	int *val = (int *) qdatameta_datap_get(datameta2);
 	assert(val != NULL);
 	printf("%i, %i, %i, %i, %i\n", val[0], val[1], val[2], val[3], val[4]);
@@ -110,9 +117,8 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 		*obj_type = QOBJ_TYPE_GRASS;
 		attr_list = qattr_list_create((size_t) 1);
 		assert(attr_list != NULL);
-		datameta2 = qdatameta_create(QDATA_TYPE_QOBJECT_TYPE, (size_t) 1);
+		datameta2 = qdatameta_create((Qdata_t *) obj_type, QDATA_TYPE_QOBJECT_TYPE, (size_t) 1);
 		assert(datameta2 != NULL);
-		(datameta2->datap) = (Qdata_t *) obj_type;
 		obj_type = NULL;
 		r = qattr_list_attr_set(attr_list, QATTR_KEY_QOBJECT_TYPE, datameta2);
 		assert(r != Q_ERROR);
@@ -138,10 +144,9 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 		attr_list = qattr_list_create((size_t) 1);
 		assert(attr_list != NULL);
 		
-		datameta2 = qdatameta_create(QDATA_TYPE_QOBJECT_TYPE, (size_t) 1);
+		datameta2 = qdatameta_create((Qdata_t *) obj_type, QDATA_TYPE_QOBJECT_TYPE, (size_t) 1);
 		assert(datameta2 != NULL);
 		
-		datameta2->datap = (Qdata_t *) obj_type;
 		obj_type = NULL;
 		
 		r = qattr_list_attr_set(attr_list, QATTR_KEY_QOBJECT_TYPE, datameta2);
@@ -156,14 +161,18 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 		assert(r != Q_ERROR);
 	}
 
-	Qdatameta_t *area_datameta;
-	area_datameta = qdatameta_create(QDATA_TYPE_QWALK_AREA, (size_t) 1);
-	assert(area_datameta != NULL);
-	
 	QwalkArea_t *walk_area;
-
 	walk_area = qwalk_area_create(walk_layer_earth, walk_layer_floater);
 	assert(walk_area != NULL);
+	walk_layer_earth = NULL;
+	walk_layer_floater = NULL;
+
+	Qdatameta_t *area_datameta;
+	area_datameta = qdatameta_create((Qdata_t *) walk_area, QDATA_TYPE_QWALK_AREA, (size_t) 1);
+	assert(area_datameta != NULL);
+	walk_area = NULL;
+	
+
 	
 	WINDOW *r_win;
 	/* ncurses startup*/
@@ -177,7 +186,6 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	assert(r != ERR);
 
 
-	area_datameta->datap = (Qdata_t *) walk_area;
 	r = qwalk_init(area_datameta);
 	assert(r != Q_ERROR);
 	r = qwalk_io_init(stdscr);
@@ -196,11 +204,15 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 		assert(r != Q_ERROR);
 	}
 
-	r = qwalk_area_destroy(walk_area);
-	assert(r != Q_ERROR);
-	qdatameta_destroy(datameta);
+	/* TODO: implement a destructor function for ModeSwitchData_t */
+	/*@i1@*/free(switch_data);
+	
+	free(intstr2);
+
+	r = qdatameta_destroy(datameta);
 	assert(r != Q_ERROR);
 	datameta = NULL;
-	endwin();
-	return 0;
+	r = endwin();
+	assert(r != Q_ERROR);
+	/*@i1@*/return 0;
 }

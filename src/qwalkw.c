@@ -40,7 +40,9 @@ qwalk_init(Qdatameta_t *datameta) {
 	
 	if (isinit) {
 		Q_ERRORFOUND(QERROR_MODULE_INITIALIZED);
-		qdatameta_destroy(datameta);
+		if (qdatameta_destroy(datameta) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);	
+		}
 		return Q_ERROR;
 	}
 
@@ -48,19 +50,25 @@ qwalk_init(Qdatameta_t *datameta) {
 	
 	if (datameta == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		qdatameta_destroy(datameta);
+		if (qdatameta_destroy(datameta) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);	
+		}
 		return Q_ERROR;
 	}
 	
 	if (datameta->type != QDATA_TYPE_QWALK_AREA) {
 		Q_ERRORFOUND(QERROR_QDATAMETA_TYPE_INCOMPATIBLE);
-		qdatameta_destroy(datameta);
+		if (qdatameta_destroy(datameta) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);	
+		}
 		return Q_ERROR;
 	}
 	
 	if (walk_area_curr != NULL) {
 		Q_ERRORFOUND(QERROR_NONNULL_POINTER_UNEXPECTED);
-		qdatameta_destroy(datameta);
+		if (qdatameta_destroy(datameta) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);	
+		}
 		return Q_ERROR;
 	}
 	
@@ -179,13 +187,13 @@ qwalk_area_create(QwalkLayer_t *layer_earth, QwalkLayer_t *layer_floater) {
 	
 	if ((layer_earth == NULL) || (layer_floater == NULL)) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return NULL;
+		abort();
 	}
 	
-	walk_area = calloc(1, sizeof(*walk_area));
+	walk_area = calloc((size_t) 1, sizeof(*walk_area));
 	if (walk_area == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return NULL;
+		abort();
 	}
 
 	walk_area->layer_earth   = layer_earth;

@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <ncurses.h>
+#include <assert.h>
 
 #include "qdefs.h"
 #include "qerror.h"
@@ -17,25 +18,19 @@
 
 /**
  * Create a #Qdatameta_t.
+ * @param[in] datap: pointer to raw data.
  * @param[in] type:  type of @c data
  * @param[in] count: number of elements allocated to the given pointer
  * @return newly created #Qdatameta_t or @c NULL pointer 
  * @allocs{2} for returned pointer and its datap member.
  */ 
 Qdatameta_t *
-qdatameta_create(QdataType_t type, size_t count) {
+qdatameta_create(Qdata_t *datap, QdataType_t type, size_t count) {
 	Qdatameta_t *datameta;
-	Qdata_t *datap;
 	datameta = calloc((size_t) 1, sizeof(*datameta));
 	if (datameta == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return NULL;
-	}
-	datap = calloc(count, qdata_type_size_get(type));
-	if (datap == NULL) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		free(datameta);
-		return NULL;
+		abort();
 	}
 	datameta->datap = datap;
 	datameta->count = count;
@@ -44,14 +39,48 @@ qdatameta_create(QdataType_t type, size_t count) {
 }
 
 /**
- * Destory a #Qdatameta_t.
- * This includes its @c datap member.
- * @param[out] datameta: #Qdatameta_t to free from memory
+ * Recursively destroy a #Qdatameta_t.
+ * @param[out] datameta: #Qdatameta_t to free from memory.
+ * @return #Q_OK or #Q_ERROR.
  */
-void
+int
 qdatameta_destroy(Qdatameta_t *datameta) {
-	free(datameta->datap);
+
+	if (datameta == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+
+	if (datameta->datap == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		free(datameta);
+		return Q_ERROR;
+	}
+
+	if ((datameta->type < (QdataType_t) Q_ENUM_VALUE_START) || (datameta->type > QDATA_TYPE_COUNT)) {
+		free(datameta->datap);
+		free(datameta);
+		return Q_ERROR;
+	}
+
+	
+	/* Find the type of the data and call its appropriate destructor */
+	switch(datameta->type) {
+
+	/* Non-string typedeffed types */
+	case QDATA_TYPE_QWALK_AREA:
+		if (qwalk_area_destroy((QwalkArea_t *) datameta->datap) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+		}
+		break;
+	
+	default:
+		free(datameta->datap);
+	}
+
+
 	free(datameta);
+	return Q_OK;
 }
 
 /**

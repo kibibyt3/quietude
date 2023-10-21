@@ -118,40 +118,46 @@ qfile_qdatameta_write(const Qdatameta_t *datameta) {
 }
 
 /**
- * Read to a #Qdatameta_t from the file open in qfile.
- * @param[out] datameta: pointer to the #Qdatameta_t to be read to.
- * Its members must be set in advance to allow @c fread() to parse the data.
- * @return #Q_OK or #Q_ERROR
+ * Read to a #Qdata_t * from the file open in qfile.
+ * @param[in] type: type of #Qdata_t.
+ * @param[in] count: amount of elements.
+ * @return #Q_OK or #Q_ERROR.
  */
-int
-qfile_qdatameta_read(Qdatameta_t *datameta) {
+Qdata_t *
+qfile_qdata_read(QdataType_t type, size_t count) {
 	size_t data_read_count;
-	size_t datameta_data_type_size;
+	size_t data_type_size;
 	
+	Qdata_t *data;
 	if (qfile_ptr == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return Q_ERROR;
+		return NULL;
 	}
 	
 	if (qfile_mode != QFILE_MODE_READ) {
 		Q_ERRORFOUND(QERROR_FILE_MODE);
-		return Q_ERROR;
+		return NULL;
 	}
 
-	if ((datameta_data_type_size = qdata_type_size_get(datameta->type))
+	if ((data_type_size = qdata_type_size_get(type))
 				== Q_ERRORCODE_SIZE) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		return Q_ERROR;
+		return NULL;
 	}
 
-	data_read_count = fread((void *) (datameta->datap),
-			datameta_data_type_size,
-			datameta->count,
-			qfile_ptr);
-	
-	if (data_read_count < datameta->count) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-		return Q_ERROR;
+	data = calloc((size_t) count, data_type_size);
+	if (data == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return NULL;
 	}
-	return Q_OK;
+
+	data_read_count = fread((void *) (data), data_type_size, count, qfile_ptr);
+	
+	if (data_read_count < count) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		free(data);
+		return NULL;
+	}
+
+	/*@i1@*/return data;
 }

@@ -48,17 +48,13 @@ typedef enum QfileMode_t {
 } QfileMode_t;
 
 /** Open a file for qfile */
-/*@external@*/
 extern int qfile_open(char*, QfileMode_t);
 
 /** Close a file for qfile */
-/*@external@*/
 extern int qfile_close(void);
 
 /** Write a #Qdata_t to a file  */
-/*@external@*/
-extern int qfile_qdatameta_write(const Qdatameta_t*);
+extern int qfile_qdatameta_write(const Qdatameta_t *);
 
 /** Read a #Qdata_t from a file */
-/*@external@*/
-extern int qfile_qdatameta_read(Qdatameta_t*);
+extern /*@null@*/Qdata_t *qfile_qdata_read(QdataType_t, size_t);

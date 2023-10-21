@@ -18,3 +18,4 @@
 - [ ] thoroughly debug the entirety of qwalk
 - [ ] look into using the `/*@abstract@*/` `splint` annotation
 - [ ] rewrite the `Qdatameta\_t` interface such that datap is never calloc'd directly; it should just store a pointer to the beginning of the data
+  - [ ] rewrite `qfile`'s read function such that it creates a new Qdatameta\_t.

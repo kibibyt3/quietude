@@ -130,7 +130,7 @@ typedef void Qdata_t;
 /** Type for holding #Qdata_t and its size */
 typedef struct Qdatameta_t {
 	
-	/** Pointer to the beginning of the data compoment of the #Qdatameta_t */
+	/** Pointer to the data compoment of the #Qdatameta_t */
 	/*@only@*/Qdata_t    *datap; 
 	
 	/**
@@ -146,10 +146,10 @@ typedef struct Qdatameta_t {
 
 
 /** Create a #Qdatameta_t    */
-extern /*@null@*//*@partial@*/Qdatameta_t *qdatameta_create(QdataType_t, size_t);
+extern /*@null@*//*@only@*/Qdatameta_t *qdatameta_create(/*@keep@*//*@returned@*/Qdata_t *, QdataType_t, size_t);
 
 /** Destroy a #Qdatameta_t   */
-extern void qdatameta_destroy(/*@only@*/Qdatameta_t *);
+extern int qdatameta_destroy(/*@only@*/Qdatameta_t *);
 
 /** Get the datap member from a #Qdatameta_t */
 extern /*@observer@*//*@null@*/Qdata_t *qdatameta_datap_get(const Qdatameta_t *)/*@*/;

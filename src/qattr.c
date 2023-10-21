@@ -52,7 +52,9 @@ int
 qattr_list_destroy(QattrList_t *qattr_list) {
 	for (int i = 0; i < (int) qattr_list->index_ok; i++) {
 		if (qattr_list->attrp[i].key != QATTR_KEY_EMPTY) {
-			qdatameta_destroy(qattr_list->attrp[i].valuep);
+			if (qdatameta_destroy(qattr_list->attrp[i].valuep) == Q_ERROR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+			}
 			qattr_list->attrp[i].valuep = NULL;
 		}
 	}
