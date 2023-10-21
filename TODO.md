@@ -15,7 +15,8 @@
     - Note: a more thorough debugging was done anyway
 - [x] complete qwalkio rough draft
   - [x] give qwalkio a cursory debugging
-- [ ] thoroughly debug the entirety of qwalk
+- [x] thoroughly debug the entirety of qwalk
 - [ ] look into using the `/*@abstract@*/` `splint` annotation
-- [ ] rewrite the `Qdatameta\_t` interface such that datap is never calloc'd directly; it should just store a pointer to the beginning of the data
-  - [ ] rewrite `qfile`'s read function such that it creates a new Qdatameta\_t.
+- [x] rewrite the `Qdatameta\_t` interface such that datap is never calloc'd directly; it should just store a pointer to the beginning of the data
+  - [x] rewrite `qfile`'s read function such that it creates a new Qdatameta\_t.
+    Note: This was implemented differently. Instead, it merely creates a new `Qdata\_t *` to give to the `Qdatameta_t` constructor function.
