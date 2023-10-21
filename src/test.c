@@ -161,17 +161,20 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	assert(area_datameta != NULL);
 	
 	QwalkArea_t *walk_area;
-	walk_area = calloc((size_t) 1, sizeof(*walk_area));
-	assert(walk_area != NULL);
-	walk_area->layer_earth = walk_layer_earth;
-	walk_area->layer_floater = walk_layer_floater;
-	
 
+	walk_area = qwalk_area_create(walk_layer_earth, walk_layer_floater);
+	assert(walk_area != NULL);
+	
+	WINDOW *r_win;
 	/* ncurses startup*/
-	initscr();
-	noecho();
-	curs_set(0);
-	cbreak();
+	r_win = initscr();
+	assert(r_win != NULL);
+	r = noecho();
+	assert(r != ERR);
+	r = curs_set(0);
+	assert(r != ERR);
+	r = cbreak();
+	assert(r != ERR);
 
 
 	area_datameta->datap = (Qdata_t *) walk_area;
@@ -180,19 +183,24 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	r = qwalk_io_init(stdscr);
 	
 	ModeSwitchData_t *switch_data;
-	switch_data = calloc(1, sizeof(*switch_data));
+	switch_data = calloc((size_t) 1, sizeof(*switch_data));
+
+	assert(switch_data != NULL);
+	
+	switch_data->mode = MODE_T_INIT; 
+	switch_data->datameta = NULL;
 
 	for (int i = 0; i < 100; i++) {
-		qwalk_tick(switch_data);
+		assert(switch_data != NULL);
+		r = qwalk_tick(switch_data);
+		assert(r != Q_ERROR);
 	}
-	r = qwalk_layer_destroy(walk_layer_earth);
-	assert(r != Q_ERROR);
-	r = qwalk_layer_destroy(walk_layer_floater);
+
+	r = qwalk_area_destroy(walk_area);
 	assert(r != Q_ERROR);
 	qdatameta_destroy(datameta);
 	assert(r != Q_ERROR);
 	datameta = NULL;
-	free(walk_area);
 	endwin();
 	return 0;
 }
