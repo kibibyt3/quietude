@@ -22,14 +22,14 @@
 
 int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 
-	printf("\n-----BEGIN PHONY ERRORS-----\n");
+	fprintf(stderr, "\n-----BEGIN PHONY ERRORS-----\n");
 	Q_IFERROR(true, (Qerror_t) QERROR_NULL_POINTER_UNEXPECTED);
 	Q_IFERROR(true, (Qerror_t) QERROR_NULL_VALUE_UNEXPECTED);
 	Q_IFERROR((1 == 2), (Qerror_t) QERROR_ENUM_CONSTANT_INVALID);
 	Q_IFERROR((1 == 1), (Qerror_t) QERROR_ENUM_CONSTANT_INVALID_ZERO);
 	Q_IFERROR(1 == 1 && 2 == 2, (Qerror_t) QERROR_MODULE_UNINITIALIZED);
 	Q_IFERROR(true, 0);
-	printf("------END PHONY ERRORS------\n\n\n");
+	fprintf(stderr, "------END PHONY ERRORS------\n\n\n");
 
 	int r;
 
@@ -107,7 +107,7 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	for (int i = 0; i < QWALK_LAYER_SIZE; i++) {
 		obj_type = calloc((size_t) 1, sizeof(*obj_type));
 		assert(obj_type != NULL);
-		*obj_type = QOBJ_TYPE_VOID;
+		*obj_type = QOBJ_TYPE_GRASS;
 		attr_list = qattr_list_create((size_t) 1);
 		assert(attr_list != NULL);
 		datameta2 = qdatameta_create(QDATA_TYPE_QOBJECT_TYPE, (size_t) 1);
@@ -117,7 +117,11 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 		r = qattr_list_attr_set(attr_list, QATTR_KEY_QOBJECT_TYPE, datameta2);
 		assert(r != Q_ERROR);
 		assert(attr_list != NULL);
-		r = qwalk_layer_object_set(walk_layer_earth, i, i, attr_list);
+		
+		int *coords;
+		coords = qwalk_index_to_coords(i);
+		r = qwalk_layer_object_set(walk_layer_earth, coords[0], coords[1], attr_list);
+		free(coords);
 		attr_list = NULL;
 		assert(r != Q_ERROR);
 	}
@@ -125,7 +129,7 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 		obj_type = calloc((size_t) 1, sizeof(*obj_type));
 		assert(obj_type != NULL);
 		
-		if (i == 20) {
+		if (i == 501) {
 			*obj_type = QOBJ_TYPE_PLAYER;
 		} else {
 			*obj_type = QOBJ_TYPE_VOID;
@@ -144,7 +148,10 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 		assert(r != Q_ERROR);
 		assert(attr_list != NULL);
 		
-		r = qwalk_layer_object_set(walk_layer_floater, i, i, attr_list);
+		int *coords;
+		coords = qwalk_index_to_coords(i);
+		r = qwalk_layer_object_set(walk_layer_floater, coords[0], coords[1], attr_list);
+		free(coords);
 		attr_list = NULL;
 		assert(r != Q_ERROR);
 	}
@@ -172,7 +179,12 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	assert(r != Q_ERROR);
 	r = qwalk_io_init(stdscr);
 	
-	/*TODO: START HERE*/qwalk_tick(
+	ModeSwitchData_t *switch_data;
+	switch_data = calloc(1, sizeof(*switch_data));
+
+	for (int i = 0; i < 100; i++) {
+		qwalk_tick(switch_data);
+	}
 	r = qwalk_layer_destroy(walk_layer_earth);
 	assert(r != Q_ERROR);
 	r = qwalk_layer_destroy(walk_layer_floater);
