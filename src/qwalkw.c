@@ -167,6 +167,63 @@ qwalk_tick(ModeSwitchData_t *switch_data) {
 
 
 /**
+ * Create a #QwalkArea_t.
+ * @param[in] layer_earth:   @ref QwalkArea_t.layer_earth.
+ * @param[in] layer_floater: @ref QwalkArea_t.layer_floater.
+ * @return new #QwalkArea_t.
+ */
+QwalkArea_t *
+qwalk_area_create(QwalkLayer_t *layer_earth, QwalkLayer_t *layer_floater) {
+	
+	QwalkArea_t *walk_area;
+	
+	if ((layer_earth == NULL) || (layer_floater == NULL)) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return NULL;
+	}
+	
+	walk_area = calloc(1, sizeof(*walk_area));
+	if (walk_area == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return NULL;
+	}
+
+	walk_area->layer_earth   = layer_earth;
+	walk_area->layer_floater = layer_floater;
+
+	return walk_area;
+}
+
+
+/**
+ * Recursively destroy a #QwalkArea_t.
+ * @param[out] walk_area: #QwalkArea_t to destroy.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+qwalk_area_destroy(QwalkArea_t *walk_area) {
+	int r;
+	int returnval = Q_OK;
+	if (walk_area == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+	r = qwalk_layer_destroy(walk_area->layer_floater);
+	if (r == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		returnval = Q_ERROR;
+	}
+	r = qwalk_layer_destroy(walk_area->layer_earth);
+	if (r == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		returnval = Q_ERROR;
+	}
+	free(walk_area);
+	return returnval;
+}
+
+
+/**
  * Get #QwalkArea_t->layer_earth.
  * @param[in] walk_area: relevant #QwalkArea_t.
  * @return walk_area->layer_earth or @c NULL if an error occurs.

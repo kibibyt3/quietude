@@ -87,7 +87,7 @@ extern           int               qwalk_init(/*@only@*/Qdatameta_t *);
 extern           int               qwalk_end(void);
 
 /** Pass a tick in the qwalk module.*/
-extern int qwalk_tick(ModeSwitchData_t *);
+extern int qwalk_tick(/*@partial@*/ModeSwitchData_t *);
 
 
 
@@ -105,20 +105,26 @@ extern           int               qwalk_output_subtick(const QwalkArea_t *);
 
 
 
+/** Create a #QwalkArea_t.                                */
+extern               /*@null@*/QwalkArea_t  *qwalk_area_create(/*@only@*/QwalkLayer_t *, /*@only@*/QwalkLayer_t *);
+
+/** Destroy a #QwalkArea_t.                               */
+extern                         int           qwalk_area_destroy(/*@only@*//*@null@*/QwalkArea_t *);
+
 /** Get the layer_earth member from a #QwalkArea_t.       */
-extern /*@null@*//*@observer@*/QwalkLayer_t      *qwalk_area_layer_earth_get(const /*@null@*//*@returned@*/QwalkArea_t *)/*@*/;
+extern /*@null@*//*@observer@*/QwalkLayer_t *qwalk_area_layer_earth_get(const /*@null@*//*@returned@*/QwalkArea_t *)/*@*/;
 
 /** Get the layer_floater member from a #QwalkArea_t.     */
-extern /*@null@*//*@observer@*/QwalkLayer_t      *qwalk_area_layer_floater_get(const/*@null@*//*@returned@*/QwalkArea_t *)/*@*/;
+extern /*@null@*//*@observer@*/QwalkLayer_t *qwalk_area_layer_floater_get(const/*@null@*//*@returned@*/QwalkArea_t *)/*@*/;
 
 /** Create a #QwalkLayer_t.                               */
-extern /*@null@*//*@partial@*/QwalkLayer_t      *qwalk_layer_create(void);
+extern  /*@null@*//*@partial@*/QwalkLayer_t  *qwalk_layer_create(void);
  
 /** Destory a #QwalkLayer_t.                              */
-extern           int                qwalk_layer_destroy(/*@only@*/QwalkLayer_t *);
+extern                         int            qwalk_layer_destroy(/*@only@*/QwalkLayer_t *);
 
 /** Add a #QwalkObj_t * to a #QwalkLayer_t *.             */
-extern           int                qwalk_layer_object_set(/*@null@*/QwalkLayer_t *, int, int, /*@null@*//*@only@*/QattrList_t *);
+extern                         int            qwalk_layer_object_set(/*@null@*/QwalkLayer_t *, int, int, /*@null@*//*@only@*/QattrList_t *);
 
 
 
