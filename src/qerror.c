@@ -7,12 +7,18 @@
 
 
 #include <stdio.h>
+#include <string.h>
 
 #include "qdefs.h"
 
 #include "qerror.h"
 
  
+
+/** Maximum number of characters in a qerror string.     */
+#define QERROR_ERROR_LENGTH_MAX 100
+
+
 
 /** String for #QERROR_NULL_POINTER_UNEXPECTED           */
 #define QERROR_STRING_NULL_POINTER_UNEXPECTED \
@@ -93,61 +99,61 @@
 void
 qerror_internal(Qerror_t error, const char *file, const char *func, int line) {
 	
-	fprintf(stderr, "Internal error: ");
+	char error_string[QERROR_ERROR_LENGTH_MAX];
 
 	switch (error) {
 	case QERROR_NULL_POINTER_UNEXPECTED:
-		fprintf(stderr, QERROR_STRING_NULL_POINTER_UNEXPECTED);
+		strcpy(error_string, QERROR_STRING_NULL_POINTER_UNEXPECTED);
 		break;
 	case QERROR_NONNULL_POINTER_UNEXPECTED:
-		fprintf(stderr, QERROR_STRING_NONNULL_POINTER_UNEXPECTED);
+		strcpy(error_string, QERROR_STRING_NONNULL_POINTER_UNEXPECTED);
 		break;
 	case QERROR_NULL_VALUE_UNEXPECTED:
-		fprintf(stderr, QERROR_STRING_NULL_VALUE_UNEXPECTED);
+		strcpy(error_string, QERROR_STRING_NULL_VALUE_UNEXPECTED);
 		break;
 	case QERROR_NEGATIVE_VALUE_UNEXPECTED:
-		fprintf(stderr, QERROR_STRING_NEGATIVE_VALUE_UNEXPECTED);
+		strcpy(error_string, QERROR_STRING_NEGATIVE_VALUE_UNEXPECTED);
 		break;
 	case QERROR_ZERO_VALUE_UNEXPECTED:
-		fprintf(stderr, QERROR_STRING_ZERO_VALUE_UNEXPECTED);
+		strcpy(error_string, QERROR_STRING_ZERO_VALUE_UNEXPECTED);
 		break;
 	case QERROR_ENUM_CONSTANT_INVALID:
-		fprintf(stderr, QERROR_STRING_ENUM_CONSTANT_INVALID);
+		strcpy(error_string, QERROR_STRING_ENUM_CONSTANT_INVALID);
 		break;
 	case QERROR_ENUM_CONSTANT_INVALID_ZERO:
-		fprintf(stderr, QERROR_STRING_ENUM_CONSTANT_INVALID_ZERO);
+		strcpy(error_string, QERROR_STRING_ENUM_CONSTANT_INVALID_ZERO);
 		break;
 	case QERROR_INDEX_OUTOFRANGE:
-		fprintf(stderr, QERROR_STRING_INDEX_OUTOFRANGE);
+		strcpy(error_string, QERROR_STRING_INDEX_OUTOFRANGE);
 		break;
 	case QERROR_PARAMETER_INVALID:
-		fprintf(stderr, QERROR_STRING_PARAMETER_INVALID);
+		strcpy(error_string, QERROR_STRING_PARAMETER_INVALID);
 		break;
 	case QERROR_MODULE_INITIALIZED:
-		fprintf(stderr, QERROR_STRING_MODULE_INITIALIZED);
+		strcpy(error_string, QERROR_STRING_MODULE_INITIALIZED);
 		break;
 	case QERROR_MODULE_UNINITIALIZED:
-		fprintf(stderr, QERROR_STRING_MODULE_UNINITIALIZED);
+		strcpy(error_string, QERROR_STRING_MODULE_UNINITIALIZED);
 		break;
 	case QERROR_FILE_MODE:
-		fprintf(stderr, QERROR_STRING_FILE_MODE);
+		strcpy(error_string, QERROR_STRING_FILE_MODE);
 		break;
 	case QERROR_QDATAMETA_TYPE_INCOMPATIBLE:
-		fprintf(stderr, QERROR_STRING_QDATAMETA_TYPE_INCOMPATIBLE);
+		strcpy(error_string, QERROR_STRING_QDATAMETA_TYPE_INCOMPATIBLE);
 		break;
 	case QERROR_QDATAMETA_TYPE_COUNT_INCOMPATIBLE:
-		fprintf(stderr, QERROR_STRING_QDATAMETA_TYPE_COUNT_INCOMPATIBLE);
+		strcpy(error_string, QERROR_STRING_QDATAMETA_TYPE_COUNT_INCOMPATIBLE);
 		break;
 	case QERROR_ERRORVAL:
-		fprintf(stderr, QERROR_STRING_ERRORVAL);
+		strcpy(error_string, QERROR_STRING_ERRORVAL);
 		break;
 	default:
-		fprintf(stderr, QERROR_STRING_QERROR_USAGE);
+		strcpy(error_string, QERROR_STRING_QERROR_USAGE);
 		break;
 	}
 
-	fprintf(stderr, " in file %s, in function %s, on line %i\n",
-			file, func, line);
+	fprintf(stderr, "Internal error: %s in file %s, in function %s, on line %i\n",
+			error_string, file, func, line);
 
 	return;
 }
