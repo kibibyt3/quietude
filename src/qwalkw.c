@@ -368,7 +368,7 @@ qwalk_layer_object_attr_list_get(const QwalkLayer_t *walk_layer, int index) {
 int
 qwalk_coords_to_index(int y, int x) {
 	if ((y < QWALK_LAYER_COORD_MINIMUM) || (y >= QWALK_LAYER_SIZE_Y) ||
-			(x < QWALK_LAYER_COORD_MINIMUM) || (x >= QWALK_LAYER_SIZE_Y)) {
+			(x < QWALK_LAYER_COORD_MINIMUM) || (x >= QWALK_LAYER_SIZE_X)) {
 		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
 		return Q_ERRORCODE_INT;
 	}
