@@ -264,6 +264,40 @@ qwalk_area_write(const QwalkArea_t *walk_area) {
 
 
 /**
+ * Read a #QwalkArea_t from storage.
+ * Follows the order #QwalkArea_t.layer_earth, #QwalkArea_t.layer_floater.
+ * @return new #QwalkArea_t
+ */
+QwalkArea_t *
+qwalk_area_read() {
+	QwalkArea_t *walk_area;
+	QwalkLayer_t *layer_earth;
+	QwalkLayer_t *layer_floater;
+
+	layer_earth = qwalk_layer_read();
+	if (layer_earth == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return NULL;
+	}
+	
+	layer_floater = qwalk_layer_read();
+	if (layer_floater == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return NULL;
+	}
+	
+	walk_area = qwalk_area_create(layer_earth, layer_floater);
+	
+	if (walk_area == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return NULL;
+	}
+
+	return walk_area;
+}
+
+
+/**
  * Get #QwalkArea_t->layer_earth.
  * @param[in] walk_area: relevant #QwalkArea_t.
  * @return walk_area->layer_earth or @c NULL if an error occurs.
@@ -391,6 +425,46 @@ qwalk_layer_write(const QwalkLayer_t *walk_layer) {
 	}
 
 	return returnval;
+}
+
+
+/**
+ * Read a #QwalkLayer_t from storage.
+ * @return new #QwalkLayer_t.
+ */
+QwalkLayer_t *
+qwalk_layer_read() {
+	QwalkLayer_t *walk_layer;
+	QattrList_t  *attr_list;
+	int *coords;
+
+	walk_layer = qwalk_layer_create();
+	if (walk_layer == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return NULL;
+	}
+
+	/* iterate through every layer object */
+	for (int i = 0; i < QWALK_LAYER_SIZE; i++) {
+		
+		attr_list = qattr_list_read();
+		if (attr_list == NULL) {
+			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+			abort();
+		}
+		
+		coords = qwalk_index_to_coords(i);
+		if (coords == NULL) {
+			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+			abort();
+		}
+		
+		qwalk_layer_object_set(walk_layer, coords[0], coords[1], attr_list);
+		
+		free(coords);
+	}
+
+	return walk_layer;
 }
 
 
