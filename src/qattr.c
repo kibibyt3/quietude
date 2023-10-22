@@ -11,7 +11,7 @@
 #include "qerror.h"
 
 #include "qattr.h"
-
+#include "qfile.h"
 
 
 /**
@@ -62,6 +62,45 @@ qattr_list_destroy(QattrList_t *qattr_list) {
 	/*@i1@*/free(qattr_list->attrp);
 	free(qattr_list);
 	return Q_OK;
+}
+
+
+/**
+ * Write a #QattrList_t to storage.
+ * @param[in] attr_list: #QattrList_t to write; must be completely filled out.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+qattr_list_write(const QattrList_t *attr_list) {
+	int r;
+	int returnval = Q_OK;
+
+	if (attr_list == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+
+	r = qfile_size_write(attr_list->count);
+	if (r == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+
+	for (int i = 0; i < (int) attr_list->count; i++) {
+		r = qfile_qattr_key_write(attr_list->attrp[i].key);
+		if (r == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			returnval = Q_ERROR;
+		}
+		
+		r = qfile_qdatameta_write(attr_list->attrp[i].valuep);
+		if (r == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			returnval = Q_ERROR;
+		}
+	}
+
+	return returnval;
 }
 
 

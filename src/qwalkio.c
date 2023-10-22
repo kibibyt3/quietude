@@ -271,3 +271,5 @@ qwalk_obj_type_to_chtype(QobjType_t obj_type) {
 		return (chtype) ERR;
 	}
 }
+
+

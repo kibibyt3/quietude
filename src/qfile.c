@@ -15,6 +15,7 @@
 #include "qdefs.h"
 #include "qerror.h"
 
+#include "qattr.h"
 #include "qfile.h"
 
 /**
@@ -82,7 +83,8 @@ qfile_close() {
 
 /**
  * Write a #Qdatameta_t to the file open in qfile.
- * @param[in] datameta: pointer to the #Qdatameta_t to be written
+ * #Qdatameta_t.count is also written.
+ * @param[in] datameta: pointer to the #Qdatameta_t to be written.
  * @return #Q_OK or #Q_ERROR
  */
 int
@@ -105,17 +107,97 @@ qfile_qdatameta_write(const Qdatameta_t *datameta) {
 		return Q_ERROR;
 	}
 	
+	data_written_count = fwrite((void *) (&datameta->count), 
+			sizeof(datameta->count),
+			(size_t) 1,
+			qfile_ptr);
+	if (data_written_count != (size_t) 1) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+
 	data_written_count = fwrite((void *) (datameta->datap),
 			datameta_data_type_size,
 			datameta->count,
 			qfile_ptr);
 
-	if (data_written_count < datameta->count) {
+	if (data_written_count != datameta->count) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return Q_ERROR;
 	}
+
 	return Q_OK;
 }
+
+
+int
+qfile_int_write(int i) {
+	size_t data_written_count;
+
+	if (qfile_ptr == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+	if (qfile_mode != QFILE_MODE_WRITE) {
+		Q_ERRORFOUND(QERROR_FILE_MODE);
+		return Q_ERROR;
+	}
+
+	data_written_count = fwrite((void *) &i, sizeof(i), (size_t) 1, qfile_ptr);
+	if (data_written_count < (size_t) 1) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+	
+	return Q_OK;
+}
+
+
+int
+qfile_size_write(size_t size) {
+	size_t data_written_count;
+
+	if (qfile_ptr == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+	if (qfile_mode != QFILE_MODE_WRITE) {
+		Q_ERRORFOUND(QERROR_FILE_MODE);
+		return Q_ERROR;
+	}
+
+	data_written_count = fwrite((void *) &size, sizeof(size), (size_t) 1, qfile_ptr);
+	if (data_written_count < (size_t) 1) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+	
+	return Q_OK;
+}
+
+
+int
+qfile_qattr_key_write(QattrKey_t attr_key) {
+	size_t data_written_count;
+
+	if (qfile_ptr == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+	if (qfile_mode != QFILE_MODE_WRITE) {
+		Q_ERRORFOUND(QERROR_FILE_MODE);
+		return Q_ERROR;
+	}
+
+	data_written_count = fwrite((void *) &attr_key, sizeof(attr_key), (size_t) 1, qfile_ptr);
+	if (data_written_count < (size_t) 1) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+	
+	return Q_OK;
+}
+
 
 /**
  * Read to a #Qdata_t * from the file open in qfile.

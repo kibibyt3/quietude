@@ -47,14 +47,23 @@ typedef enum QfileMode_t {
 	QFILE_MODE_COUNT = QFILE_MODE_WRITE
 } QfileMode_t;
 
-/** Open a file for qfile */
-extern int qfile_open(char*, QfileMode_t);
+/** Open a file for qfile.          */
+extern           int      qfile_open(char*, QfileMode_t);
 
-/** Close a file for qfile */
-extern int qfile_close(void);
+/** Close a file for qfile.         */
+extern           int      qfile_close(void);
 
-/** Write a #Qdata_t to a file  */
-extern int qfile_qdatameta_write(const Qdatameta_t *);
+/** Write a #Qdata_t to a file.     */
+extern           int      qfile_qdatameta_write(const Qdatameta_t *);
 
-/** Read a #Qdata_t from a file */
+/** Write an @c int to storage.     */
+/*@unused@*/extern           int      qfile_int_write(int);
+
+/** Write a @c size_t to storage.   */
+extern           int      qfile_size_write(size_t);
+
+/** Write a #QattrKey_t to storage. */
+extern           int      qfile_qattr_key_write(QattrKey_t);
+
+/** Read a #Qdata_t from a file.    */
 extern /*@null@*/Qdata_t *qfile_qdata_read(QdataType_t, size_t);

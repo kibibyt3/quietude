@@ -71,7 +71,10 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	Qdata_t *rawdata;
 	rawdata = qfile_qdata_read(QDATA_TYPE_INT, (size_t) COUNT);
 	assert(rawdata != NULL);
-
+	
+	r = qfile_close();
+	assert(r != Q_ERROR);
+	
 	datameta2 = qdatameta_create(rawdata, QDATA_TYPE_INT, (size_t) COUNT);
 	assert(datameta2 != NULL);
 	int *val = (int *) qdatameta_datap_get(datameta2);
@@ -135,7 +138,7 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 		obj_type = calloc((size_t) 1, sizeof(*obj_type));
 		assert(obj_type != NULL);
 		
-		if (i == 501) {
+		if (i == 100) {
 			*obj_type = QOBJ_TYPE_PLAYER;
 		} else {
 			*obj_type = QOBJ_TYPE_VOID;
@@ -167,12 +170,21 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	walk_layer_earth = NULL;
 	walk_layer_floater = NULL;
 
+	r = qfile_open(FILENAME, QFILE_MODE_WRITE);
+	assert(r != Q_ERROR);
+	
+	r = qwalk_area_write(walk_area);
+	assert(r != Q_ERROR);
+
+	r = qfile_close();
+	assert(r != Q_ERROR);
+
+
+	
 	Qdatameta_t *area_datameta;
 	area_datameta = qdatameta_create((Qdata_t *) walk_area, QDATA_TYPE_QWALK_AREA, (size_t) 1);
 	assert(area_datameta != NULL);
 	walk_area = NULL;
-	
-
 	
 	WINDOW *r_win;
 	/* ncurses startup*/

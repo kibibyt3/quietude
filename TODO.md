@@ -10,7 +10,8 @@
 - [x] Rewrite qattr such that it controls its qdatameta pointers. If necessary, make a separate version of qdatameta\_t for the sake of indirect control.
 - [x] Resume work on qwalk
 - [x] complete qwalkl rough draft
-  - [ ] add read/write functionality to qwalkl
+  - [x] add write functionality to qwalkl
+  - [ ] add read functionality to qwalkl
   - [x] give qwalkl a cursory debugging
     - Note: a more thorough debugging was done anyway
 - [x] complete qwalkio rough draft

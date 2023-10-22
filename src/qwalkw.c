@@ -232,6 +232,38 @@ qwalk_area_destroy(QwalkArea_t *walk_area) {
 
 
 /**
+ * Write a #QwalkArea_t to storage.
+ * Follows the order #QwalkArea_t.layer_earth, #QwalkArea_t.layer_floater.
+ * @param[in] walk_area: #QwalkArea_t to write
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+qwalk_area_write(const QwalkArea_t *walk_area) {
+	int r;
+	int returnval = Q_OK;
+	
+	if (walk_area == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+	
+	r = qwalk_layer_write(walk_area->layer_earth);
+	if (r != Q_OK) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+	
+	r = qwalk_layer_write(walk_area->layer_floater);
+	if (r != Q_OK) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+	
+	return returnval;
+}
+
+
+/**
  * Get #QwalkArea_t->layer_earth.
  * @param[in] walk_area: relevant #QwalkArea_t.
  * @return walk_area->layer_earth or @c NULL if an error occurs.
@@ -317,6 +349,47 @@ qwalk_layer_destroy(QwalkLayer_t *walk_layer) {
 	}
 	/*@i1@*/free(walk_layer->objects);
 	free(walk_layer);
+	return returnval;
+}
+
+
+/**
+ * Write a #QwalkLayer_t to storage.
+ * Only #QwalkLayer_t.attr_list is written; this is because #QwalkLayer_t.coordy
+ * and #QwalkLayer_t.coordx can be confidently converted to and from their
+ * index.
+ * @param[in] walk_layer: #QwalkLayer_t to write.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+qwalk_layer_write(const QwalkLayer_t *walk_layer) {
+	int r;
+	int returnval = Q_OK;
+	
+	if (walk_layer == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+	if (walk_layer->objects == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+
+	/* layers should ONLY be written when they are fully filled out! */
+	if (walk_layer->index_ok != QWALK_LAYER_SIZE) {
+		Q_ERRORFOUND(QERROR_STRUCT_INCOMPLETE);
+		return Q_ERROR;
+	}
+
+	/* iterate through every layer object */
+	for (int i = 0; i < QWALK_LAYER_SIZE; i++) {
+		r = qattr_list_write(walk_layer->objects[i].attr_list);
+		if (r != Q_OK) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			returnval = Q_ERROR;
+		}
+	}
+
 	return returnval;
 }
 

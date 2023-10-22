@@ -106,10 +106,13 @@ extern           int               qwalk_output_subtick(const QwalkArea_t *);
 
 
 /** Create a #QwalkArea_t.                                */
-extern               /*@null@*//*@only@*/QwalkArea_t  *qwalk_area_create(/*@returned@*//*@keep@*/QwalkLayer_t *, /*@returned@*//*@keep@*/QwalkLayer_t *);
+extern /*@null@*//*@only@*/QwalkArea_t *qwalk_area_create(/*@returned@*//*@keep@*/QwalkLayer_t *, /*@returned@*//*@keep@*/QwalkLayer_t *);
 
 /** Destroy a #QwalkArea_t.                               */
-extern                         int           qwalk_area_destroy(/*@only@*//*@null@*/QwalkArea_t *);
+extern int qwalk_area_destroy(/*@only@*//*@null@*/QwalkArea_t *);
+
+/** Write a #QwalkArea_t to storage.                      */
+extern int qwalk_area_write(const QwalkArea_t *)/*@*/;
 
 /** Get the layer_earth member from a #QwalkArea_t.       */
 extern /*@null@*//*@observer@*/QwalkLayer_t *qwalk_area_layer_earth_get(const /*@null@*//*@returned@*/QwalkArea_t *)/*@*/;
@@ -117,11 +120,16 @@ extern /*@null@*//*@observer@*/QwalkLayer_t *qwalk_area_layer_earth_get(const /*
 /** Get the layer_floater member from a #QwalkArea_t.     */
 extern /*@null@*//*@observer@*/QwalkLayer_t *qwalk_area_layer_floater_get(const/*@null@*//*@returned@*/QwalkArea_t *)/*@*/;
 
+
+
 /** Create a #QwalkLayer_t.                               */
 extern  /*@null@*//*@partial@*/QwalkLayer_t  *qwalk_layer_create(void);
  
 /** Destory a #QwalkLayer_t.                              */
 extern                         int            qwalk_layer_destroy(/*@only@*/QwalkLayer_t *);
+
+/** Write a #QwalkLayer_t to storage.                     */
+extern                         int            qwalk_layer_write(const QwalkLayer_t *);
 
 /** Add a #QwalkObj_t * to a #QwalkLayer_t *.             */
 extern                         int            qwalk_layer_object_set(/*@null@*/QwalkLayer_t *, int, int, /*@null@*//*@only@*/QattrList_t *);
