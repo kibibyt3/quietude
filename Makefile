@@ -1,7 +1,7 @@
 CC = gcc
 LINT.c = splint
 
-CFLAGS = -I include -O0 -g3 -Wall -Wstrict-prototypes -Wmissing-prototypes -Wshadow -Wconversion
+CFLAGS = -I include -Og -g3 -Wall -Wstrict-prototypes -Wmissing-prototypes -Wshadow -Wconversion
 LDLIBS = -lncurses
 LINTFLAGS = -I include -checks
 
