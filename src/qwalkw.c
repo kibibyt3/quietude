@@ -277,20 +277,20 @@ qwalk_area_read() {
 	layer_earth = qwalk_layer_read();
 	if (layer_earth == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return NULL;
+		abort();
 	}
 	
 	layer_floater = qwalk_layer_read();
 	if (layer_floater == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return NULL;
+		abort();
 	}
 	
 	walk_area = qwalk_area_create(layer_earth, layer_floater);
 	
 	if (walk_area == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return NULL;
+		abort();
 	}
 
 	return walk_area;
@@ -389,9 +389,9 @@ qwalk_layer_destroy(QwalkLayer_t *walk_layer) {
 
 /**
  * Write a #QwalkLayer_t to storage.
- * Only #QwalkLayer_t.attr_list is written; this is because #QwalkLayer_t.coordy
- * and #QwalkLayer_t.coordx can be confidently converted to and from their
- * index.
+ * Only @ref QwalkObj_t.attr_list is written; this is because @ref
+ * QwalkObj_t.coord_y and @ref QwalkObj_t.coord_x can be confidently converted to
+ * and from their index.
  * @param[in] walk_layer: #QwalkLayer_t to write.
  * @return #Q_OK or #Q_ERROR.
  */
@@ -437,6 +437,7 @@ qwalk_layer_read() {
 	QwalkLayer_t *walk_layer;
 	QattrList_t  *attr_list;
 	int *coords;
+	int r;
 
 	walk_layer = qwalk_layer_create();
 	if (walk_layer == NULL) {
@@ -459,8 +460,11 @@ qwalk_layer_read() {
 			abort();
 		}
 		
-		qwalk_layer_object_set(walk_layer, coords[0], coords[1], attr_list);
-		
+		r = qwalk_layer_object_set(walk_layer, coords[0], coords[1], attr_list);
+		if (r == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+		}
+
 		free(coords);
 	}
 
@@ -469,11 +473,11 @@ qwalk_layer_read() {
 
 
 /**
- * Set an object in a #QwalkLayer_t.
+ * Set a #QwalkObj_t in a #QwalkLayer_t.
  * @param[out] walk_layer: relevant #QwalkLayer_t.
- * @param[in] y: #QwalkLayer_t->coord_y.
- * @param[in] x: #QwalkLayer_t->coord_x.
- * @param[out] attr_list: #QwalkLayer_t->attr_list
+ * @param[in] y: @ref QwalkObj_t.coord_y.
+ * @param[in] x: @ref QwalkObj_t.coord_x.
+ * @param[out] attr_list: @ref QwalkObj_t.attr_list.
  * @return #Q_OK or #Q_ERROR.
  */
 int

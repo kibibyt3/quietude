@@ -105,6 +105,54 @@ qattr_list_write(const QattrList_t *attr_list) {
 
 
 /**
+ * Read a #QattrList_t from storage.
+ * @return new #QattrList_t.
+ */
+QattrList_t *
+qattr_list_read() {
+	QattrList_t *attr_list;
+	size_t count;
+	QattrKey_t attr_key;
+	Qdatameta_t *datameta;
+	int r;
+
+	count = qfile_size_read();
+	if (count == (size_t) Q_ERRORCODE_SIZE) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+
+	attr_list = qattr_list_create(count);
+	if (attr_list == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		abort();
+	}
+
+	for (int i = 0; i < (int) count; i++) {
+		attr_key = qfile_qattr_key_read();
+		if (attr_key == (QattrKey_t) Q_ERRORCODE_ENUM) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			abort();
+		}
+		
+		datameta = qfile_qdatameta_read();
+		if (datameta == NULL) {
+			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);;
+			abort();
+		}
+
+		r = qattr_list_attr_set(attr_list, attr_key, datameta);
+		if (r == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			abort();
+		}
+	}
+
+	return attr_list;
+}
+
+
+/**
  * Fetch an attribute value
  * Fetches the value associated with a #QattrKey_t in a #QattrList_t.
  * @param[in] attr_key: key whose value is to be found

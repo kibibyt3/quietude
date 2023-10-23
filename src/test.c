@@ -164,21 +164,32 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 		assert(r != Q_ERROR);
 	}
 
-	QwalkArea_t *walk_area;
-	walk_area = qwalk_area_create(walk_layer_earth, walk_layer_floater);
-	assert(walk_area != NULL);
+	QwalkArea_t *walk_area, *walk_area1;
+	walk_area1 = qwalk_area_create(walk_layer_earth, walk_layer_floater);
+	assert(walk_area1 != NULL);
 	walk_layer_earth = NULL;
 	walk_layer_floater = NULL;
 
 	r = qfile_open(FILENAME, QFILE_MODE_WRITE);
 	assert(r != Q_ERROR);
 	
-	r = qwalk_area_write(walk_area);
+	r = qwalk_area_write(walk_area1);
 	assert(r != Q_ERROR);
 
 	r = qfile_close();
 	assert(r != Q_ERROR);
 
+	qwalk_area_destroy(walk_area1);
+	walk_area1 = NULL;
+	
+	r = qfile_open(FILENAME, QFILE_MODE_READ);
+	assert(r != Q_ERROR);
+	
+	walk_area = qwalk_area_read();
+	assert(walk_area != NULL);
+
+	r = qfile_close();
+	assert(r != Q_ERROR);
 
 	
 	Qdatameta_t *area_datameta;

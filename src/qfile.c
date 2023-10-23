@@ -18,6 +18,8 @@
 #include "qattr.h"
 #include "qfile.h"
 
+
+
 /**
  * Pointer to the current active file.
  * Modify via #qfile_open() and #qfile_close().
@@ -107,11 +109,12 @@ qfile_qdatameta_write(const Qdatameta_t *datameta) {
 		return Q_ERROR;
 	}
 	
-	data_written_count = fwrite((void *) (&datameta->count), 
-			sizeof(datameta->count),
-			(size_t) 1,
-			qfile_ptr);
-	if (data_written_count != (size_t) 1) {
+	if (qfile_size_write(datameta->count) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+
+	if (qfile_qdata_type_write(datameta->type) == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return Q_ERROR;
 	}
@@ -130,6 +133,11 @@ qfile_qdatameta_write(const Qdatameta_t *datameta) {
 }
 
 
+/**
+ * Write an @c int to the file open in qfile.
+ * @param[in] i: @c int to write.
+ * @return #Q_OK or #Q_ERROR.
+ */
 int
 qfile_int_write(int i) {
 	size_t data_written_count;
@@ -153,6 +161,10 @@ qfile_int_write(int i) {
 }
 
 
+/**
+ * Write a @c size_t to the file open in qfile.
+ * @return #Q_OK or #Q_ERROR.
+ */
 int
 qfile_size_write(size_t size) {
 	size_t data_written_count;
@@ -176,6 +188,37 @@ qfile_size_write(size_t size) {
 }
 
 
+/**
+ * Write a #QdataType_t to the file open in qfile.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+qfile_qdata_type_write(QdataType_t type) {
+	size_t data_written_count;
+
+	if (qfile_ptr == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+	if (qfile_mode != QFILE_MODE_WRITE) {
+		Q_ERRORFOUND(QERROR_FILE_MODE);
+		return Q_ERROR;
+	}
+
+	data_written_count = fwrite((void *) &type, sizeof(type), (size_t) 1, qfile_ptr);
+	if (data_written_count < (size_t) 1) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+	
+	return Q_OK;
+}
+
+
+/**
+ * Write a #QattrKey_t to the file open in qfile.
+ * @return #Q_OK or #Q_ERROR.
+ */
 int
 qfile_qattr_key_write(QattrKey_t attr_key) {
 	size_t data_written_count;
@@ -196,6 +239,165 @@ qfile_qattr_key_write(QattrKey_t attr_key) {
 	}
 	
 	return Q_OK;
+}
+
+
+/**
+ * Read a #Qdatameta_t from the file open in qfile.
+ * @return new #Qdatameta_t.
+ */
+Qdatameta_t *
+qfile_qdatameta_read() {
+	Qdatameta_t *datameta;
+	size_t count;
+	QdataType_t type;
+	Qdata_t *datap;
+
+	if (qfile_ptr == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return NULL;
+	}
+	if (qfile_mode != QFILE_MODE_READ) {
+		Q_ERRORFOUND(QERROR_FILE_MODE);
+		return NULL;
+	}
+
+	count = qfile_size_read();
+	if (count == (size_t) Q_ERRORCODE_SIZE) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+
+	type = qfile_qdata_type_read();
+	if (type == (QdataType_t) Q_ERRORCODE_ENUM) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+	if ((type < (QdataType_t) Q_ENUM_VALUE_START) || (type > QDATA_TYPE_COUNT)) {
+		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+		return NULL;
+	}
+
+	datap = qfile_qdata_read(type, count);
+	if (datap == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return NULL;
+	}
+
+	datameta = qdatameta_create(datap, type, count);
+	return datameta;
+}
+
+
+/**
+ * Read an @c int from the file open in qfile.
+ * @return newly-read @c int.
+ */
+int
+qfile_int_read() {
+	size_t data_read_count;
+	int i;
+
+	if (qfile_ptr == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		abort();
+	}
+	if (qfile_mode != QFILE_MODE_READ) {
+		Q_ERRORFOUND(QERROR_FILE_MODE);
+		abort();
+	}
+
+	data_read_count = fread((void *) &i, sizeof(i), (size_t) 1, qfile_ptr);
+	if (data_read_count < (size_t) 1) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+	
+	return i;
+}
+
+
+/**
+ * Read a @c size_t from the file open in qfile.
+ * @return newly-read @c size_t.
+ */
+size_t
+qfile_size_read() {
+	size_t data_read_count;
+	size_t size;
+
+	if (qfile_ptr == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return (size_t) Q_ERRORCODE_SIZE;
+	}
+	if (qfile_mode != QFILE_MODE_READ) {
+		Q_ERRORFOUND(QERROR_FILE_MODE);
+		return (size_t) Q_ERRORCODE_SIZE;
+	}
+
+	data_read_count = fread((void *) &size, sizeof(size), (size_t) 1, qfile_ptr);
+	if (data_read_count < (size_t) 1) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return (size_t) Q_ERRORCODE_SIZE;
+	}
+	
+	return size;
+}
+
+
+/**
+ * Read a #QdataType_t from the file open in qfile.
+ * @return newly-read #QdataType_t or #Q_ERRORCODE_ENUM.
+ */
+QdataType_t
+qfile_qdata_type_read() {
+	size_t data_read_count;
+	QdataType_t type;
+
+	if (qfile_ptr == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return (QdataType_t) Q_ERRORCODE_ENUM;
+	}
+	if (qfile_mode != QFILE_MODE_READ) {
+		Q_ERRORFOUND(QERROR_FILE_MODE);
+		return (QdataType_t) Q_ERRORCODE_ENUM;
+	}
+
+	data_read_count = fread((void *) &type, sizeof(type), (size_t) 1, qfile_ptr);
+	if (data_read_count < (size_t) 1) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return (QdataType_t) Q_ERRORCODE_ENUM;
+	}
+	
+	return type;
+}
+
+
+/**
+ * Read a #QattrKey_t from the file open in qfile.
+ * @return newly-read #QattrKey_t or #Q_ERRORCODE_ENUM.
+ */
+QattrKey_t
+qfile_qattr_key_read() {
+	size_t data_read_count;
+	QattrKey_t attr_key;
+
+	if (qfile_ptr == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return (QattrKey_t) Q_ERRORCODE_ENUM;
+	}
+	if (qfile_mode != QFILE_MODE_READ) {
+		Q_ERRORFOUND(QERROR_FILE_MODE);
+		return (QattrKey_t) Q_ERRORCODE_ENUM;
+	}
+
+	data_read_count = fread((void *) &attr_key, sizeof(attr_key), (size_t) 1, qfile_ptr);
+	if (data_read_count < (size_t) 1) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return (QattrKey_t) Q_ERRORCODE_ENUM;
+	}
+	
+	return attr_key;
 }
 
 

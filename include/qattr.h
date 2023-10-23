@@ -64,13 +64,16 @@ typedef struct QattrList_t {
 
 
 /** Return a newly-created attr list of a given size               */
-extern /*@null@*//*@partial@*/QattrList_t* qattr_list_create(size_t);
+extern /*@null@*//*@partial@*/QattrList_t *qattr_list_create(size_t);
 
 /** Free a given #QattrList_t from memory                          */
 extern int qattr_list_destroy(/*@only@*/QattrList_t *);
 
 /** Write a #QattrList_t to storage                                */
 extern int qattr_list_write(const QattrList_t *);
+
+/** Read a #QattrList_t from storage                               */
+extern /*@null@*//*@only@*/QattrList_t *qattr_list_read(void);
 
 /*
 ** Transfers control of a #Qattr_t to the caller *
