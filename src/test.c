@@ -179,7 +179,9 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	r = qfile_close();
 	assert(r != Q_ERROR);
 
-	qwalk_area_destroy(walk_area1);
+	r = qwalk_area_destroy(walk_area1);
+	assert(r != Q_ERROR);
+	
 	walk_area1 = NULL;
 	
 	r = qfile_open(FILENAME, QFILE_MODE_READ);
