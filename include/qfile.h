@@ -6,11 +6,13 @@
 
 
 
-#define QFILE_SAVES_DIR "saves"     /**< Directory in which to store saves */
-#define QFILE_WALK_NAME "qwalk.dat" /**< Filename for qwalk save data      */
-#define QFILE_TALK_NAME "qtalk.dat" /**< Filename for qtalk save data      */
-#define QFILE_CLI_NAME  "qcli.dat"  /**< Filename for qcli  save data      */
-#define QFILE_SAIL_NAME "qsail.dat" /**< Filename for qsail save data      */
+#define QFILE_SAVES_DIR "saves/"      /**< Directory in which to store saves. */
+#define QFILE_DEVEL_DIR "devel-utils/" /**< Parent directory for developer utils. */
+
+#define QFILE_SAVE_WALK "qwalk.sav" /**< Filename for qwalk save data. */
+#define QFILE_SAVE_TALK "qtalk.sav" /**< Filename for qtalk save data. */
+#define QFILE_SAVE_CLI  "qcli.sav"  /**< Filename for qcli  save data. */
+#define QFILE_SAVE_SAIL "qsail.sav" /**< Filename for qsail save data. */
 
 
 
