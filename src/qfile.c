@@ -1,9 +1,9 @@
 /**
  * @file qfile.c
  * Program file for the file module of Q.
- * Responsible for directly reading and writing to files. This module keeps the
- * current file for I/O operations at a global scope; this avoids the need to
- * open & close a file every time a lone datam needs to be written.
+ * Responsible for reading and writing binary information to files. This module
+ * keeps the current file for I/O operations at a global scope; this avoids the
+ * need to open & close a file every time a lone datam needs to be written.
  */
 
 
@@ -20,22 +20,22 @@
 
 
 
-/**
+/*
  * Pointer to the current active file.
- * Modify via #qfile_open() and #qfile_close().
+ * Modify via qfile_open() and qfile_close().
  */
 /*@null@*/static FILE *qfile_ptr;
 
-/** Current #QfileMode_t */
+/* Current #QfileMode_t */
 static QfileMode_t qfile_mode = QFILE_MODE_INACTIVE;
 
 
 
 /**
  * Opens a file for future access by the qfile module.
- * @param[in] filename: @c char* that the name of the file to be kept open
- * @param[in] mode: #QfileMode_t to open @c filename in
- * @return #Q_OK or #Q_ERROR
+ * @param[in] filename: name of the file to be kept open.
+ * @param[in] mode: #QfileMode_t to open @p filename in.
+ * @return #Q_OK or #Q_ERROR.
  */
 int
 qfile_open(char *filename, QfileMode_t mode) {
@@ -61,6 +61,7 @@ qfile_open(char *filename, QfileMode_t mode) {
 	return Q_OK;
 }
 
+
 /**
  * Closes the file opened in the qfile module.
  * @return #Q_OK or #Q_ERROR
@@ -82,6 +83,7 @@ qfile_close() {
 	qfile_mode = QFILE_MODE_INACTIVE;
 	return Q_OK;
 }
+
 
 /**
  * Write a #Qdatameta_t to the file open in qfile.
