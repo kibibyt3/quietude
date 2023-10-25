@@ -30,7 +30,12 @@ docs:
 	doxygen Doxyfile
 
 lint:
-	$(LINT.c) $(LINTFLAGS) $(GAME_SOURCES) $(TEST_SOURCES) $(DEVEL_SOURCES)
+	echo \
+		&& echo "---TEST LINT---" \
+		&& $(LINT.c) $(LINTFLAGS) $(GAME_SOURCES) $(TEST_SOURCES) \
+		&& echo \
+		&& echo "---DEVEL LINT---" \
+		&& $(LINT.c) $(LINTFLAGS) +partial $(GAME_SOURCES) $(DEVEL_SOURCES)
 
 $(GAME_OBJECTS): %.o: %.c
 
