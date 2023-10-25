@@ -13,6 +13,9 @@
 /** Minimum x/y coordinate value on a #QwalkLayer_t */
 #define QWALK_LAYER_COORD_MINIMUM 0
 
+/** Total amount of #QwalkLayer_t per #QwalkArea_t. */
+#define QWALK_AREA_TOTAL_LAYER_COUNT 2
+
 
 
 /**
