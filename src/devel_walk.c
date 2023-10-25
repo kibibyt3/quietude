@@ -24,12 +24,8 @@
 
 
 
-/*@only@*/static QwalkArea_t *walk_area;
-
-
-
-
 int main(int argc, char **argv) {
+	/*@only@*//*@null@*/static QwalkArea_t *walk_area = NULL;
 	int opt;
 	DevelWalkCmd_t cmd = DEVEL_WALK_CMD_INIT;
 	int r;
@@ -58,7 +54,6 @@ int main(int argc, char **argv) {
 			exit(EXIT_FAILURE);
 		}
 	}
-	
 	if (access(file_path, F_OK) != 0) {
 		walk_area = devel_walk_area_default_init();
 	}	else {
@@ -70,11 +65,12 @@ int main(int argc, char **argv) {
 
 	while (cmd != DEVEL_WALK_CMD_EXIT) {
 		
+		assert(walk_area != NULL);
 		r = devel_walkio_out(walk_area);
 		assert(r != Q_ERROR);
 		
 		cmd = devel_walkio_in();
-		assert((cmd >= Q_ENUM_VALUE_START) && (cmd <= DEVEL_WALK_CMD_INIT));
+		assert((cmd >= (DevelWalkCmd_t) Q_ENUM_VALUE_START) && (cmd <= DEVEL_WALK_CMD_INIT));
 
 		if (cmd != DEVEL_WALK_CMD_INIT) {		
 			r = devel_walkl_tick(walk_area, cmd);
