@@ -63,16 +63,16 @@ typedef struct QattrList_t {
 
 
 
-/** Return a newly-created attr list of a given size               */
+/** Return a newly-created attr list of a given size.                    */
 extern /*@null@*//*@partial@*/QattrList_t *qattr_list_create(size_t);
 
-/** Free a given #QattrList_t from memory                          */
+/** Free a given #QattrList_t from memory.                               */
 extern int qattr_list_destroy(/*@only@*/QattrList_t *);
 
-/** Write a #QattrList_t to storage                                */
+/** Write a #QattrList_t to storage.                                     */
 extern int qattr_list_write(const QattrList_t *);
 
-/** Read a #QattrList_t from storage                               */
+/** Read a #QattrList_t from storage.                                    */
 extern /*@null@*//*@only@*/QattrList_t *qattr_list_read(void);
 
 /*
@@ -80,8 +80,17 @@ extern /*@null@*//*@only@*/QattrList_t *qattr_list_read(void);
 extern *@null@*Qdatameta_t *qattr_list_attr_remove(QattrList_t *, QattrKey_t);
 */
 
-/** Returns the value associated with a key in a #QattrList_t      */
+/** Return the value associated with a key in a #QattrList_t.             */
 extern /*@null@*//*@observer@*/Qdatameta_t *qattr_list_value_get(/*@returned@*/QattrList_t *, QattrKey_t)/*@*/;
 
-/** Sets a #QattrKey_t/#Qdatameta_t pair in the given #QattrList_t */
+/** Return @ref QattrList_t.count.                                        */
+extern size_t qattr_list_count_get(const QattrList_t *)/*@*/;
+
+/** Return @ref QattrList_t.index_ok.                                     */
+extern size_t qattr_list_index_ok_get(const QattrList_t *)/*@*/;
+
+/** Return @ref Qattr_t.key from a #QattrList_t as addressed by an index. */
+extern QattrKey_t qattr_list_attr_key_get(const QattrList_t *, int)/*@*/;
+
+/** Set a #QattrKey_t/#Qdatameta_t pair in the given #QattrList_t.        */
 extern int qattr_list_attr_set(QattrList_t *, QattrKey_t, /*@only@*/Qdatameta_t *);

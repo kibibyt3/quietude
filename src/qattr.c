@@ -160,7 +160,7 @@ qattr_list_read() {
  * @return #Qdatameta_t containing the value or @c NULL if the key doesn't exist.
  */ 
 Qdatameta_t*
-qattr_list_value_get(QattrList_t* attr_list, QattrKey_t attr_key) {
+qattr_list_value_get(QattrList_t *attr_list, QattrKey_t attr_key) {
 
 	Qdatameta_t *value = NULL;
 	if (attr_list == NULL) {
@@ -175,6 +175,57 @@ qattr_list_value_get(QattrList_t* attr_list, QattrKey_t attr_key) {
 		}
 	}
 	return value;
+}
+
+
+/**
+ * Get @ref QattrList_t.count.
+ * @param[in] attr_list: relevant attr_list.
+ * @return @ref QattrList_t.count or #Q_ERRORCODE_SIZE.
+ */ 
+size_t
+qattr_list_count_get(const QattrList_t *attr_list) {
+	if (attr_list == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return (size_t) Q_ERRORCODE_SIZE;
+	}
+	return attr_list->count;
+}
+
+
+/**
+ * Get @ref QattrList_t.index_ok.
+ * @param[in] attr_list: relevant attr_list.
+ * @return @ref QattrList_t.index_ok or #Q_ERRORCODE_SIZE.
+ */ 
+size_t
+qattr_list_index_ok_get(const QattrList_t *attr_list) {
+	if (attr_list == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return (size_t) Q_ERRORCODE_SIZE;
+	}
+	return attr_list->index_ok;
+}
+
+
+/**
+ * Get @ref Qattr_t.key in a #QattrList_t from an index.
+ * @param[in] attr_list: relevant attr_list.
+ * @param[in] index: index of @ref Qattr_t.key in @p attr_list
+ * @return @ref Qattr_t.key or #Q_ERRORCODE_ENUM.
+ */ 
+QattrKey_t
+qattr_list_attr_key_get(const QattrList_t *attr_list, int index) {
+	if (attr_list == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return (QattrKey_t) Q_ERRORCODE_ENUM;
+	}
+	if (index >= qattr_list_index_ok_get(attr_list)) {
+		Q_ERRORFOUND(QERROR_INDEX_OUTOFRANGE);
+		return (QattrKey_t) Q_ERRORCODE_ENUM;
+	}
+
+	return attr_list->attrp[index].key;
 }
 
 
