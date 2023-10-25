@@ -85,7 +85,6 @@
 
 
 static QwalkCommand_t qwalk_input_to_command(int)/*@*/;
-static chtype         qwalk_obj_type_to_chtype(QobjType_t)/*@*/;
 
 
 
@@ -131,7 +130,6 @@ qwalk_input_subtick() {
  * Pass the subtick step of outputting the game state.
  * @return #Q_OK or #Q_ERROR.
  */
-/* TODO: create */
 int
 qwalk_output_subtick(const QwalkArea_t *walk_area) {
 	/*@observer@*/QattrList_t *layer_object_attr_list;
