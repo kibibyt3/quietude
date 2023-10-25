@@ -7,6 +7,7 @@
 
 
 
+
 /**
  * Type for holding attribute keys. This avoids needing to use char pointers or
  * char arrays which would consume excessive memory and result in needlessly
@@ -14,28 +15,96 @@
  */
 typedef enum QattrKey_t {
 
+	/**
+	 * @defgroup GeneralKeys General Attribute Keys
+	 * A #QattrKey_t whose usage is relevant across all modules.
+	 */
 	/* GENERAL ATTRIBUTE KEYS         */
 	
 	/**
-	 * #QobjType_t object type
+	 * @addtogroup GeneralKeys
+	 * #QobjType_t of parent.
 	 * This field <i>must</i> exist in any given #QattrList_t.
 	 */ 
 	QATTR_KEY_QOBJECT_TYPE = Q_ENUM_VALUE_START,
-	QATTR_KEY_NAME,                       /**< name of object */
-	QATTR_KEY_DESCRIPTION_BRIEF,          /**< brief description of object */
-	QATTR_KEY_DESCRIPTION_LONG,           /**< long description of object  */
-	/* QWALK-EXCLUSIVE ATTRIBUTE KEYS */ 
+	
+	/**
+	 * @addtogroup GeneralKeys
+	 * Name of object.
+	 */
+	QATTR_KEY_NAME,                      
+	
+	/**
+	 * @addtogroup GeneralKeys
+	 * Brief description of object.
+	 */
+	QATTR_KEY_DESCRIPTION_BRIEF,
 
+	/**
+	 * @addtogroup GeneralKeys
+	 * Long description of object.
+	 */
+	QATTR_KEY_DESCRIPTION_LONG,	
+	
+
+	/**
+	 * @defgroup QwalkKeys Qwalk-Exclusive Attribute Keys
+	 * A #QattrKey_t whose usage is exclusive to qwalk.
+	 */
+	/* QWALK-EXCLUSIVE ATTRIBUTE KEYS */ 
+	
+	/**
+	 * @addtogroup QwalkKeys 
+	 * Whether object can move.
+	 */
+	QATTR_KEY_CANMOVE,
+
+
+
+	/**
+	 * @defgroup QtalkKeys Qtalk-Exclusive Attribute Keys
+	 * A #QattrKey_t whose usage is exclusive to qwalk.
+	 */
 	/* QTALK-EXCLUSIVE ATTRIBUTE KEYS */
 
+
+
+	/**
+	 * @defgroup QCLIKeys QCLI-Exclusive Attribute Keys
+	 * A #QattrKey_t whose usage is exclusive to qcli.
+	 */
 	/* QCLI-EXLUSIVE ATTRIBUTE KEYS   */
 
+	
+	
+	/**
+	 * @defgroup QsailKeys Qsail-Exclusive Attribute Keys
+	 * A #QattrKey_t whose usage is exclusive to qsail.
+	 */
 	/* QSAIL_EXCLUSIVE ATTRIBUTE KEYS */
 
-	/* INTERNAL ATTRIBUTE KEYS        */
-	QATTR_KEY_EMPTY,                     /**< key for an empty (i.e. @c NULL) attribute */
-	QATTR_KEY_DEBUG,                     /**< test key for debugging                    */
+
+
 	/**
+	 * @defgroup InternalKeys Internal Attribute Keys
+	 * A #QattrKey_t whose usage is for error-checking, debugging, etc.
+	 */
+	/* INTERNAL ATTRIBUTE KEYS        */
+	
+	/** 
+	 * @addtogroup InternalKeys
+	 * Key for an empty (i.e. @c NULL) attribute.
+	 */
+	QATTR_KEY_EMPTY,                     
+	
+	/**
+	 * @addtogroup InternalKeys
+	 * Test key for debugging.
+	 */
+	QATTR_KEY_DEBUG,                     
+	
+	/**
+	 * @addtogroup InternalKeys
 	 * Number of allowed values for #QattrKey_t.
 	 * Must be defined via the second-to-last enum.
 	 */
