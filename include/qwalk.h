@@ -156,3 +156,5 @@ extern /*@null@*//*@observer@*/QattrList_t *qwalk_layer_object_attr_list_get(/*@
 extern int qwalk_coords_to_index(int, int)/*@*/;
 
 extern int *qwalk_index_to_coords(int)/*@*/;
+
+extern bool qwalk_logic_coords_arevalid(int, int)/*@*/;

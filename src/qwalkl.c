@@ -89,7 +89,7 @@ static           int         qwalk_logic_find_qobj_index(/*@null@*/QobjType_t *,
 
 static                       Qdirection_t qwalk_logic_command_move_to_direction(QwalkCommand_t)/*@*/;
 
-static           bool qwalk_logic_coords_arevalid(int, int)/*@*/;
+
 
 
 /**
