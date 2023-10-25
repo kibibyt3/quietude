@@ -19,7 +19,7 @@ all: test devel_walk
 test: $(GAME_OBJECTS) $(TEST_OBJECTS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
 
-devel_walk: $(GAME_OBJECTS) $(TEST_OBJECTS) $(DEVEL_OBJECTS)
+devel_walk: $(GAME_OBJECTS) $(DEVEL_OBJECTS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
 
 clean:
