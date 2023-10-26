@@ -20,13 +20,85 @@
 
 
 
+/**
+ * @defgroup DevelWalkInputChars devel_walk Input Characters
+ * Characters meant to be input by the user in devel_walk.
+ */
+
+
+
+/**
+ * @ingroup DevelWalkInputChars
+ * Input character for #DEVEL_WALK_CMD_CURSOR_MOVE_NORTH.
+ */
+#define DEVEL_WALK_ICH_CURSOR_MOVE_NORTH      'w'
+
+/**
+ * @ingroup DevelWalkInputChars
+ * Input character for #DEVEL_WALK_CMD_CURSOR_MOVE_SOUTH.
+ */
+#define DEVEL_WALK_ICH_CURSOR_MOVE_SOUTH      's'
+
+/**
+ * @ingroup DevelWalkInputChars
+ * Input character for #DEVEL_WALK_CMD_CURSOR_MOVE_EAST.
+ */
+#define DEVEL_WALK_ICH_CURSOR_MOVE_EAST       'd'
+
+/**
+ * @ingroup DevelWalkInputChars
+ * Input character for #DEVEL_WALK_CMD_CURSOR_MOVE_WEST.
+ */
+#define DEVEL_WALK_ICH_CURSOR_MOVE_WEST       'a'
+
+/**
+ * @ingroup DevelWalkInputChars
+ * Input character for #DEVEL_WALK_CMD_CURSOR_TOGGLE_ALTITUDE.
+ */
+#define DEVEL_WALK_ICH_CURSOR_TOGGLE_ALTITUDE 'z'
+
+/**
+ * @ingroup DevelWalkInputChars
+ * Input character for #DEVEL_WALK_CMD_COPY.
+ */
+#define DEVEL_WALK_ICH_COPY                   'c'
+
+/**
+ * @ingroup DevelWalkInputChars
+ * Input character for #DEVEL_WALK_CMD_PASTE.
+ */
+#define DEVEL_WALK_ICH_PASTE                  'v'
+
+/**
+ * @ingroup DevelWalkInputChars
+ * Input character for #DEVEL_WALK_CMD_EDIT.
+ */
+#define DEVEL_WALK_ICH_EDIT                   'e'
+
+/**
+ * @ingroup DevelWalkInputChars
+ * Input character for #DEVEL_WALK_CMD_SAVE.
+ */
+#define DEVEL_WALK_ICH_SAVE                   'x'
+
+/**
+ * @ingroup DevelWalkInputChars
+ * Input character for #DEVEL_WALK_CMD_EXIT.
+ */
+#define DEVEL_WALK_ICH_EXIT                   'q'
+
+
+
+/** The window that outputs the #QwalkArea_t.              */
 /*@null@*/static WINDOW *area_win = NULL;
+/** The window that outputs the relevant #QattrList_t. */
 /*@null@*/static WINDOW *info_win = NULL;
 
 
 
 static int devel_walkio_area_out(const QwalkArea_t *, const int *); 
 static int devel_walkio_info_out(const QwalkArea_t *, const int *);
+static DevelWalkCmd_t devel_walkio_input_to_command(int ch);
 
 
 
@@ -218,6 +290,12 @@ devel_walkio_area_out(const QwalkArea_t *walk_area, const int *curs_loc) {
 }
 
 
+/**
+ * Output the #QattrList_t of a specific #QwalkObj_t.
+ * @param[in] walk_area: #QwalkArea_t to operate with.
+ * @param[in] curs_loc:  y, x, z coords of the cursor.
+ * @return #Q_OK or #Q_ERROR.
+ */
 int
 devel_walkio_info_out(const QwalkArea_t *walk_area, const int *curs_loc) {
 	
@@ -294,4 +372,51 @@ devel_walkio_info_out(const QwalkArea_t *walk_area, const int *curs_loc) {
 	}
 
 	return returnval;
+}
+
+
+
+/**
+ * Convert a raw player input to a #DevelWalkCmd_t.
+ * @param[in] ch: raw input character from e.g. `getch()`.
+ * @return #DevelWalkCmd_t associated with @p ch.
+ */
+DevelWalkCmd_t
+devel_walkio_input_to_command(int ch) {
+	switch (ch) {
+	
+	case DEVEL_WALK_ICH_CURSOR_MOVE_NORTH:
+		return DEVEL_WALK_CMD_CURSOR_MOVE_NORTH;
+	
+	case DEVEL_WALK_ICH_CURSOR_MOVE_SOUTH:
+		return DEVEL_WALK_CMD_CURSOR_MOVE_SOUTH;
+	
+	case DEVEL_WALK_ICH_CURSOR_MOVE_EAST:
+		return DEVEL_WALK_CMD_CURSOR_MOVE_EAST;
+	
+	case DEVEL_WALK_ICH_CURSOR_MOVE_WEST:
+		return DEVEL_WALK_CMD_CURSOR_MOVE_WEST;
+	
+	case DEVEL_WALK_ICH_CURSOR_TOGGLE_ALTITUDE:
+		return DEVEL_WALK_CMD_CURSOR_TOGGLE_ALTITUDE;
+	
+	case DEVEL_WALK_ICH_COPY:
+		return DEVEL_WALK_CMD_COPY;
+	
+	case DEVEL_WALK_ICH_PASTE:
+		return DEVEL_WALK_CMD_PASTE;
+	
+	case DEVEL_WALK_ICH_EDIT:
+		return DEVEL_WALK_CMD_EDIT;
+	
+	case DEVEL_WALK_ICH_SAVE:
+		return DEVEL_WALK_CMD_SAVE;
+	
+	case DEVEL_WALK_ICH_EXIT:
+		return DEVEL_WALK_CMD_EXIT;
+	
+	default:
+		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+		return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
+	}
 }
