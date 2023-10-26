@@ -20,13 +20,13 @@
 
 
 
-/*
+/**
  * Pointer to the current active file.
  * Modify via qfile_open() and qfile_close().
  */
 /*@null@*/static FILE *qfile_ptr;
 
-/* Current #QfileMode_t */
+/** Current #QfileMode_t */
 static QfileMode_t qfile_mode = QFILE_MODE_INACTIVE;
 
 
@@ -38,7 +38,7 @@ static QfileMode_t qfile_mode = QFILE_MODE_INACTIVE;
  * @return #Q_OK or #Q_ERROR.
  */
 int
-qfile_open(char *filename, QfileMode_t mode) {
+qfile_open(const char *filename, QfileMode_t mode) {
 	if (qfile_mode != QFILE_MODE_INACTIVE) {
 		Q_ERRORFOUND(QERROR_MODULE_UNINITIALIZED);
 		return Q_ERROR;
