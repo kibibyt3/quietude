@@ -66,7 +66,8 @@ typedef enum QdataType_t {
 	/* standard types */
 	QDATA_TYPE_INT = Q_ENUM_VALUE_START, /**< @c int type   */
 	QDATA_TYPE_FLOAT,                    /**< @c float type */
-	
+	QDATA_TYPE_BOOL,                     /**< @c bool type  */
+
 	/** `int *` type (when representing characters)
 	 *  Usage of this type should be strictly external; inside-facing character
 	 *  representations should use `char *` instead to save memory usage.

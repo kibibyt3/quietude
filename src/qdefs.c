@@ -6,8 +6,9 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <ncurses.h>
+#include <stdbool.h>
 #include <assert.h>
+#include <ncurses.h>
 
 #include "qdefs.h"
 #include "qerror.h"
@@ -100,6 +101,8 @@ qdata_type_size_get(QdataType_t data_type) {
 		return sizeof(int);
 	case QDATA_TYPE_FLOAT:
 		return sizeof(float);
+	case QDATA_TYPE_BOOL:
+		return sizeof(bool);
 	case QDATA_TYPE_INT_STRING:
 		return sizeof(int);
 	case QDATA_TYPE_CHAR_STRING:
