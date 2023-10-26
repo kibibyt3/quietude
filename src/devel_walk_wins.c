@@ -11,7 +11,9 @@
 
 
 
-#define DEVEL_WALK_AREA_INFO_WIN_COLS 80
+#define DEVEL_WALK_AREA_INFO_WIN_COLS 80 /**< Total width of the info window. */
+
+/** Total width of the window to hold the border of the info window. */
 #define DEVEL_WALK_AREA_INFO_WIN_BORDER_COLS (DEVEL_WALK_AREA_INFO_WIN_COLS + 2)
 
 
@@ -23,10 +25,10 @@ extern int /*@alt void@*/wborder(WINDOW *, chtype, chtype, chtype, chtype, chtyp
 
 /**
  * Initialize @c WINDOW types for devel_walk.
- * @param[out] area_win: @c WINDOW to output the relevant #QwalkArea_t.
- * @param[out] area_border_win: @c WINDOW to draw @p area_win border.
- * @param[out] info_win: @c WINDOW to output #QwalkObj_t info.
- * @param[out] info_border_win: @c WINDOW to draw @p info_win border.
+ * @param[out] area_winp: @c WINDOW to output the relevant #QwalkArea_t.
+ * @param[out] area_border_winp: @c WINDOW to draw @p area_win border.
+ * @param[out] info_winp: @c WINDOW to output #QwalkObj_t info.
+ * @param[out] info_border_winp: @c WINDOW to draw @p info_win border.
  * @return #Q_OK or #Q_ERROR.
  */
 int
@@ -67,10 +69,10 @@ devel_walk_wins_init(WINDOW **area_winp, WINDOW **area_border_winp,
 
 /**
  * Close @c WINDOW types for devel_walk.
- * @param[out] area_win: @c WINDOW for #QwalkArea_t output.
- * @param[out] area_border_win: @c WINDOW for drawing @p area_win border.
- * @param[out] info_win: @c WINDOW for #QwalkObj_t info output.
- * @param[out] info_border_win: @c WINDOW for drawing @p info_win border.
+ * @param[out] area_winp: @c WINDOW for #QwalkArea_t output.
+ * @param[out] area_border_winp: @c WINDOW for drawing @p area_win border.
+ * @param[out] info_winp: @c WINDOW for #QwalkObj_t info output.
+ * @param[out] info_border_winp: @c WINDOW for drawing @p info_win border.
  * @return #Q_OK or #Q_ERROR.
  */
 int
