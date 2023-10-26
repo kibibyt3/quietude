@@ -217,7 +217,7 @@ qwalk_output_subtick(const QwalkArea_t *walk_area) {
 
 /**
  * Convert a raw player input to a #QwalkCommand_t.
- * @param[in] ch: raw input character from e.g. getch().
+ * @param[in] ch: raw input character from e.g. `getch()`.
  * @return #QwalkCommand_t associated with @p ch.
  */
 QwalkCommand_t
