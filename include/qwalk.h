@@ -56,6 +56,7 @@ typedef struct QwalkObj_t {
 	QattrList_t *attr_list;
 } QwalkObj_t;
 
+
 /**
  * A lone z-level of a playable area in the qwalk module.
  */
@@ -64,6 +65,23 @@ typedef struct QwalkLayer_t {
 	/*@only@*/QwalkObj_t *objects;
 	int index_ok; /**< next available index. */
 } QwalkLayer_t;
+
+
+/**
+ * Specific layer type.
+ */
+typedef enum QwalkLayerType_t {
+
+	/** @ref QwalkArea_t.layer_earth. */
+	QWALK_LAYER_TYPE_EARTH = Q_ENUM_VALUE_START, 
+	
+	/** @ref QwalkArea_t.layer_floater. */
+	QWALK_LAYER_TYPE_FLOATER,
+
+	/** Number of possible values for a #QwalkLayerType_t. */
+	QWALK_LAYER_TYPE_COUNT = QWALK_LAYER_TYPE_FLOATER
+} QwalkLayerType_t;
+
 
 /**
  * A full playable area in qwalk.
