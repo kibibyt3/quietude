@@ -11,7 +11,7 @@ GAME_SOURCES = $(GAME_OBJECTS:.o=.c)
 TEST_OBJECTS = ./src/test.o
 TEST_SOURCES = $(TEST_OBJECTS:.o=.c)
 
-DEVEL_OBJECTS = ./src/devel_walkio.o ./src/devel_walk.o
+DEVEL_OBJECTS = ./src/devel_walk_wins.o ./src/devel_walkio.o ./src/devel_walk.o
 DEVEL_SOURCES = $(DEVEL_OBJECTS:.o=.c)
 
 all: test devel_walk
