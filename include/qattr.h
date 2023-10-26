@@ -7,6 +7,50 @@
 
 
 
+/*************************************************** 
+ * DEFAULT QWALK QattrKey_t VALUES                 
+ ***************************************************/
+
+/* DEFAULT QattrKey_t VALUES FOR THE EARTH LAYER   */
+
+#define QATTR_KEY_QOBJECT_TYPE_QWALK_DEFAULT_EARTH \
+QOBJ_TYPE_GRASS
+
+#define QATTR_KEY_NAME_DEFAULT_QWALK_DEFAULT_EARTH \
+"grass"
+
+#define QATTR_KEY_DESCRIPTION_BRIEF_QWALK_DEFAULT_EARTH \
+"A patch of grass"
+
+#define QATTR_KEY_DESCRIPTION_LONG_QWALK_DEFAULT_EARTH \
+"Long limbs and threads of a varying greenbrown grasp longingly from the " \
+"earth. You wonder if they march toward you."
+
+#define QATTR_KEY_CANMOVE_QWALK_DEFAULT_EARTH \
+false;
+
+
+
+/* DEFAULT QattrKey_t VALUES FOR THE FLOATER LAYER */
+
+#define QATTR_KEY_QOBJECT_TYPE_QWALK_DEFAULT_FLOATER \
+QOBJ_TYPE_VOID
+
+#define QATTR_KEY_NAME_DEFAULT_QWALK_DEFAULT_FLOATER \
+"void"
+
+#define QATTR_KEY_DESCRIPTION_BRIEF_QWALK_DEFAULT_FLOATER \
+"An empty space"
+
+#define QATTR_KEY_DESCRIPTION_LONG_QWALK_DEFAULT_FLOATER \
+"The wind here whirls in a mundane miniature vortex. You know this. You can " \
+"smell it."
+
+#define QATTR_KEY_CANMOVE_QWALK_DEFAULT_FLOATER \
+true;
+
+
+
 
 /**
  * Type for holding attribute keys. This avoids needing to use char pointers or
