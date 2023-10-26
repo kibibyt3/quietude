@@ -13,19 +13,24 @@
 
 /* DEFAULT QattrKey_t VALUES FOR THE EARTH LAYER   */
 
+/** Default value for #QATTR_KEY_QOBJECT_TYPE in #QWALK_LAYER_TYPE_EARTH. */
 #define QATTR_KEY_QOBJECT_TYPE_QWALK_DEFAULT_EARTH \
 QOBJ_TYPE_GRASS
 
+/** Default value for #QATTR_KEY_NAME in #QWALK_LAYER_TYPE_EARTH. */
 #define QATTR_KEY_NAME_DEFAULT_QWALK_DEFAULT_EARTH \
 "grass"
 
+/** Default value for #QATTR_KEY_DESCRIPTION_BRIEF in #QWALK_LAYER_TYPE_EARTH. */
 #define QATTR_KEY_DESCRIPTION_BRIEF_QWALK_DEFAULT_EARTH \
 "A patch of grass"
 
+/** Default value for #QATTR_KEY_DESCRIPTION_LONG in #QWALK_LAYER_TYPE_EARTH. */
 #define QATTR_KEY_DESCRIPTION_LONG_QWALK_DEFAULT_EARTH \
 "Long limbs and threads of a varying greenbrown grasp longingly from the " \
 "earth. You wonder if they march toward you."
 
+/** Default value for #QATTR_KEY_CANMOVE in #QWALK_LAYER_TYPE_EARTH. */
 #define QATTR_KEY_CANMOVE_QWALK_DEFAULT_EARTH \
 false;
 
@@ -33,19 +38,24 @@ false;
 
 /* DEFAULT QattrKey_t VALUES FOR THE FLOATER LAYER */
 
+/** Default value for #QATTR_KEY_QOBJECT_TYPE in #QWALK_LAYER_TYPE_FLOATER. */
 #define QATTR_KEY_QOBJECT_TYPE_QWALK_DEFAULT_FLOATER \
 QOBJ_TYPE_VOID
 
+/** Default value for #QATTR_KEY_NAME in #QWALK_LAYER_TYPE_FLOATER. */
 #define QATTR_KEY_NAME_DEFAULT_QWALK_DEFAULT_FLOATER \
 "void"
 
+/** Default value for #QATTR_KEY_DESCRIPTION_LONG in #QWALK_LAYER_TYPE_FLOATER. */
 #define QATTR_KEY_DESCRIPTION_BRIEF_QWALK_DEFAULT_FLOATER \
 "An empty space"
 
+/** Default value for #QATTR_KEY_DESCRIPTION_BRIEF in #QWALK_LAYER_TYPE_FLOATER. */
 #define QATTR_KEY_DESCRIPTION_LONG_QWALK_DEFAULT_FLOATER \
 "The wind here whirls in a mundane miniature vortex. You know this. You can " \
 "smell it."
 
+/** Default value for #QATTR_KEY_CANMOVE in #QWALK_LAYER_TYPE_FLOATER. */
 #define QATTR_KEY_CANMOVE_QWALK_DEFAULT_FLOATER \
 true;
 
