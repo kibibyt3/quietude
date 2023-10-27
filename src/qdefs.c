@@ -4,6 +4,8 @@
  * Logic for game-wide types.
  */
 
+
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -16,6 +18,8 @@
 #include "mode.h"
 #include "qattr.h"
 #include "qwalk.h"
+
+
 
 /**
  * Create a #Qdatameta_t.
@@ -38,6 +42,7 @@ qdatameta_create(Qdata_t *datap, QdataType_t type, size_t count) {
 	datameta->type = type;
 	return datameta;
 }
+
 
 /**
  * Recursively destroy a #Qdatameta_t.
@@ -83,6 +88,7 @@ qdatameta_destroy(Qdatameta_t *datameta) {
 	free(datameta);
 	return Q_OK;
 }
+
 
 /**
  * Get the size of a #QdataType_t.
@@ -160,4 +166,19 @@ qdatameta_type_get(const Qdatameta_t *datameta) {
 		return (QdataType_t) Q_ERRORCODE_ENUM;
 	}
 	return datameta->type;
+}
+
+
+/**
+ * Convert a @c bool to a `char *`.
+ * @param[in] b: relevant @c bool.
+ * @return @c char * version of @p b.
+ */
+char *
+bool_to_string(bool b) {
+	if (b) {
+		return BOOL_STRING_TRUE;
+	} else {
+		return BOOL_STRING_FALSE;
+	}
 }

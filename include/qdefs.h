@@ -1,9 +1,13 @@
 /**
  * @file qdefs.h
- * Header file for game-wide definitions. Depends on stdint.h.
+ * Header file for game-wide definitions. Depends on stdint.h and stdbool.h.
  */
 
 
+/** `char *` version of `true`. */
+#define BOOL_STRING_TRUE  "true"
+/** `char *` version of `false`. */
+#define BOOL_STRING_FALSE "false"
 
 
 #define Q_OK     0          /**< Generic OK return code for Q    */
@@ -163,3 +167,6 @@ extern QdataType_t qdatameta_type_get(const Qdatameta_t *)/*@*/;
 
 /** Get the size of a #QdataType_t */
 extern size_t qdata_type_size_get(QdataType_t)/*@*/;
+
+/** Convert a bool to a string.    */
+/*@unused@*/extern /*@observer@*/char *bool_to_string(bool)/*@*/;
