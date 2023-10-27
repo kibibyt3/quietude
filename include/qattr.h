@@ -76,26 +76,26 @@ typedef enum QattrKey_t {
 	/* GENERAL ATTRIBUTE KEYS         */
 	
 	/**
-	 * @addtogroup GeneralKeys
+	 * @ingroup GeneralKeys
 	 * #QobjType_t of parent.
 	 * This field <i>must</i> exist in any given #QattrList_t.
 	 */ 
 	QATTR_KEY_QOBJECT_TYPE = Q_ENUM_VALUE_START,
 	
 	/**
-	 * @addtogroup GeneralKeys
+	 * @ingroup GeneralKeys
 	 * Name of object.
 	 */
 	QATTR_KEY_NAME,                      
 	
 	/**
-	 * @addtogroup GeneralKeys
+	 * @ingroup GeneralKeys
 	 * Brief description of object.
 	 */
 	QATTR_KEY_DESCRIPTION_BRIEF,
 
 	/**
-	 * @addtogroup GeneralKeys
+	 * @ingroup GeneralKeys
 	 * Long description of object.
 	 */
 	QATTR_KEY_DESCRIPTION_LONG,	
@@ -108,7 +108,7 @@ typedef enum QattrKey_t {
 	/* QWALK-EXCLUSIVE ATTRIBUTE KEYS */ 
 	
 	/**
-	 * @addtogroup QwalkKeys 
+	 * @ingroup QwalkKeys 
 	 * Whether object can move.
 	 */
 	QATTR_KEY_CANMOVE,
@@ -146,25 +146,73 @@ typedef enum QattrKey_t {
 	/* INTERNAL ATTRIBUTE KEYS        */
 	
 	/** 
-	 * @addtogroup InternalKeys
+	 * @ingroup InternalKeys
 	 * Key for an empty (i.e. @c NULL) attribute.
 	 */
 	QATTR_KEY_EMPTY,                     
 	
 	/**
-	 * @addtogroup InternalKeys
+	 * @ingroup InternalKeys
 	 * Test key for debugging.
 	 */
 	QATTR_KEY_DEBUG,                     
 	
 	/**
-	 * @addtogroup InternalKeys
+	 * @ingroup InternalKeys
 	 * Number of allowed values for #QattrKey_t.
 	 * Must be defined via the second-to-last enum.
 	 */
 	QATTR_KEY_COUNT = QATTR_KEY_DEBUG
 	
 } QattrKey_t;
+
+
+/**
+ * @defgroup AttrKeyStrings Qattr_t Key Strings
+ * For use in converting #QattrKey_t values to string (@c char *) values.
+ */
+
+/**
+ * @ingroup AttrKeyStrings
+ * String for #QATTR_KEY_QOBJECT_TYPE.
+ */
+#define QATTR_STRING_KEY_QOBJECT_TYPE      "object type"
+/**
+ * @ingroup AttrKeyStrings
+ * String for #QATTR_KEY_NAME.
+ */
+#define QATTR_STRING_KEY_NAME              "name"
+/**
+ * @ingroup AttrKeyStrings
+ * String for #QATTR_KEY_DESCRIPTION_LONG.
+ */
+#define QATTR_STRING_KEY_DESCRIPTION_BRIEF "brief description"
+/**
+ * @ingroup AttrKeyStrings
+ * String for #QATTR_KEY_DESCRIPTION_LONG.
+ */
+#define QATTR_STRING_KEY_DESCRIPTION_LONG  "long description"
+/**
+ * @ingroup AttrKeyStrings
+ * String for #QATTR_KEY_CANMOVE.
+ */
+#define QATTR_STRING_KEY_CANMOVE           "can move"
+/**
+ * @ingroup AttrKeyStrings
+ * String for #QATTR_KEY_EMPTY.
+ */
+#define QATTR_STRING_KEY_EMPTY             "empty"
+/**
+ * @ingroup AttrKeyStrings
+ * String for #QATTR_KEY_DEBUG.
+ */
+#define QATTR_STRING_KEY_DEBUG             "debug"
+/**
+ * @ingroup AttrKeyStrings
+ * String for an unrecognized #QattrKey_t.
+ */
+#define QATTR_STRING_KEY_UNRECOGNIZED      "KEY NOT RECOGNIZED!"
+
 
 /**
  * Type for holding attribute pairs.
@@ -173,6 +221,7 @@ typedef struct Qattr_t {
 	QattrKey_t    key;    /**< Key to address the value by */
 	/*@only@*/Qdatameta_t  *valuep; /**< Value to hold the proper data for the attribute */
 } Qattr_t;
+
 
 /**
  * Type for holding a collection of attributes.
@@ -217,3 +266,6 @@ extern /*@null@*//*@observer@*/Qdatameta_t *qattr_list_value_get(/*@returned@*/Q
 
 /** Set a #QattrKey_t/#Qdatameta_t pair in the given #QattrList_t.        */
 extern int qattr_list_attr_set(QattrList_t *, QattrKey_t, /*@only@*/Qdatameta_t *);
+
+/** Convert a #QattrKey_t to a @c char *.                                 */
+/*@observer@*//*@unused@*/extern char *qattr_key_to_string(QattrKey_t)/*@*/;

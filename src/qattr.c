@@ -14,6 +14,7 @@
 #include "qfile.h"
 
 
+
 /**
  * Create a #QattrList_t
  * Allocates memory for a new #QattrList_t of a given size.
@@ -278,4 +279,33 @@ qattr_list_attr_set(QattrList_t *attr_list, QattrKey_t attr_key, Qdatameta_t *da
 	attr_list->attrp[index_free].valuep = datameta;
 	(attr_list->index_ok)++; /* Index is no longer available; move to the next */
 	return Q_OK;
+}
+
+
+/**
+ * Convert a #QattrKey_t to a @c char * from @ref AttrKeyStrings.
+ * @param[in] key: relevant #QattrKey_t.
+ * @return string @p key or #QATTR_STRING_KEY_UNRECOGNIZED.
+ */
+char *
+qattr_key_to_string(QattrKey_t key) {
+	switch (key) {
+		case QATTR_KEY_QOBJECT_TYPE:
+			return QATTR_STRING_KEY_QOBJECT_TYPE;
+		case QATTR_KEY_NAME:
+			return QATTR_STRING_KEY_NAME;
+		case QATTR_KEY_DESCRIPTION_BRIEF:
+			return QATTR_STRING_KEY_DESCRIPTION_BRIEF;
+		case QATTR_KEY_DESCRIPTION_LONG:
+			return QATTR_STRING_KEY_DESCRIPTION_LONG;
+		case QATTR_KEY_CANMOVE:
+			return QATTR_STRING_KEY_CANMOVE;
+		case QATTR_KEY_EMPTY:
+			return QATTR_STRING_KEY_EMPTY;
+		case QATTR_KEY_DEBUG:
+			return QATTR_STRING_KEY_DEBUG;
+		default:
+			Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+			return QATTR_STRING_KEY_UNRECOGNIZED;
+	}
 }
