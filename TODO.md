@@ -21,4 +21,6 @@
 - [x] rewrite the `Qdatameta\_t` interface such that datap is never calloc'd directly; it should just store a pointer to the beginning of the data
   - [x] rewrite `qfile`'s read function such that it creates a new Qdatameta\_t.
     Note: This was implemented differently. Instead, it merely creates a new `Qdata\_t *` to give to the `Qdatameta_t` constructor function.
-- [ ] make qwalk be able to generate a save file from a human-readable data file 
+- [x] make qwalk be able to generate a save file from a human-readable data file 
+  - Note: in the end, it proved more sensible to not implement this functionality.
+- [ ] add editing functionality to devel\_walk.
