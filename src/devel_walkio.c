@@ -89,7 +89,7 @@
 
 
 
-/** The window that outputs the #QwalkArea_t.              */
+/** The window that outputs the #QwalkArea_t.          */
 /*@null@*/static WINDOW *area_win = NULL;
 /** The window that outputs the relevant #QattrList_t. */
 /*@null@*/static WINDOW *info_win = NULL;
@@ -106,7 +106,32 @@ static DevelWalkCmd_t devel_walkio_input_to_command(int ch);
  * Initialize devel_walkio.
  */
 int
-devel_walkio_init(WINDOW *area_argwin, WINDOW *info_argwin) {
+devel_walkio_init() {
+	int returnval = Q_OK;
+	if (initscr() == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+	if (noecho() == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+	if (cbreak() == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+	return returnval;
+}
+
+
+/**
+ * Set the devel_walkio @c WINDOW vars.
+ * @param[out] area_argwin: window to output the #QwalkArea_t.
+ * @param[out] info_argwin: window to output the relevant #QattrList_t.
+ * return #Q_OK or #Q_ERROR.
+ */
+int
+devel_walkio_wins_init(WINDOW *area_argwin, WINDOW *info_argwin) {
 	if ((area_argwin == NULL) || (info_argwin == NULL)) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
@@ -120,11 +145,16 @@ devel_walkio_init(WINDOW *area_argwin, WINDOW *info_argwin) {
 	return Q_OK;
 }
 
+
 /**
  * Terminate devel_walkio.
  */
 int
 devel_walkio_end() {
+	if (endwin() == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
 	return Q_OK;
 }
 
@@ -178,6 +208,14 @@ devel_walkio_out(const QwalkArea_t *walk_area, const int *curs_loc) {
 		returnval = Q_ERROR;
 	}
 
+	if (wrefresh(info_win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+	if (wrefresh(area_win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
 	return returnval;
 }
 
@@ -318,6 +356,11 @@ devel_walkio_info_out(const QwalkArea_t *walk_area, const int *curs_loc) {
 		return Q_ERROR;
 	}
 
+	if (wclear(info_win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+
 	if (curs_loc[2] == 0) {
 		layer_active = qwalk_area_layer_earth_get(walk_area);
 	}
@@ -365,7 +408,7 @@ devel_walkio_info_out(const QwalkArea_t *walk_area, const int *curs_loc) {
 			return Q_ERROR;
 		}
 
-		if (wprintw(info_win, "%i : %i\n", (int) key, *((int *) datap)) == ERR) {
+		if (wprintw(info_win, "%s : %i\n", qattr_key_to_string(key), *((int *) datap)) == ERR) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 			returnval = Q_ERROR;
 		}

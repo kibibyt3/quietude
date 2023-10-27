@@ -24,7 +24,7 @@ extern int /*@alt void@*/wborder(WINDOW *, chtype, chtype, chtype, chtype, chtyp
 
 
 /**
- * Initialize @c WINDOW types for devel_walk.
+ * Initialize ncurses and @c WINDOW types for devel_walk.
  * @param[out] area_winp: @c WINDOW to output the relevant #QwalkArea_t.
  * @param[out] area_border_winp: @c WINDOW to draw @p area_win border.
  * @param[out] info_winp: @c WINDOW to output #QwalkObj_t info.
@@ -34,6 +34,8 @@ extern int /*@alt void@*/wborder(WINDOW *, chtype, chtype, chtype, chtype, chtyp
 int
 devel_walk_wins_init(WINDOW **area_winp, WINDOW **area_border_winp,
 		WINDOW **info_winp, WINDOW **info_border_winp) {
+
+	int returnval = Q_OK;
 	*area_border_winp = newwin(LINES, (COLS - DEVEL_WALK_AREA_INFO_WIN_BORDER_COLS), 0, 0);
 	if (*area_border_winp == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
@@ -48,8 +50,8 @@ devel_walk_wins_init(WINDOW **area_winp, WINDOW **area_border_winp,
 		abort();
 	}
 	
-	*info_border_winp = newwin(LINES, DEVEL_WALK_AREA_INFO_WIN_BORDER_COLS + 2,
-			0, (COLS - 1) - (DEVEL_WALK_AREA_INFO_WIN_BORDER_COLS + 2));
+	*info_border_winp = newwin(LINES, DEVEL_WALK_AREA_INFO_WIN_BORDER_COLS,
+			0, COLS - DEVEL_WALK_AREA_INFO_WIN_BORDER_COLS);
 	if (*info_border_winp == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		abort();
@@ -57,13 +59,23 @@ devel_walk_wins_init(WINDOW **area_winp, WINDOW **area_border_winp,
 	box(*info_border_winp, 0, 0);
 	
 	*info_winp = derwin(*info_border_winp, LINES - 2, DEVEL_WALK_AREA_INFO_WIN_COLS,
-			0, (COLS - 1) - DEVEL_WALK_AREA_INFO_WIN_COLS);
+			1, 1);
 	if (*info_winp == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		abort();
 	}
 
-	return Q_OK;
+	/* refresh border windows */
+	if (wrefresh(*area_border_winp) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+	if (wrefresh(*info_border_winp) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+
+	return returnval;
 }
 
 

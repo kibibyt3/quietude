@@ -77,7 +77,10 @@ typedef enum DevelWalkCmd_t {
 
 
 /** Initialize devel_walkio.                              */
-extern int devel_walkio_init(WINDOW *, WINDOW *);
+extern int devel_walkio_init(void);
+
+/** Initialize the devel_walkio @c WINDOW vars.           */
+extern int devel_walkio_wins_init(WINDOW *, WINDOW *);
 
 /** Terminate devel_walkio.                               */
 extern int devel_walkio_end(void);

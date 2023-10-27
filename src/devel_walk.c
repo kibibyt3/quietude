@@ -78,11 +78,14 @@ int main(int argc, char **argv) {
 		walk_area = devel_walk_area_load(file_path);
 	}
 	assert(walk_area != NULL);
-	
+
+	r = devel_walkio_init();
+	assert(r != Q_ERROR);
+
 	r = devel_walk_wins_init(&area_win, &area_border_win, &info_win, &info_border_win);
 	assert(r != Q_ERROR);
 
-	r = devel_walkio_init(area_win, info_win);
+	r = devel_walkio_wins_init(area_win, info_win);
 	assert(r != Q_ERROR);
 
 	while (cmd != DEVEL_WALK_CMD_EXIT) {
