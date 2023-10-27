@@ -7,6 +7,7 @@
 
 
 #include <stdio.h>
+#include <stdbool.h>
 #include <string.h>
 
 #include "qdefs.h"
@@ -47,6 +48,10 @@
 /** String for #QERROR_ENUM_CONSTANT_INVALID_ZERO        */
 #define QERROR_STRING_ENUM_CONSTANT_INVALID_ZERO \
 	"Enum constant likely never explicitly defined"
+
+/** String for #QERROR_STRUCT_INCOMPLETE                 */
+#define QERROR_STRING_STRUCT_INCOMPLETE \
+	"Struct required to be fully defined is not fully defined"
 
 /** String for #QERROR_INDEX_OUTOFRANGE                  */
 #define QERROR_STRING_INDEX_OUTOFRANGE \
@@ -122,6 +127,9 @@ qerror_internal(Qerror_t error, const char *file, const char *func, int line) {
 		break;
 	case QERROR_ENUM_CONSTANT_INVALID_ZERO:
 		strcpy(error_string, QERROR_STRING_ENUM_CONSTANT_INVALID_ZERO);
+		break;
+	case QERROR_STRUCT_INCOMPLETE:
+		strcpy(error_string, QERROR_STRING_STRUCT_INCOMPLETE);
 		break;
 	case QERROR_INDEX_OUTOFRANGE:
 		strcpy(error_string, QERROR_STRING_INDEX_OUTOFRANGE);

@@ -1,9 +1,13 @@
 /**
  * @file qdefs.h
- * Header file for game-wide definitions. Depends on stdint.h.
+ * Header file for game-wide definitions. Depends on stdint.h and stdbool.h.
  */
 
 
+/** `char *` version of `true`. */
+#define BOOL_STRING_TRUE  "true"
+/** `char *` version of `false`. */
+#define BOOL_STRING_FALSE "false"
 
 
 #define Q_OK     0          /**< Generic OK return code for Q    */
@@ -34,11 +38,17 @@
 
 
 
-/** Generic error for functions that otherwise return a meaningful @c int */
+/** Generic error for functions that otherwise return a meaningful @c int. */
 #define Q_ERRORCODE_INT -1
 
-/** Returned by functions that return @c size_t if an error occurs */
+/** Returned by functions that return @c size_t if an error occurs. */
 #define Q_ERRORCODE_SIZE 0
+
+/** Returned by functions that return `char *` if an error occurs. */
+#define Q_ERRORCODE_CHARSTRING "ERROR"
+
+/** Returned by functions that return `int *` if an error occurs.  */
+#define Q_ERRORCODE_INTSTRING  "ERROR"
 
 /**
  * Returned by functions that return an internal enum if an error occurs.
@@ -66,7 +76,8 @@ typedef enum QdataType_t {
 	/* standard types */
 	QDATA_TYPE_INT = Q_ENUM_VALUE_START, /**< @c int type   */
 	QDATA_TYPE_FLOAT,                    /**< @c float type */
-	
+	QDATA_TYPE_BOOL,                     /**< @c bool type  */
+
 	/** `int *` type (when representing characters)
 	 *  Usage of this type should be strictly external; inside-facing character
 	 *  representations should use `char *` instead to save memory usage.
@@ -114,6 +125,30 @@ typedef enum QobjType_t {
 
 } QobjType_t;
 
+/**
+ * @defgroup ObjTypeStrings #QobjType_t Strings
+ * String versions of #QobjType_t constants.
+ */
+/**
+ * @ingroup ObjTypeStrings
+ * String version of #QOBJ_TYPE_PLAYER.
+ */
+#define QOBJ_STRING_TYPE_PLAYER "player"
+/**
+ * @ingroup ObjTypeStrings
+ * String version of #QOBJ_TYPE_GRASS.
+ */
+#define QOBJ_STRING_TYPE_GRASS  "grass"
+/**
+ * @ingroup ObjTypeStrings
+ * String version of #QOBJ_TYPE_TREE.
+ */
+#define QOBJ_STRING_TYPE_TREE   "tree"
+/**
+ * @ingroup ObjTypeStrings
+ * String version of #QOBJ_TYPE_VOID.
+ */
+#define QOBJ_STRING_TYPE_VOID   "void"
 
 
 
@@ -145,20 +180,26 @@ typedef struct Qdatameta_t {
 
 
 
-/** Create a #Qdatameta_t    */
+/** Create a #Qdatameta_t.                    */
 extern /*@null@*//*@only@*/Qdatameta_t *qdatameta_create(/*@keep@*//*@returned@*/Qdata_t *, QdataType_t, size_t);
 
-/** Destroy a #Qdatameta_t   */
+/** Destroy a #Qdatameta_t.                   */
 extern int qdatameta_destroy(/*@only@*/Qdatameta_t *);
 
-/** Get the datap member from a #Qdatameta_t */
+/** Get the datap member from a #Qdatameta_t. */
 extern /*@observer@*//*@null@*/Qdata_t *qdatameta_datap_get(const Qdatameta_t *)/*@*/;
 
-/** Get the count member from a #Qdatameta_t */
+/** Get the count member from a #Qdatameta_t. */
 extern size_t qdatameta_count_get(const Qdatameta_t *)/*@*/;
 
-/** Get the type member from a #Qdatameta_t  */
+/** Get the type member from a #Qdatameta_t.  */
 extern QdataType_t qdatameta_type_get(const Qdatameta_t *)/*@*/;
 
-/** Get the size of a #QdataType_t */
+/** Get the size of a #QdataType_t.           */
 extern size_t qdata_type_size_get(QdataType_t)/*@*/;
+
+/** Convert a bool to a string.               */
+/*@unused@*/extern /*@observer@*/char *bool_to_string(bool)/*@*/;
+
+/** Convert a #QobjType_t to a string.        */
+/*@unused@*/extern /*@observer@*/char *qobj_type_to_string(QobjType_t)/*@*/;

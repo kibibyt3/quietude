@@ -19,62 +19,6 @@
 #include "qwalk.h"
 
 
-/**
- * Direction type.
- * Stored here for now; might be worth moving to qwalk.h eventually?
- */
-typedef enum Qdirection_t {
-	
-	/** North */
-	QDIRECTION_NORTH = Q_ENUM_VALUE_START,
-	
-	QDIRECTION_NORTHEAST, /**< Northeast */
-	QDIRECTION_EAST,      /**< East      */
-	QDIRECTION_SOUTHEAST, /**< Southeast */
-	QDIRECTION_SOUTH,     /**< South     */
-	QDIRECTION_SOUTHWEST, /**<	Southwest */
-	QDIRECTION_WEST,      /**< West      */
-	QDIRECTION_NORTHWEST, /**< Northwest */
-
-	/**
-	 * Amount of possible values for a #Qdirection_t
-	 * Must be defined by the final @c enum constant.
-	 */
-	QDIRECTION_COUNT = QDIRECTION_NORTHWEST
-} Qdirection_t;
-
-/**
- * Translate north to a y coordinate multiplicand (which is then reduced to an
- * augend depending on its factor, if applicable).
- */
-#define QDIRECTION_NORTH_Y_MULTIPLICAND -1
-
-/**
- * Translate east to an x coordinate multiplicand (which is then reduced to an
- * augend depending on its factor, if applicable).
- */
-#define QDIRECTION_EAST_X_MULTIPLICAND   1
-
-/**
- * Translate south to a y coordinate multiplicand (which is then reduced to an
- * augend depending on its factor, if applicable)
- */
-#define QDIRECTION_SOUTH_Y_MULTIPLICAND  1
-
-/**
- * Translate west to a x coordinate multiplicand (which is then reduced to an
- * augend depending on its factor, if applicable)
- */
-#define QDIRECTION_WEST_X_MULTIPLICAND  -1
-
-
-/**
- * Default multiplier for the multiplicands in the event that it isn't otherwise
- * specified
- */
-#define QDIRECTION_MULTIPLIER_DEFAULT    1
-
-
 
 
 static           int         qwalk_logic_obj_move(/*@null@*/QwalkLayer_t *, int, Qdirection_t);
@@ -89,7 +33,7 @@ static           int         qwalk_logic_find_qobj_index(/*@null@*/QobjType_t *,
 
 static                       Qdirection_t qwalk_logic_command_move_to_direction(QwalkCommand_t)/*@*/;
 
-static           bool qwalk_logic_coords_arevalid(int, int)/*@*/;
+
 
 
 /**

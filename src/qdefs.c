@@ -4,10 +4,13 @@
  * Logic for game-wide types.
  */
 
+
+
 #include <stdlib.h>
 #include <stdio.h>
-#include <ncurses.h>
+#include <stdbool.h>
 #include <assert.h>
+#include <ncurses.h>
 
 #include "qdefs.h"
 #include "qerror.h"
@@ -15,6 +18,8 @@
 #include "mode.h"
 #include "qattr.h"
 #include "qwalk.h"
+
+
 
 /**
  * Create a #Qdatameta_t.
@@ -37,6 +42,7 @@ qdatameta_create(Qdata_t *datap, QdataType_t type, size_t count) {
 	datameta->type = type;
 	return datameta;
 }
+
 
 /**
  * Recursively destroy a #Qdatameta_t.
@@ -83,6 +89,7 @@ qdatameta_destroy(Qdatameta_t *datameta) {
 	return Q_OK;
 }
 
+
 /**
  * Get the size of a #QdataType_t.
  * Specifically the size in bytes. This is merely for acquiring the size of a
@@ -100,6 +107,8 @@ qdata_type_size_get(QdataType_t data_type) {
 		return sizeof(int);
 	case QDATA_TYPE_FLOAT:
 		return sizeof(float);
+	case QDATA_TYPE_BOOL:
+		return sizeof(bool);
 	case QDATA_TYPE_INT_STRING:
 		return sizeof(int);
 	case QDATA_TYPE_CHAR_STRING:
@@ -157,4 +166,46 @@ qdatameta_type_get(const Qdatameta_t *datameta) {
 		return (QdataType_t) Q_ERRORCODE_ENUM;
 	}
 	return datameta->type;
+}
+
+
+/**
+ * Convert a #QobjType_t to a `char *`.
+ * @param[in] type: relevant #QobjType_t.
+ * @return `char *` version of @p type.
+ */
+char *
+qobj_type_to_string(QobjType_t type) {
+	if ((type < (QobjType_t) Q_ENUM_VALUE_START) || (type > QOBJ_TYPE_COUNT)) {
+		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+		return Q_ERRORCODE_CHARSTRING;
+	}
+	switch (type) {
+	case QOBJ_TYPE_PLAYER:
+		return QOBJ_STRING_TYPE_PLAYER;
+	case QOBJ_TYPE_GRASS:
+		return QOBJ_STRING_TYPE_GRASS;
+	case QOBJ_TYPE_TREE:
+		return QOBJ_STRING_TYPE_TREE;
+	case QOBJ_TYPE_VOID:
+		return QOBJ_STRING_TYPE_VOID;
+	default:
+		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+		return Q_ERRORCODE_CHARSTRING;
+	}
+}
+
+
+/**
+ * Convert a @c bool to a `char *`.
+ * @param[in] b: relevant @c bool.
+ * @return @c char * version of @p b.
+ */
+char *
+bool_to_string(bool b) {
+	if (b) {
+		return BOOL_STRING_TRUE;
+	} else {
+		return BOOL_STRING_FALSE;
+	}
 }

@@ -3,12 +3,15 @@
 ├── data
 │   ├── README.md
 │   └── world
-│       └── demo.txt
+├── devel-utils
+│   ├── README.md
+│   └── walk-areas
 ├── docs
 │   ├── directory-info.txt
 │   └── README.md
 ├── Doxyfile
 ├── include
+│   ├── devel_walk.h
 │   ├── iodefs.h
 │   ├── mode.h
 │   ├── qattr.h
@@ -24,6 +27,10 @@
 ├── README.md
 ├── saves
 ├── src
+│   ├── devel_walk.c
+│   ├── devel_walkio.c
+│   ├── devel_walkl.c
+│   ├── devel_walk_wins.c
 │   ├── main.c
 │   ├── mode.c
 │   ├── qattr.c
@@ -37,5 +44,5 @@
 │   └── test.c
 └── TODO.md
 
-7 directories, 30 files
+9 directories, 35 files
 ```

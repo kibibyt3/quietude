@@ -1,0 +1,105 @@
+/**
+ * @file devel_walk.h
+ * Header file for devel_walk.
+ * Depends on ncurses.h.
+ */
+
+
+
+/**
+ * Type for commands sent in the I/O section of devel_walk.
+ */
+typedef enum DevelWalkCmd_t {
+	
+	/**
+	 * Initialization command.
+	 * Only ever sent internally; the player definitionally cannot ever send this
+	 * command to the program.
+	 */
+	DEVEL_WALK_CMD_INIT = Q_ENUM_VALUE_START, 
+
+
+
+	/** Minimum value for move commands. */
+	DEVEL_WALK_CMD_MOVE_MIN,
+
+	/** Move the cursor north. */
+	DEVEL_WALK_CMD_CURSOR_MOVE_NORTH = DEVEL_WALK_CMD_MOVE_MIN,
+	DEVEL_WALK_CMD_CURSOR_MOVE_SOUTH,      /** Move the cursor south.        */
+	DEVEL_WALK_CMD_CURSOR_MOVE_EAST,       /** Move the cursor east.         */
+	DEVEL_WALK_CMD_CURSOR_MOVE_WEST,       /** Move the cursor west.         */
+	DEVEL_WALK_CMD_CURSOR_TOGGLE_ALTITUDE, /** Toggle the cursor's altitude. */
+	
+	/** Maximum value for move commands. */
+	DEVEL_WALK_CMD_MOVE_MAX = DEVEL_WALK_CMD_CURSOR_TOGGLE_ALTITUDE,
+
+
+
+	/** Minimum value for modify commands. */
+	DEVEL_WALK_CMD_MODIFY_MIN,
+
+	/** Copy the #QattrList_t of the #QwalkObj_t the cursor is pointing at. */
+	DEVEL_WALK_CMD_COPY = DEVEL_WALK_CMD_MODIFY_MIN,
+	
+	/** 
+	 * Paste a #QattrList_t to the #QwalkObj_t the cursor is pointing at.  
+	 * Namely that of the last object that #DEVEL_WALK_CMD_COPY was used on.
+	 */
+	DEVEL_WALK_CMD_PASTE,
+	
+	/** Edit the #QattrList_t of the #QwalkObj_t the cursor is pointing at. */
+	DEVEL_WALK_CMD_EDIT,
+
+	/** Maximum value for modify commands. */
+	DEVEL_WALK_CMD_MODIFY_MAX = DEVEL_WALK_CMD_EDIT,
+	
+
+
+	/** Minimum value for control commands. */
+	DEVEL_WALK_CMD_CONTROL_MIN,
+
+	/** Save the current #QwalkArea_t. */
+	DEVEL_WALK_CMD_SAVE = DEVEL_WALK_CMD_CONTROL_MIN,
+	
+	/** Exit the program. */
+	DEVEL_WALK_CMD_EXIT,
+
+	/** Maximum value for control commands. */
+	DEVEL_WALK_CMD_CONTROL_MAX = DEVEL_WALK_CMD_EXIT,
+	
+
+
+	/** Total number of possible values for a #DevelWalkCmd_t. */
+	DEVEL_WALK_CMD_COUNT = DEVEL_WALK_CMD_CONTROL_MAX
+
+} DevelWalkCmd_t;
+
+
+
+/** Initialize devel_walkio.                              */
+extern int devel_walkio_init(void);
+
+/** Initialize the devel_walkio @c WINDOW vars.           */
+extern int devel_walkio_wins_init(WINDOW *, WINDOW *);
+
+/** Terminate devel_walkio.                               */
+extern int devel_walkio_end(void);
+
+
+
+/** Initialize @c WINDOW types for devel_walk.            */
+extern int devel_walk_wins_init(/*@out@*/WINDOW **, /*@out@*/WINDOW **, /*@out@*/WINDOW **, /*@out@*/WINDOW **);
+
+/** Close @c WINDOW types for devel_walk.                 */
+extern int devel_walk_wins_close(WINDOW **, WINDOW **, WINDOW **, WINDOW **);
+
+
+
+/** Take input from the user.                             */
+extern DevelWalkCmd_t devel_walkio_in(void);
+
+/** Output the a #QwalkArea_t to the screen.              */
+extern int devel_walkio_out(const QwalkArea_t *, const int *);
+
+/** Modify a #QwalkArea_t according to a #DevelWalkCmd_t. */
+extern int devel_walkl_tick(/*@null@*/QwalkArea_t *, /*@null@*/int *, DevelWalkCmd_t);

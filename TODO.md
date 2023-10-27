@@ -10,7 +10,8 @@
 - [x] Rewrite qattr such that it controls its qdatameta pointers. If necessary, make a separate version of qdatameta\_t for the sake of indirect control.
 - [x] Resume work on qwalk
 - [x] complete qwalkl rough draft
-  - [ ] add read/write functionality to qwalkl
+  - [x] add write functionality to qwalkl
+  - [x] add read functionality to qwalkl
   - [x] give qwalkl a cursory debugging
     - Note: a more thorough debugging was done anyway
 - [x] complete qwalkio rough draft
@@ -20,3 +21,4 @@
 - [x] rewrite the `Qdatameta\_t` interface such that datap is never calloc'd directly; it should just store a pointer to the beginning of the data
   - [x] rewrite `qfile`'s read function such that it creates a new Qdatameta\_t.
     Note: This was implemented differently. Instead, it merely creates a new `Qdata\_t *` to give to the `Qdatameta_t` constructor function.
+- [ ] make qwalk be able to generate a save file from a human-readable data file 

@@ -4,6 +4,7 @@
  */
 
 #include <stdlib.h>
+#include <stdbool.h>
 #include <assert.h>
 #include <stdint.h>
 
@@ -11,6 +12,7 @@
 #include "qerror.h"
 
 #include "qattr.h"
+#include "qfile.h"
 
 
 
@@ -66,6 +68,93 @@ qattr_list_destroy(QattrList_t *qattr_list) {
 
 
 /**
+ * Write a #QattrList_t to storage.
+ * @param[in] attr_list: #QattrList_t to write; must be completely filled out.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+qattr_list_write(const QattrList_t *attr_list) {
+	int r;
+	int returnval = Q_OK;
+
+	if (attr_list == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+
+	r = qfile_size_write(attr_list->count);
+	if (r == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+
+	for (int i = 0; i < (int) attr_list->count; i++) {
+		r = qfile_qattr_key_write(attr_list->attrp[i].key);
+		if (r == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			returnval = Q_ERROR;
+		}
+		
+		r = qfile_qdatameta_write(attr_list->attrp[i].valuep);
+		if (r == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			returnval = Q_ERROR;
+		}
+	}
+
+	return returnval;
+}
+
+
+/**
+ * Read a #QattrList_t from storage.
+ * @return new #QattrList_t.
+ */
+QattrList_t *
+qattr_list_read() {
+	QattrList_t *attr_list;
+	size_t count;
+	QattrKey_t attr_key;
+	Qdatameta_t *datameta;
+	int r;
+
+	count = qfile_size_read();
+	if (count == (size_t) Q_ERRORCODE_SIZE) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+
+	attr_list = qattr_list_create(count);
+	if (attr_list == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		abort();
+	}
+
+	for (int i = 0; i < (int) count; i++) {
+		attr_key = qfile_qattr_key_read();
+		if (attr_key == (QattrKey_t) Q_ERRORCODE_ENUM) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			abort();
+		}
+		
+		datameta = qfile_qdatameta_read();
+		if (datameta == NULL) {
+			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);;
+			abort();
+		}
+
+		r = qattr_list_attr_set(attr_list, attr_key, datameta);
+		if (r == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			abort();
+		}
+	}
+
+	return attr_list;
+}
+
+
+/**
  * Fetch an attribute value
  * Fetches the value associated with a #QattrKey_t in a #QattrList_t.
  * @param[in] attr_key: key whose value is to be found
@@ -73,7 +162,7 @@ qattr_list_destroy(QattrList_t *qattr_list) {
  * @return #Qdatameta_t containing the value or @c NULL if the key doesn't exist.
  */ 
 Qdatameta_t*
-qattr_list_value_get(QattrList_t* attr_list, QattrKey_t attr_key) {
+qattr_list_value_get(const QattrList_t *attr_list, QattrKey_t attr_key) {
 
 	Qdatameta_t *value = NULL;
 	if (attr_list == NULL) {
@@ -88,6 +177,57 @@ qattr_list_value_get(QattrList_t* attr_list, QattrKey_t attr_key) {
 		}
 	}
 	return value;
+}
+
+
+/**
+ * Get @ref QattrList_t.count.
+ * @param[in] attr_list: relevant attr_list.
+ * @return @ref QattrList_t.count or #Q_ERRORCODE_SIZE.
+ */ 
+size_t
+qattr_list_count_get(const QattrList_t *attr_list) {
+	if (attr_list == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return (size_t) Q_ERRORCODE_SIZE;
+	}
+	return attr_list->count;
+}
+
+
+/**
+ * Get @ref QattrList_t.index_ok.
+ * @param[in] attr_list: relevant attr_list.
+ * @return @ref QattrList_t.index_ok or #Q_ERRORCODE_SIZE.
+ */ 
+size_t
+qattr_list_index_ok_get(const QattrList_t *attr_list) {
+	if (attr_list == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return (size_t) Q_ERRORCODE_SIZE;
+	}
+	return attr_list->index_ok;
+}
+
+
+/**
+ * Get @ref Qattr_t.key in a #QattrList_t from an index.
+ * @param[in] attr_list: relevant attr_list.
+ * @param[in] index: index of @ref Qattr_t.key in @p attr_list
+ * @return @ref Qattr_t.key or #Q_ERRORCODE_ENUM.
+ */ 
+QattrKey_t
+qattr_list_attr_key_get(const QattrList_t *attr_list, int index) {
+	if (attr_list == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return (QattrKey_t) Q_ERRORCODE_ENUM;
+	}
+	if (index >= (int) qattr_list_index_ok_get(attr_list)) {
+		Q_ERRORFOUND(QERROR_INDEX_OUTOFRANGE);
+		return (QattrKey_t) Q_ERRORCODE_ENUM;
+	}
+
+	return attr_list->attrp[index].key;
 }
 
 
@@ -140,4 +280,86 @@ qattr_list_attr_set(QattrList_t *attr_list, QattrKey_t attr_key, Qdatameta_t *da
 	attr_list->attrp[index_free].valuep = datameta;
 	(attr_list->index_ok)++; /* Index is no longer available; move to the next */
 	return Q_OK;
+}
+
+
+/**
+ * Convert a @ref Qattr_t.valuep to a string, if possible.
+ * @param[in] attr_list: #QattrList_t to find @p key in.
+ * @param[in] key: key of value to convert to a string.
+ * @return `int *` version of value of @p key.
+ */
+int *
+qattr_value_to_string(const QattrList_t *attr_list, QattrKey_t key) {
+	Qdatameta_t *datameta;
+	size_t count;
+	QdataType_t type;
+	Qdata_t *data;
+
+	/* collect and sanitize value metadata */
+	if ((datameta = qattr_list_value_get(attr_list, key)) == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return (int *) Q_ERRORCODE_INTSTRING; 
+	}
+	if ((count = qdatameta_count_get(datameta)) == Q_ERRORCODE_SIZE) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return (int *) Q_ERRORCODE_INTSTRING;
+	}
+	if ((data = qdatameta_datap_get(datameta)) == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return (int *) Q_ERRORCODE_INTSTRING; 
+	}
+	if((type = qdatameta_type_get(datameta)) == (QdataType_t) Q_ERRORCODE_ENUM) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return (int *) Q_ERRORCODE_INTSTRING;
+	}
+
+	switch (key) {
+		case QATTR_KEY_QOBJECT_TYPE:
+			return (int *) qobj_type_to_string(*((QobjType_t *) data));
+		case QATTR_KEY_NAME:
+			return (int *) data;
+		case QATTR_KEY_DESCRIPTION_BRIEF:
+			return (int *) data;
+		case QATTR_KEY_DESCRIPTION_LONG:
+			return (int *) data;
+		case QATTR_KEY_CANMOVE:
+			return (int *) bool_to_string(*((bool *) data));
+		case QATTR_KEY_EMPTY:
+			return (int *) Q_ERRORCODE_INTSTRING;
+		case QATTR_KEY_DEBUG:
+			return (int *) Q_ERRORCODE_INTSTRING;
+		default:
+			Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+			return (int *) QATTR_STRING_KEY_UNRECOGNIZED;
+	}
+}
+
+
+/**
+ * Convert a #QattrKey_t to a @c char * from @ref AttrKeyStrings.
+ * @param[in] key: relevant #QattrKey_t.
+ * @return string @p key or #QATTR_STRING_KEY_UNRECOGNIZED.
+ */
+char *
+qattr_key_to_string(QattrKey_t key) {
+	switch (key) {
+		case QATTR_KEY_QOBJECT_TYPE:
+			return QATTR_STRING_KEY_QOBJECT_TYPE;
+		case QATTR_KEY_NAME:
+			return QATTR_STRING_KEY_NAME;
+		case QATTR_KEY_DESCRIPTION_BRIEF:
+			return QATTR_STRING_KEY_DESCRIPTION_BRIEF;
+		case QATTR_KEY_DESCRIPTION_LONG:
+			return QATTR_STRING_KEY_DESCRIPTION_LONG;
+		case QATTR_KEY_CANMOVE:
+			return QATTR_STRING_KEY_CANMOVE;
+		case QATTR_KEY_EMPTY:
+			return QATTR_STRING_KEY_EMPTY;
+		case QATTR_KEY_DEBUG:
+			return QATTR_STRING_KEY_DEBUG;
+		default:
+			Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+			return QATTR_STRING_KEY_UNRECOGNIZED;
+	}
 }

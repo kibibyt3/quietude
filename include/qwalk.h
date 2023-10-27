@@ -13,6 +13,9 @@
 /** Minimum x/y coordinate value on a #QwalkLayer_t */
 #define QWALK_LAYER_COORD_MINIMUM 0
 
+/** Total amount of #QwalkLayer_t per #QwalkArea_t. */
+#define QWALK_AREA_TOTAL_LAYER_COUNT 2
+
 
 
 /**
@@ -44,6 +47,61 @@ typedef enum QwalkCommand_t {
 
 
 /**
+ * Direction type.
+ */
+typedef enum Qdirection_t {
+	
+	/** North. */
+	QDIRECTION_NORTH = Q_ENUM_VALUE_START,
+	
+	QDIRECTION_NORTHEAST, /**< Northeast. */
+	QDIRECTION_EAST,      /**< East.      */
+	QDIRECTION_SOUTHEAST, /**< Southeast. */
+	QDIRECTION_SOUTH,     /**< South.     */
+	QDIRECTION_SOUTHWEST, /**< Southwest. */
+	QDIRECTION_WEST,      /**< West.      */
+	QDIRECTION_NORTHWEST, /**< Northwest. */
+
+	/**
+	 * Amount of possible values for a #Qdirection_t.
+	 * Must be defined by the final @c enum constant.
+	 */
+	QDIRECTION_COUNT = QDIRECTION_NORTHWEST
+} Qdirection_t;
+
+/**
+ * Translate north to a y coordinate multiplicand (which is then reduced to an
+ * augend depending on its factor, if applicable).
+ */
+#define QDIRECTION_NORTH_Y_MULTIPLICAND -1
+
+/**
+ * Translate east to an x coordinate multiplicand (which is then reduced to an
+ * augend depending on its factor, if applicable).
+ */
+#define QDIRECTION_EAST_X_MULTIPLICAND   1
+
+/**
+ * Translate south to a y coordinate multiplicand (which is then reduced to an
+ * augend depending on its factor, if applicable).
+ */
+#define QDIRECTION_SOUTH_Y_MULTIPLICAND  1
+
+/**
+ * Translate west to a x coordinate multiplicand (which is then reduced to an
+ * augend depending on its factor, if applicable).
+ */
+#define QDIRECTION_WEST_X_MULTIPLICAND  -1
+
+/**
+ * Default multiplier for the multiplicands in the event that it isn't otherwise
+ * specified.
+ */
+#define QDIRECTION_MULTIPLIER_DEFAULT    1
+
+
+
+/**
  * An object in a #QwalkLayer_t.
  */
 typedef struct QwalkObj_t {
@@ -53,6 +111,7 @@ typedef struct QwalkObj_t {
 	QattrList_t *attr_list;
 } QwalkObj_t;
 
+
 /**
  * A lone z-level of a playable area in the qwalk module.
  */
@@ -61,6 +120,23 @@ typedef struct QwalkLayer_t {
 	/*@only@*/QwalkObj_t *objects;
 	int index_ok; /**< next available index. */
 } QwalkLayer_t;
+
+
+/**
+ * Specific layer type.
+ */
+typedef enum QwalkLayerType_t {
+
+	/** @ref QwalkArea_t.layer_earth. */
+	QWALK_LAYER_TYPE_EARTH = Q_ENUM_VALUE_START, 
+	
+	/** @ref QwalkArea_t.layer_floater. */
+	QWALK_LAYER_TYPE_FLOATER,
+
+	/** Number of possible values for a #QwalkLayerType_t. */
+	QWALK_LAYER_TYPE_COUNT = QWALK_LAYER_TYPE_FLOATER
+} QwalkLayerType_t;
+
 
 /**
  * A full playable area in qwalk.
@@ -106,10 +182,16 @@ extern           int               qwalk_output_subtick(const QwalkArea_t *);
 
 
 /** Create a #QwalkArea_t.                                */
-extern               /*@null@*//*@only@*/QwalkArea_t  *qwalk_area_create(/*@returned@*//*@keep@*/QwalkLayer_t *, /*@returned@*//*@keep@*/QwalkLayer_t *);
+extern /*@null@*//*@only@*/QwalkArea_t *qwalk_area_create(/*@returned@*//*@keep@*/QwalkLayer_t *, /*@returned@*//*@keep@*/QwalkLayer_t *);
 
 /** Destroy a #QwalkArea_t.                               */
-extern                         int           qwalk_area_destroy(/*@only@*//*@null@*/QwalkArea_t *);
+extern int qwalk_area_destroy(/*@only@*//*@null@*/QwalkArea_t *);
+
+/** Write a #QwalkArea_t to storage.                      */
+extern int qwalk_area_write(const QwalkArea_t *)/*@*/;
+
+/** Read a #QwalkArea_t from storage.                     */
+extern /*@null@*//*@only@*/QwalkArea_t *qwalk_area_read(void);
 
 /** Get the layer_earth member from a #QwalkArea_t.       */
 extern /*@null@*//*@observer@*/QwalkLayer_t *qwalk_area_layer_earth_get(const /*@null@*//*@returned@*/QwalkArea_t *)/*@*/;
@@ -117,14 +199,22 @@ extern /*@null@*//*@observer@*/QwalkLayer_t *qwalk_area_layer_earth_get(const /*
 /** Get the layer_floater member from a #QwalkArea_t.     */
 extern /*@null@*//*@observer@*/QwalkLayer_t *qwalk_area_layer_floater_get(const/*@null@*//*@returned@*/QwalkArea_t *)/*@*/;
 
+
+
 /** Create a #QwalkLayer_t.                               */
-extern  /*@null@*//*@partial@*/QwalkLayer_t  *qwalk_layer_create(void);
+extern /*@null@*//*@partial@*/QwalkLayer_t *qwalk_layer_create(void);
  
 /** Destory a #QwalkLayer_t.                              */
-extern                         int            qwalk_layer_destroy(/*@only@*/QwalkLayer_t *);
+extern                        int           qwalk_layer_destroy(/*@only@*/QwalkLayer_t *);
+
+/** Write a #QwalkLayer_t to storage.                     */
+extern                        int           qwalk_layer_write(const QwalkLayer_t *);
+
+/** Read a #QwalkLayer_t from storage.                    */
+extern    /*@null@*//*@only@*/QwalkLayer_t *qwalk_layer_read(void);
 
 /** Add a #QwalkObj_t * to a #QwalkLayer_t *.             */
-extern                         int            qwalk_layer_object_set(/*@null@*/QwalkLayer_t *, int, int, /*@null@*//*@only@*/QattrList_t *);
+extern                        int          qwalk_layer_object_set(/*@null@*/QwalkLayer_t *, int, int, /*@null@*//*@only@*/QattrList_t *);
 
 
 
@@ -139,6 +229,10 @@ extern /*@null@*//*@observer@*/QattrList_t *qwalk_layer_object_attr_list_get(/*@
 
 
 
-extern int qwalk_coords_to_index(int, int)/*@*/;
+extern int    qwalk_coords_to_index(int, int)/*@*/;
 
-extern int *qwalk_index_to_coords(int)/*@*/;
+extern int   *qwalk_index_to_coords(int)/*@*/;
+
+extern bool   qwalk_logic_coords_arevalid(int, int)/*@*/;
+
+extern chtype qwalk_obj_type_to_chtype(QobjType_t)/*@*/;
