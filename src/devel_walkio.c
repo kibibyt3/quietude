@@ -408,7 +408,10 @@ devel_walkio_info_out(const QwalkArea_t *walk_area, const int *curs_loc) {
 			return Q_ERROR;
 		}
 
-		if (wprintw(info_win, "%s : %i\n", qattr_key_to_string(key), *((int *) datap)) == ERR) {
+		if (wprintw(info_win, "%s : %s\n",
+					qattr_key_to_string(key),
+					(char *) qattr_value_to_string(attr_list, key))
+				== ERR) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 			returnval = Q_ERROR;
 		}
