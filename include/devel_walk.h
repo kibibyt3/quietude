@@ -99,4 +99,4 @@ extern DevelWalkCmd_t devel_walkio_in(void);
 extern int devel_walkio_out(const QwalkArea_t *, const int *);
 
 /** Modify a #QwalkArea_t according to a #DevelWalkCmd_t. */
-extern int devel_walkl_tick(QwalkArea_t *, const int *, DevelWalkCmd_t);
+extern int devel_walkl_tick(/*@null@*/QwalkArea_t *, /*@null@*/int *, DevelWalkCmd_t);
