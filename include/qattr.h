@@ -253,7 +253,7 @@ extern *@null@*Qdatameta_t *qattr_list_attr_remove(QattrList_t *, QattrKey_t);
 */
 
 /** Return the value associated with a key in a #QattrList_t.             */
-extern /*@null@*//*@observer@*/Qdatameta_t *qattr_list_value_get(/*@returned@*/QattrList_t *, QattrKey_t)/*@*/;
+extern /*@null@*//*@observer@*/Qdatameta_t *qattr_list_value_get(/*@returned@*/const QattrList_t *, QattrKey_t)/*@*/;
 
 /** Return @ref QattrList_t.count.                                        */
 /*@unused@*/extern size_t qattr_list_count_get(const QattrList_t *)/*@*/;
@@ -266,6 +266,9 @@ extern /*@null@*//*@observer@*/Qdatameta_t *qattr_list_value_get(/*@returned@*/Q
 
 /** Set a #QattrKey_t/#Qdatameta_t pair in the given #QattrList_t.        */
 extern int qattr_list_attr_set(QattrList_t *, QattrKey_t, /*@only@*/Qdatameta_t *);
+
+/** Convert a @ref Qattr_t.valuep to an `int *`.                          */
+/*@observer@*//*@unused@*/extern int *qattr_value_to_string(const QattrList_t *, QattrKey_t)/*@*/;
 
 /** Convert a #QattrKey_t to a @c char *.                                 */
 /*@observer@*//*@unused@*/extern char *qattr_key_to_string(QattrKey_t)/*@*/;
