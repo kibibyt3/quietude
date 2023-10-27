@@ -170,6 +170,33 @@ qdatameta_type_get(const Qdatameta_t *datameta) {
 
 
 /**
+ * Convert a #QobjType_t to a `char *`.
+ * @param[in] type: relevant #QobjType_t.
+ * @return `char *` version of @p type.
+ */
+char *
+qobj_type_to_string(QobjType_t type) {
+	if ((type < (QobjType_t) Q_ENUM_VALUE_START) || (type > QOBJ_TYPE_COUNT)) {
+		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+		return Q_ERRORCODE_CHARSTRING;
+	}
+	switch (type) {
+	case QOBJ_TYPE_PLAYER:
+		return QOBJ_STRING_TYPE_PLAYER;
+	case QOBJ_TYPE_GRASS:
+		return QOBJ_STRING_TYPE_GRASS;
+	case QOBJ_TYPE_TREE:
+		return QOBJ_STRING_TYPE_TREE;
+	case QOBJ_TYPE_VOID:
+		return QOBJ_STRING_TYPE_VOID;
+	default:
+		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+		return Q_ERRORCODE_CHARSTRING;
+	}
+}
+
+
+/**
  * Convert a @c bool to a `char *`.
  * @param[in] b: relevant @c bool.
  * @return @c char * version of @p b.
