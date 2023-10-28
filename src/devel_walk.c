@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
 		r = devel_walkio_out(walk_area, curs_loc);
 		assert(r != Q_ERROR);
 		
-		cmd = devel_walkio_in();
+		cmd = devel_walkio_in(walk_area, curs_loc);
 		assert((cmd >= (DevelWalkCmd_t) Q_ENUM_VALUE_START) && (cmd <= DEVEL_WALK_CMD_COUNT));
 
 		if (cmd != DEVEL_WALK_CMD_EXIT) {		

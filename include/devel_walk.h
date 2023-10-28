@@ -85,7 +85,8 @@ extern int devel_walkio_wins_init(WINDOW *, WINDOW *);
 /** Terminate devel_walkio.                               */
 extern int devel_walkio_end(void);
 
-
+/** Get @ref devel_walkio_logic_arg.                      */
+/*@observer@*//*@out@*/extern char *devel_walkio_userstring_get(void);
 
 /** Initialize @c WINDOW types for devel_walk.            */
 extern int devel_walk_wins_init(/*@out@*/WINDOW **, /*@out@*/WINDOW **, /*@out@*/WINDOW **, /*@out@*/WINDOW **);
@@ -96,7 +97,7 @@ extern int devel_walk_wins_close(WINDOW **, WINDOW **, WINDOW **, WINDOW **);
 
 
 /** Take input from the user.                             */
-extern DevelWalkCmd_t devel_walkio_in(void);
+extern DevelWalkCmd_t devel_walkio_in(const QwalkArea_t *, const int *);
 
 /** Output the a #QwalkArea_t to the screen.              */
 extern int devel_walkio_out(const QwalkArea_t *, const int *);
