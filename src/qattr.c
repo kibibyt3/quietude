@@ -5,8 +5,9 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
-#include <assert.h>
 #include <stdint.h>
+#include <string.h>
+#include <assert.h>
 
 #include "qdefs.h"
 #include "qerror.h"
@@ -361,5 +362,33 @@ qattr_key_to_string(QattrKey_t key) {
 		default:
 			Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 			return QATTR_STRING_KEY_UNRECOGNIZED;
+	}
+}
+
+
+/**
+ * Convert a @c char * from @ref AttrKeyStrings to a #QattrKey_t.
+ * @param[in] s: relevant string.
+ * @return requested #QattrKey_t or #Q_ERRORCODE_ENUM.
+ */
+QattrKey_t
+qattr_string_to_key(const char *s) {
+	if (strcmp(s, QATTR_STRING_KEY_QOBJECT_TYPE) == 0) {
+		return QATTR_KEY_QOBJECT_TYPE;
+	} else if (strcmp(s, QATTR_STRING_KEY_NAME) == 0) {
+		return QATTR_KEY_NAME;
+	} else if (strcmp(s, QATTR_STRING_KEY_DESCRIPTION_BRIEF) == 0) {
+		return QATTR_KEY_DESCRIPTION_BRIEF;
+	} else if (strcmp(s, QATTR_STRING_KEY_DESCRIPTION_LONG) == 0) {
+		return QATTR_KEY_DESCRIPTION_LONG;
+	} else if (strcmp(s, QATTR_STRING_KEY_CANMOVE) == 0) {
+		return QATTR_KEY_CANMOVE;
+	} else if (strcmp(s, QATTR_STRING_KEY_EMPTY) == 0) {
+		return QATTR_KEY_EMPTY;
+	} else if (strcmp(s, QATTR_STRING_KEY_DEBUG) == 0) {
+		return QATTR_KEY_DEBUG;
+	} else {
+		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+		return (QattrKey_t) Q_ERRORCODE_ENUM;
 	}
 }
