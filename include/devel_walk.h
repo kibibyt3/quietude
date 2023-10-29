@@ -76,31 +76,37 @@ typedef enum DevelWalkCmd_t {
 
 
 
-/** Initialize devel_walkio.                              */
+/** Initialize devel_walkio.                                         */
 extern int devel_walkio_init(void);
 
-/** Initialize the devel_walkio @c WINDOW vars.           */
+/** Initialize the devel_walkio @c WINDOW vars.                      */
 extern int devel_walkio_wins_init(WINDOW *, WINDOW *);
 
-/** Terminate devel_walkio.                               */
+/** Terminate devel_walkio.                                          */
 extern int devel_walkio_end(void);
 
-/** Get @ref devel_walkio_logic_arg.                      */
+/** Get @ref devel_walkio_logic_arg.                                 */
 /*@observer@*//*@out@*/extern char *devel_walkio_userstring_get(void);
 
-/** Initialize @c WINDOW types for devel_walk.            */
+/** Initialize @c WINDOW types for devel_walk.                       */
 extern int devel_walk_wins_init(/*@out@*/WINDOW **, /*@out@*/WINDOW **, /*@out@*/WINDOW **, /*@out@*/WINDOW **);
 
-/** Close @c WINDOW types for devel_walk.                 */
+/** Close @c WINDOW types for devel_walk.                            */
 extern int devel_walk_wins_close(WINDOW **, WINDOW **, WINDOW **, WINDOW **);
 
 
 
-/** Take input from the user.                             */
+/** Take input from the user.                                        */
 extern DevelWalkCmd_t devel_walkio_in(const QwalkArea_t *, const int *);
 
-/** Output the a #QwalkArea_t to the screen.              */
+/** Output the a #QwalkArea_t to the screen.                         */
 extern int devel_walkio_out(const QwalkArea_t *, const int *);
 
-/** Modify a #QwalkArea_t according to a #DevelWalkCmd_t. */
+
+
+/** Modify a #QwalkArea_t according to a #DevelWalkCmd_t.            */
 extern int devel_walkl_tick(/*@null@*/QwalkArea_t *, /*@null@*/int *, DevelWalkCmd_t);
+
+/** Get a #QattrLIst_t from a #QwalkARea_t according to coordinates. */
+/*@observer@*//*@null@*/
+extern QattrList_t *devel_walkl_loc_attr_list_get(const QwalkArea_t *, const int *)/*@*/;

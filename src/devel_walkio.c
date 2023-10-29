@@ -25,9 +25,9 @@
 #define DEVEL_WALKIO_USERSTRING_LENGTH_MAX 1024
 
 /** Width of window created by @ref devel_walkio_string_input_choice. */
-#define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_HEIGHT 17
+#define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_HEIGHT 50
 /** Height of window created by @ref devel_walkio_string_input_choice. */
-#define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_WIDTH 50
+#define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_WIDTH 100
 /** Header message of window created by @ref devel_walkio_string_input_choice. */
 #define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_HEADER \
 	"Select one of the following...\r(Arrow keys to navigate)"
@@ -115,6 +115,11 @@
 /*@out@*/static char devel_walkio_userstring[DEVEL_WALKIO_USERSTRING_LENGTH_MAX];
 
 /**
+ * Stores int from user.
+ */
+static int devel_walkio_userint = Q_ERROR;
+
+/**
  * Array of all possible values in @ref QobjTypeStrings.
  */
 /*@observer@*/static char *qobj_selectable_string_types[] = {
@@ -122,15 +127,41 @@
 	QOBJ_STRING_TYPE_GRASS,
 	QOBJ_STRING_TYPE_TREE,
 	QOBJ_STRING_TYPE_VOID};
+
 /**
  * Number of possible values in @ref qobj_string_types.
  */
 #define QOBJ_SELECTABLE_STRING_TYPE_COUNT 4
 
 
+/**
+ * Mode for @ref devel_walkio_info_out() to operate in.
+ */
+typedef enum DevelWalkIOInfoOutMode_t {
+	
+	/** Mode to merely display the relevant #QattrList_t. */
+	DEVEL_WALKIO_INFO_OUT_MODE_DISPLAY = Q_ENUM_VALUE_START,
+
+	/** 
+	 * Mode to have the user select a specific #QattrKey_t from the #QattrList_t.
+	 */
+	DEVEL_WALKIO_INFO_OUT_MODE_CHOICE,
+
+	/** Total number of possible values for a #DevelWalkIOInfoOutMode_t. */
+	DEVEL_WALKIO_INFO_OUT_MODE_COUNT = DEVEL_WALKIO_INFO_OUT_MODE_CHOICE
+
+} DevelWalkIOInfoOutMode_t;
+
+
+
+/** for splint's benefit */
+/*@external@*/
+extern int wattr_on(WINDOW *, attr_t, /*@null@*/void *);
+
+
 
 static int devel_walkio_area_out(const QwalkArea_t *, const int *); 
-static int devel_walkio_info_out(const QwalkArea_t *, const int *);
+static int devel_walkio_info_out(const QwalkArea_t *, const int *, DevelWalkIOInfoOutMode_t);
 static int devel_walkio_string_input_choice(QattrKey_t);
 static DevelWalkCmd_t devel_walkio_input_to_command(int);
 
@@ -177,6 +208,10 @@ devel_walkio_wins_init(WINDOW *area_argwin, WINDOW *info_argwin) {
 	}
 	area_win = area_argwin;
 	info_win = info_argwin;
+	if ((keypad(area_win, true) == ERR) || (keypad(info_win, true) == ERR)) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
 	return Q_OK;
 }
 
@@ -208,7 +243,6 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 	int ch;
 	DevelWalkCmd_t cmd;
 	QattrList_t *attr_list;
-	int choice_index;
 	QattrKey_t key;
 
 	if ((area_win == NULL) || (info_win == NULL)) {
@@ -232,16 +266,27 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 	/* deal with #DEVEL_WALK_CMD_EDIT */
 	if (cmd == DEVEL_WALK_CMD_EDIT) {
 		
+		if (curs_set(0) == ERR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return (DevelWalkCmd_t) Q_ERROR;
+		}
 		attr_list = devel_walkl_loc_attr_list_get(walk_area, curs_loc);
 		if (attr_list == NULL) {
 			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 			return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
 		}
-		choice_index = devel_walkio_info_attr_pick(attr_list);
-		key = qattr_list_attr_key_get(attr_list, choice_index);
+		if (devel_walkio_info_out(walk_area, curs_loc, DEVEL_WALKIO_INFO_OUT_MODE_CHOICE) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
+		}
+		key = qattr_list_attr_key_get(attr_list, devel_walkio_userint);
 		if (devel_walkio_string_input_choice(key) == Q_ERROR) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
-			return Q_ERROR;	
+			return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
+		}
+		if (curs_set(1) == ERR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return (DevelWalkCmd_t) Q_ERROR;
 		}
 	}
 
@@ -273,7 +318,7 @@ devel_walkio_out(const QwalkArea_t *walk_area, const int *curs_loc) {
 		returnval = Q_ERROR;
 	}
 	
-	r = devel_walkio_info_out(walk_area, curs_loc);
+	r = devel_walkio_info_out(walk_area, curs_loc, DEVEL_WALKIO_INFO_OUT_MODE_DISPLAY);
 	if (r != Q_OK) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		returnval = Q_ERROR;
@@ -406,13 +451,16 @@ devel_walkio_area_out(const QwalkArea_t *walk_area, const int *curs_loc) {
  * @return #Q_OK or #Q_ERROR.
  */
 int
-devel_walkio_info_out(const QwalkArea_t *walk_area, const int *curs_loc) {
+devel_walkio_info_out(const QwalkArea_t *walk_area, const int *curs_loc, DevelWalkIOInfoOutMode_t mode) {
 	
-	/*@observer@*/QwalkLayer_t *layer_active;
 	/*@observer@*/QattrList_t *attr_list;
 	int returnval = Q_OK;
-	
-	/* routine error-checking */
+
+	/* routine validation */
+	if ((mode < (DevelWalkIOInfoOutMode_t) Q_ENUM_VALUE_START) || (mode > DEVEL_WALKIO_INFO_OUT_MODE_COUNT)) {
+		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+		return Q_ERROR;
+	}
 	if ((area_win == NULL) || (info_win == NULL)) {
 		Q_ERRORFOUND(QERROR_MODULE_UNINITIALIZED);
 		return Q_ERROR;
@@ -421,30 +469,13 @@ devel_walkio_info_out(const QwalkArea_t *walk_area, const int *curs_loc) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
 	}
-	if ((!(qwalk_logic_coords_arevalid(curs_loc[0], curs_loc[1])))
-			|| ((curs_loc[2] != 0) && (curs_loc[2] != 1))) {
-		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
-		return Q_ERROR;
-	}
-
+	
 	if (wclear(info_win) == ERR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		returnval = Q_ERROR;
 	}
 
-	if (curs_loc[2] == 0) {
-		layer_active = qwalk_area_layer_earth_get(walk_area);
-	}
-	else if (curs_loc[2] == 1) {
-		layer_active = qwalk_area_layer_floater_get(walk_area);
-	} else {
-		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
-		return Q_ERROR;
-	}
-
-	attr_list = qwalk_layer_object_attr_list_get(layer_active,
-			qwalk_coords_to_index(curs_loc[0], curs_loc[1]));
-	
+	attr_list = devel_walkl_loc_attr_list_get(walk_area, curs_loc);
 	/* ensure attr_list is entirely filled out. */
 	if (attr_list == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
@@ -455,27 +486,84 @@ devel_walkio_info_out(const QwalkArea_t *walk_area, const int *curs_loc) {
 		return Q_ERROR;
 	}
 
-
 	QattrKey_t key;
-	
-	/* print all key-value pairs. */
-	for (int i = 0; i < (int) qattr_list_count_get(attr_list); i++) {
-		
-		if ((key = qattr_list_attr_key_get(attr_list, i))
-				== (QattrKey_t) Q_ERRORCODE_ENUM) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-			return Q_ERROR;
-		}
+	bool isinputloop;
+	int choice_highlight = 0;
+	int input;
 
-		if (wprintw(info_win, "%s : %s\n",
-					qattr_key_to_string(key),
-					(char *) qattr_value_to_string(attr_list, key))
-				== ERR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-			returnval = Q_ERROR;
-		}
+	if (mode == DEVEL_WALKIO_INFO_OUT_MODE_DISPLAY) {
+		isinputloop = false;
+	} else {
+		isinputloop = true;
 	}
 
+	/* 
+	 * FIXME: please for the love of god move some of the inner nested sections
+	 * to their own functions. this is so ugly. the degree of nesting is absurd.
+	 * four of these lines are nested to the fifth degree!
+	 */
+	do {
+		/* print all key-value pairs. */
+		for (int i = 0; i < (int) qattr_list_count_get(attr_list); i++) {
+		
+			if ((key = qattr_list_attr_key_get(attr_list, i))
+					== (QattrKey_t) Q_ERRORCODE_ENUM) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				return Q_ERROR;
+			}
+
+			if (isinputloop && (choice_highlight == i)) {
+				if (wattr_on(info_win, A_REVERSE, NULL) == ERR) {
+					Q_ERRORFOUND(QERROR_ERRORVAL);
+					returnval = Q_ERROR;
+				}
+			}
+			if (wprintw(info_win, "%s : %s\n",
+						qattr_key_to_string(key),
+						(char *) qattr_value_to_string(attr_list, key))
+					== ERR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				returnval = Q_ERROR;
+			}
+			if (isinputloop && (choice_highlight == i)) {
+				if (wattr_off(info_win, A_REVERSE, NULL) == ERR) {
+					Q_ERRORFOUND(QERROR_ERRORVAL);
+					returnval = Q_ERROR;
+				}
+			}
+		}
+		/* deal with user input */
+		if (isinputloop) {
+			if (wrefresh(info_win) == ERR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				returnval = Q_ERROR;
+			}
+			input = wgetch(info_win);
+			if (wclear(info_win) == ERR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				returnval = Q_ERROR;
+			}
+			switch (input) {
+			case KEY_UP:
+				if (choice_highlight > 0) {
+					choice_highlight--;
+				}
+				break;
+			case KEY_DOWN:
+				if (choice_highlight < ((int) qattr_list_count_get(attr_list)) - 1) {
+					choice_highlight++;
+				}
+				break;
+			case 'o':
+				devel_walkio_userint = choice_highlight;
+				isinputloop = false;
+				break;
+			case ERR:
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				break;
+			}
+		}
+	} while (isinputloop);
 	return returnval;
 }
 
@@ -503,9 +591,6 @@ devel_walkio_string_input_choice(QattrKey_t key) {
 	WINDOW *win;
 	CDKSCREEN *screen;
 	CDKALPHALIST *alphalist;
-	/*@observer@*/char *out;
-	/*@observer@*/char *list[] = {QOBJ_STRING_TYPE_PLAYER, QOBJ_STRING_TYPE_GRASS,
-		QOBJ_STRING_TYPE_TREE, QOBJ_STRING_TYPE_VOID};
 	int returnval = Q_OK;	
 	/*@observer@*/char **options;
 	int optionc;
@@ -527,34 +612,31 @@ devel_walkio_string_input_choice(QattrKey_t key) {
 		return Q_ERROR;
 	}
 	screen = initCDKScreen(win);
+
 	alphalist = newCDKAlphalist(screen,
 			0, 0, 0, 0, /* initialize alphalist such that it fills the entirety of win */
 			DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_HEADER,
 			DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_PROMPT,
-			qobj_selectable_string_types, QOBJ_SELECTABLE_STRING_TYPE_COUNT,
-			(chtype) ' ', /* filler character */
-			(chtype) 0,   /* highlight        */
-			true,         /* box?             */
-			false);       /* shadow?          */
+			options, optionc,
+			(chtype) ' ', 	/* filler character */
+			(chtype) 0,   	/* highlight        */
+			(boolean) true,	/* box?             */
+			false);       	/* shadow?          */
 	
 	
 	if (alphalist == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		returnval = Q_ERROR;
-	} else {
-		out = activateCDKAlphalist(alphalist, NULL);
-	
-		/*
-		 * only copy the choice into @ref devel_walkio_userstring if we exit by
-		 * hitting enter
-		 */
-		if (alphalist->exitType == vNORMAL) {
-			if (strcpy(devel_walkio_userstring, out) == NULL) {
-				Q_ERRORFOUND(QERROR_ERRORVAL);
-			}
+		if (strcpy(devel_walkio_userstring, Q_ERRORCODE_CHARSTRING) == NULL) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
 		}
+		returnval = Q_ERROR;
 		
-	/* destroy everything created */
+	} else {
+		if (strcpy(devel_walkio_userstring, activateCDKAlphalist(alphalist, NULL)) == NULL) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			returnval = Q_ERROR;
+		}
+		/* destroy everything created */
 		destroyCDKAlphalist(alphalist);
 	}
 	destroyCDKScreen(screen);

@@ -110,6 +110,50 @@ devel_walkl_cursor_move(int *curs_loc, DevelWalkCmd_t cmd) {
 
 
 /**
+ * Get a #QattrList_t from a #QwalkArea_t according to coordinates.
+ * @param[in] walk_area: contextual #QwalkArea_t.
+ * @param[in] curs_loc:  y, x, z coords in @p walk_area.
+ * @return desired #QattrList_t or @c NULL.
+ */
+QattrList_t *
+devel_walkl_loc_attr_list_get(const QwalkArea_t *walk_area, const int *curs_loc) {
+	QwalkLayer_t *layer;
+	int index;
+	QattrList_t *attr_list;
+
+	if ((walk_area == NULL) || (curs_loc == NULL)) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return NULL;
+	}
+	if (!devel_walkl_coords_arevalid(curs_loc[0], curs_loc[1], curs_loc[2])) {
+		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+		return NULL;
+	}
+
+	if (curs_loc[2] == 0) {
+		layer = qwalk_area_layer_earth_get(walk_area);
+	} else if (curs_loc[2] == 1) {
+		layer = qwalk_area_layer_floater_get(walk_area);
+	} else {
+		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+		return NULL;
+	}
+
+	if ((index = qwalk_coords_to_index(curs_loc[0], curs_loc[1])) == Q_ERRORCODE_INT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+	
+	if ((attr_list = qwalk_layer_object_attr_list_get(layer, index)) == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return NULL;
+	}
+
+	return attr_list;
+}
+
+
+/**
  * Check the validity of a set of coordinates.
  * @param[in] y: y coord.
  * @param[in] x: x coord.
