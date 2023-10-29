@@ -25,9 +25,9 @@
 #define DEVEL_WALKIO_USERSTRING_LENGTH_MAX 1024
 
 /** Width of window created by @ref devel_walkio_string_input_choice. */
-#define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_HEIGHT 50
+#define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_HEIGHT 40
 /** Height of window created by @ref devel_walkio_string_input_choice. */
-#define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_WIDTH 100
+#define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_WIDTH 90
 /** Header message of window created by @ref devel_walkio_string_input_choice. */
 #define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_HEADER \
 	"Select one of the following...\r(Arrow keys to navigate)"
@@ -554,7 +554,7 @@ devel_walkio_info_out(const QwalkArea_t *walk_area, const int *curs_loc, DevelWa
 					choice_highlight++;
 				}
 				break;
-			case 'o':
+			case '\n':
 				devel_walkio_userint = choice_highlight;
 				isinputloop = false;
 				break;
@@ -600,6 +600,9 @@ devel_walkio_string_input_choice(QattrKey_t key) {
 		options = qobj_selectable_string_types;
 	 	optionc = QOBJ_SELECTABLE_STRING_TYPE_COUNT;
 		break;	
+	default:
+		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+		return Q_ERROR;
 	}
 
 	/* initializations */
