@@ -327,9 +327,9 @@ qattr_list_attr_modify(QattrList_t *attr_list, QattrKey_t attr_key, Qdatameta_t 
  * Convert a @ref Qattr_t.valuep to a string, if possible.
  * @param[in] attr_list: #QattrList_t to find @p key in.
  * @param[in] key: key of value to convert to a string.
- * @return `int *` version of value of @p key.
+ * @return `char *` version of value of @p key.
  */
-int *
+char *
 qattr_value_to_string(const QattrList_t *attr_list, QattrKey_t key) {
 	Qdatameta_t *datameta;
 	size_t count;
@@ -339,39 +339,39 @@ qattr_value_to_string(const QattrList_t *attr_list, QattrKey_t key) {
 	/* collect and sanitize value metadata */
 	if ((datameta = qattr_list_value_get(attr_list, key)) == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return (int *) Q_ERRORCODE_INTSTRING; 
+		return Q_ERRORCODE_CHARSTRING; 
 	}
 	if ((count = qdatameta_count_get(datameta)) == Q_ERRORCODE_SIZE) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		return (int *) Q_ERRORCODE_INTSTRING;
+		return Q_ERRORCODE_CHARSTRING;
 	}
 	if ((data = qdatameta_datap_get(datameta)) == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return (int *) Q_ERRORCODE_INTSTRING; 
+		return Q_ERRORCODE_CHARSTRING; 
 	}
 	if((type = qdatameta_type_get(datameta)) == (QdataType_t) Q_ERRORCODE_ENUM) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		return (int *) Q_ERRORCODE_INTSTRING;
+		return Q_ERRORCODE_CHARSTRING;
 	}
 
 	switch (key) {
 		case QATTR_KEY_QOBJECT_TYPE:
-			return (int *) qobj_type_to_string(*((QobjType_t *) data));
+			return qobj_type_to_string(*((QobjType_t *) data));
 		case QATTR_KEY_NAME:
-			return (int *) data;
+			return (char *) data;
 		case QATTR_KEY_DESCRIPTION_BRIEF:
-			return (int *) data;
+			return (char *) data;
 		case QATTR_KEY_DESCRIPTION_LONG:
-			return (int *) data;
+			return (char *) data;
 		case QATTR_KEY_CANMOVE:
-			return (int *) bool_to_string(*((bool *) data));
+			return bool_to_string(*((bool *) data));
 		case QATTR_KEY_EMPTY:
-			return (int *) Q_ERRORCODE_INTSTRING;
+			return Q_ERRORCODE_CHARSTRING;
 		case QATTR_KEY_DEBUG:
-			return (int *) Q_ERRORCODE_INTSTRING;
+			return Q_ERRORCODE_CHARSTRING;
 		default:
 			Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
-			return (int *) QATTR_STRING_KEY_UNRECOGNIZED;
+			return QATTR_STRING_KEY_UNRECOGNIZED;
 	}
 }
 

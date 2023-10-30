@@ -270,8 +270,8 @@ extern int qattr_list_attr_set(QattrList_t *, QattrKey_t, /*@only@*/Qdatameta_t 
 /** Modify the value of an existing #QattrKey_t.                          */
 /*@unused@*/extern int qattr_list_attr_modify(QattrList_t *, QattrKey_t, /*@only@*/Qdatameta_t *);
 
-/** Convert a @ref Qattr_t.valuep to an `int *`.                          */
-/*@observer@*//*@unused@*/extern int *qattr_value_to_string(const QattrList_t *, QattrKey_t)/*@*/;
+/** Convert a @ref Qattr_t.valuep to an `char *`.                         */
+/*@observer@*//*@unused@*/extern char *qattr_value_to_string(const QattrList_t *, QattrKey_t)/*@*/;
 
 /** Convert a #QattrKey_t to a @c char *.                                 */
 /*@observer@*//*@unused@*/extern char *qattr_key_to_string(QattrKey_t)/*@*/;
