@@ -31,7 +31,7 @@ static bool devel_walkl_coords_arevalid(int, int, int)/*@*/;
  */
 int
 devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
-	
+
 	/* param validation */
 	if ((walk_area == NULL) || (curs_loc == NULL)) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
@@ -49,6 +49,80 @@ devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
 		}
 	}
 
+	/* check if cmd is a modify command */
+	if ((cmd >= DEVEL_WALK_CMD_MODIFY_MIN) && (cmd <= DEVEL_WALK_CMD_MODIFY_MAX)) {
+		
+		/* handle the edit command */
+		if (cmd == DEVEL_WALK_CMD_EDIT) {
+			QattrList_t *attr_list;
+			QattrKey_t key;
+			Qdatameta_t *datameta;
+			QobjType_t obj_type;
+			QobjType_t *obj_typep;
+			/* char  *char_data;      */
+			/* size_t userstring_len; */
+
+			/*
+			 * TODO: implement this properly! this section will be invoked whenever we
+			 * need to directly copy player input into a char * value.
+			 *
+			userstring_len = strlen(devel_walkio_userstring_get() + 1);
+			if ((data = calloc(userstring_len, sizeof(*data))) == NULL) {
+				Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+				return Q_ERROR;
+			}
+
+			strcpy(data, devel_walkio_userstring_get());
+			*/
+
+			
+			if ((attr_list = devel_walkl_loc_attr_list_get(walk_area, curs_loc)) == NULL) {
+				Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+				return Q_ERROR;
+			}
+
+			/* devel_walkio sets userint to the index of the changed attribute */
+			if ((key = qattr_list_attr_key_get(attr_list, devel_walkio_userint_get()))
+					== (QattrKey_t) Q_ERRORCODE_ENUM) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				return Q_ERROR;
+			}
+			
+			switch (key) {
+			case QATTR_KEY_QOBJECT_TYPE:
+				/* 
+				 * devel_walkio sets userstring to the string version of the new value
+				 */
+				/*@i1@*/if ((obj_type = qobj_string_to_type(devel_walkio_userstring_get()))
+						== (QobjType_t) Q_ERRORCODE_ENUM) {
+					if (devel_walkio_message_print(DEVEL_WALKIO_MESSAGE_MODIFY_ERROR) == Q_ERROR) {
+						Q_ERRORFOUND(QERROR_ERRORVAL);
+						return Q_ERROR;
+					}
+					return Q_OK;
+				}
+
+				if ((obj_typep = calloc((size_t) 1, sizeof(QobjType_t))) == NULL) {
+					Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+					return Q_ERROR;
+				}
+
+				*obj_typep = obj_type;
+				break;
+			default:
+				Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+				return Q_ERROR;
+			}
+			if ((datameta = qdatameta_create((Qdata_t *) obj_typep,
+							QDATA_TYPE_QOBJECT_TYPE, (size_t) 1)) == NULL) {
+				Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+				abort();
+			}
+			if (qattr_list_attr_modify(attr_list, key, datameta) == Q_ERROR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+			}
+		}
+	}
 	return Q_OK;
 }
 

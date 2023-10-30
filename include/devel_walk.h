@@ -6,6 +6,15 @@
 
 
 
+/** Message if the user uses an incorrect input.                             */
+#define DEVEL_WALKIO_MESSAGE_INPUT_INVALID \
+	"Invalid input..."
+/** Message if the user tries and fails to modify something.                 */
+#define DEVEL_WALKIO_MESSAGE_MODIFY_ERROR \
+	"An error occurred while trying to modify an object..."
+
+
+
 /**
  * Type for commands sent in the I/O section of devel_walk.
  */
@@ -16,7 +25,12 @@ typedef enum DevelWalkCmd_t {
 	 * Only ever sent internally; the player definitionally cannot ever send this
 	 * command to the program.
 	 */
-	DEVEL_WALK_CMD_INIT = Q_ENUM_VALUE_START, 
+	DEVEL_WALK_CMD_INIT = Q_ENUM_VALUE_START,
+
+	/**
+	 * Pass a tick without doing anything.
+	 */
+	DEVEL_WALK_CMD_WAIT,
 
 
 
@@ -80,13 +94,19 @@ typedef enum DevelWalkCmd_t {
 extern int devel_walkio_init(void);
 
 /** Initialize the devel_walkio @c WINDOW vars.                      */
-extern int devel_walkio_wins_init(WINDOW *, WINDOW *);
+extern int devel_walkio_wins_init(WINDOW *, WINDOW *, WINDOW *, WINDOW *);
 
 /** Terminate devel_walkio.                                          */
 extern int devel_walkio_end(void);
 
-/** Get @ref devel_walkio_logic_arg.                                 */
-/*@observer@*//*@out@*/extern char *devel_walkio_userstring_get(void);
+/** Print a text string to the user.                                 */
+extern int devel_walkio_message_print(/*@null@*/char *);
+
+/** Get @ref devel_walkio_userstring.                                */
+/*@observer@*//*@out@*/extern char *devel_walkio_userstring_get(void)/*@globals internalState@*/;
+
+/** Get @ref devel_walkio_userint.                                   */
+extern int devel_walkio_userint_get(void)/*@globals internalState@*/;
 
 /** Initialize @c WINDOW types for devel_walk.                       */
 extern int devel_walk_wins_init(/*@out@*/WINDOW **, /*@out@*/WINDOW **, /*@out@*/WINDOW **, /*@out@*/WINDOW **);

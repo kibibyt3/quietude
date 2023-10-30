@@ -24,16 +24,22 @@
 /** Max amount of characters that can be stored in #devel_walkio_userstring. */ 
 #define DEVEL_WALKIO_USERSTRING_LENGTH_MAX 1024
 
-/** Width of window created by @ref devel_walkio_string_input_choice. */
-#define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_HEIGHT 40
-/** Height of window created by @ref devel_walkio_string_input_choice. */
-#define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_WIDTH 90
-/** Header message of window created by @ref devel_walkio_string_input_choice. */
-#define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_HEADER \
-	"Select one of the following...\r(Arrow keys to navigate)"
-/** Prompt message of window created by @ref devel_walkio_string_input_choice. */
-#define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_PROMPT "Choice: "
+/** Default value for #devel_walkio_userstring.                              */
+#define DEVEL_WALKIO_USERSTRING_DEFAULT "INIT"
 
+/** Width of window created by @ref devel_walkio_string_input_choice.        */
+#define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_HEIGHT 40
+/** Height of window created by @ref devel_walkio_string_input_choice.       */
+#define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_WIDTH 90
+/**
+ * Header message of window created by @ref devel_walkio_string_input_choice. 
+ */
+#define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_HEADER \
+	"Select one of the following...<CR>(Arrow keys to navigate)"
+/**
+ * Prompt message of window created by @ref devel_walkio_string_input_choice.
+ */
+#define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_PROMPT "Choice: "
 
 /**
  * @defgroup DevelWalkInputChars devel_walk Input Characters
@@ -108,11 +114,16 @@
 /*@null@*/static WINDOW *area_win = NULL;
 /** The window that outputs the relevant #QattrList_t. */
 /*@null@*/static WINDOW *info_win = NULL;
+/** The window to draw the border for #area_win.       */
+/*@null@*/static WINDOW *area_border_win = NULL;
+/** The window to draw the border for #info_win.       */
+/*@null@*/static WINDOW *info_border_win = NULL;
 
 /** 
  * Stores string from user. 
  */
-/*@out@*/static char devel_walkio_userstring[DEVEL_WALKIO_USERSTRING_LENGTH_MAX];
+static char devel_walkio_userstring[DEVEL_WALKIO_USERSTRING_LENGTH_MAX] = 
+/*@i1@*/DEVEL_WALKIO_USERSTRING_DEFAULT;
 
 /**
  * Stores int from user.
@@ -192,22 +203,29 @@ devel_walkio_init() {
 
 /**
  * Set the devel_walkio @c WINDOW vars.
- * @param[out] area_argwin: window to output the #QwalkArea_t.
- * @param[out] info_argwin: window to output the relevant #QattrList_t.
+ * @param[in] area_argwin: window to output the #QwalkArea_t.
+ * @param[in] info_argwin: window to output the relevant #QattrList_t.
+ * @param[in] area_border_argwin: window to draw the border for @p area_argwin.
+ * @param[in] info_border_argwin: window to draw the border for @p info_argwin.
  * return #Q_OK or #Q_ERROR.
  */
 int
-devel_walkio_wins_init(WINDOW *area_argwin, WINDOW *info_argwin) {
-	if ((area_argwin == NULL) || (info_argwin == NULL)) {
+devel_walkio_wins_init(WINDOW *area_argwin, WINDOW *area_border_argwin,
+		WINDOW *info_argwin, WINDOW *info_border_argwin) {
+	if ((area_argwin == NULL) || (info_argwin == NULL) ||
+			(area_border_argwin == NULL) || (info_border_argwin == NULL)) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
 	}
-	if ((area_win != NULL) || (info_win != NULL)) {
+	if ((area_win != NULL) || (info_win != NULL) ||
+			(area_border_win != NULL) || (info_border_win != NULL)) {
 		Q_ERRORFOUND(QERROR_NONNULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
 	}
 	area_win = area_argwin;
 	info_win = info_argwin;
+	area_border_win = area_border_argwin;
+	info_border_win = info_border_argwin;
 	if ((keypad(area_win, true) == ERR) || (keypad(info_win, true) == ERR)) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return Q_ERROR;
@@ -251,6 +269,10 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 	}
 	
 	ch = wgetch(area_win);
+	if (devel_walkio_message_print(NULL) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return (DevelWalkCmd_t) Q_ERROR;
+	}
 	if (ch == ERR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
@@ -270,6 +292,7 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 			return (DevelWalkCmd_t) Q_ERROR;
 		}
+
 		attr_list = devel_walkl_loc_attr_list_get(walk_area, curs_loc);
 		if (attr_list == NULL) {
 			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
@@ -307,7 +330,8 @@ devel_walkio_out(const QwalkArea_t *walk_area, const int *curs_loc) {
 	int returnval = Q_OK;
 	int r;
 	
-	if ((area_win == NULL) || (info_win == NULL)) {
+	if ((area_win == NULL) || (info_win == NULL)
+			|| (area_border_win == NULL) || (info_border_win == NULL)) {
 		Q_ERRORFOUND(QERROR_MODULE_UNINITIALIZED);
 		return Q_ERROR;
 	}
@@ -324,11 +348,27 @@ devel_walkio_out(const QwalkArea_t *walk_area, const int *curs_loc) {
 		returnval = Q_ERROR;
 	}
 
+	box(info_border_win, 0, 0);
+	box(area_border_win, 0, 0);
+	if (wrefresh(info_border_win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+	if (wrefresh(area_border_win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
 	if (wrefresh(info_win) == ERR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		returnval = Q_ERROR;
 	}
 	if (wrefresh(area_win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+
+	/* TODO: maybe change cursor style depending on curs_loc[2]. */
+	if (wmove(area_win, curs_loc[0], curs_loc[1]) == ERR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		returnval = Q_ERROR;
 	}
@@ -416,8 +456,8 @@ devel_walkio_area_out(const QwalkArea_t *walk_area, const int *curs_loc) {
 				return Q_ERROR;
 			}
 			
-			/* if *obj_typep isn't an empty space, print it to the screen */
-			if (*obj_typep != QOBJ_TYPE_VOID) {
+			/* if *obj_typep isn't a layer_floater void, print it to the screen */
+			if ((*obj_typep != QOBJ_TYPE_VOID) || (i != 1)) {
 				
 				outch = qwalk_obj_type_to_chtype(*obj_typep);
 				if (outch == (chtype) ERR) {
@@ -434,11 +474,6 @@ devel_walkio_area_out(const QwalkArea_t *walk_area, const int *curs_loc) {
 				}
 			}
 		}
-	}
-	/* TODO: maybe change cursor style depending on curs_loc[2]. */
-	if (wmove(area_win, curs_loc[0], curs_loc[1]) == ERR) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-		returnval = Q_ERROR;
 	}
 	return returnval;
 }
@@ -573,11 +608,25 @@ devel_walkio_info_out(const QwalkArea_t *walk_area, const int *curs_loc, DevelWa
  * @return @ref devel_walkio_userstring.
  */
 char *
-devel_walkio_userstring_get() {
+devel_walkio_userstring_get()
+/*@globals devel_walkio_userstring@*/
+{
 	return devel_walkio_userstring;
 }
 
 
+/**
+ * Get @ref devel_walkio_userint.
+ * @return @ref devel_walkio_userint.
+ */
+int
+devel_walkio_userint_get()
+/*@globals devel_walkio_userint@*/
+{
+	return devel_walkio_userint;
+}
+
+ 
 /**
  * Get one of a number of specific possible values for a key.
  * Set #devel_walkio_string_input_choice to the value chosen.
@@ -594,6 +643,11 @@ devel_walkio_string_input_choice(QattrKey_t key) {
 	int returnval = Q_OK;	
 	/*@observer@*/char **options;
 	int optionc;
+
+	if ((info_win == NULL) || (area_win == NULL)) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
 
 	switch (key) {
 	case QATTR_KEY_QOBJECT_TYPE:
@@ -648,9 +702,65 @@ devel_walkio_string_input_choice(QattrKey_t key) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		returnval = Q_ERROR;	
 	}
+
+	if (wrefresh(info_win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+	if (wrefresh(area_win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
 	/*@i3@*/return returnval;
 }
 
+
+/**
+ * Print a text string to the user and display it at the bottom of @p area_win.
+ * @param[in] s: message to print. If @c NULL, clears the area to which messages
+ * are printed.
+ * @return #Q_OK on success or #Q_ERROR if @s is too long for the screen or if 
+ * a different error occurs.
+ */
+int
+devel_walkio_message_print(char *s) {
+	int max_y, max_x;
+	int returnval = Q_OK;
+
+	if (area_win == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+
+	/*@i6@*/getmaxyx(area_win, max_y, max_x);
+	
+	/* normal, non-null behaviour */
+	if (s != NULL) {
+		/* make sure message will fit */
+		if ((int) strlen(s) > (max_x - 1)) {
+			Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+			return Q_ERROR;
+		}
+	
+		if (mvwprintw(area_win, max_y - 1, 0, s) == ERR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			returnval = Q_ERROR;
+		}
+	/* @c NULL behaviour */
+	} else {
+		if (wmove(area_win, max_y - 1, 0) == ERR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			returnval = Q_ERROR;
+		}
+		for (int i = 0; i < (max_x - 1); i++) {
+			if (waddch(area_win, (chtype) ' ') == ERR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				returnval = Q_ERROR;
+			}
+		}
+	}
+
+	return returnval;
+
+}
 
 
 /**
@@ -693,7 +803,9 @@ devel_walkio_input_to_command(int ch) {
 		return DEVEL_WALK_CMD_EXIT;
 	
 	default:
-		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
-		return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
+		if (devel_walkio_message_print(DEVEL_WALKIO_MESSAGE_INPUT_INVALID) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+		}
+		return DEVEL_WALK_CMD_WAIT;
 	}
 }
