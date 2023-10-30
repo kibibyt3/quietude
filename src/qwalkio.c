@@ -74,7 +74,11 @@
  * Output character for #QOBJ_TYPE_TREE.
  */
 #define QWALK_OCH_TREE 'T'
-
+/**
+ * @ingroup OutputChars
+ * Output character for #QOBJ_TYPE_VOID.
+ */
+#define QWALK_OCH_VOID ' '
 
 
 
@@ -192,8 +196,8 @@ qwalk_output_subtick(const QwalkArea_t *walk_area) {
 				return Q_ERROR;
 			}
 			
-			/* if *obj_typep isn't an empty space, print it to the screen */
-			if (*obj_typep != QOBJ_TYPE_VOID) {
+			/* if *obj_typep isn't a layer_floater void, print it to the screen */
+			if ((*obj_typep != QOBJ_TYPE_VOID) || (i != 1)) {
 				
 				outch = qwalk_obj_type_to_chtype(*obj_typep);
 				if (outch == (chtype) ERR) {
@@ -264,6 +268,8 @@ qwalk_obj_type_to_chtype(QobjType_t obj_type) {
 		return (chtype) QWALK_OCH_GRASS;
 	case QOBJ_TYPE_TREE: 
 		return (chtype) QWALK_OCH_TREE;
+	case QOBJ_TYPE_VOID: 
+		return (chtype) QWALK_OCH_VOID;
 	default:
 		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 		return (chtype) ERR;
