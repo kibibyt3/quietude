@@ -198,8 +198,14 @@ extern QdataType_t qdatameta_type_get(const Qdatameta_t *)/*@*/;
 /** Get the size of a #QdataType_t.           */
 extern size_t qdata_type_size_get(QdataType_t)/*@*/;
 
-/** Convert a bool to a string.               */
-/*@unused@*/extern /*@observer@*/char *bool_to_string(bool)/*@*/;
-
 /** Convert a #QobjType_t to a string.        */
 /*@unused@*/extern /*@observer@*/char *qobj_type_to_string(QobjType_t)/*@*/;
+
+/** Convert a string to a #QobjType_t.        */
+/*@unused@*/extern QobjType_t qobj_string_to_type(char *)/*@*/;
+
+/** Convert a @c bool to a string.            */
+/*@unused@*/extern /*@observer@*/char *bool_to_string(bool)/*@*/;
+
+/** Convert a string to a @c bool.            */
+/*@unused@*/extern bool charstring_to_bool(char *)/*@*/;

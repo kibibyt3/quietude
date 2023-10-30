@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 #include <assert.h>
 #include <ncurses.h>
 
@@ -197,6 +198,30 @@ qobj_type_to_string(QobjType_t type) {
 
 
 /**
+ * Convert a `char *` to a #QobjType_t.
+ * @param[in] s: relevant `char *`.
+ * @return #QobjType_t version of @p s.
+ */
+QobjType_t
+qobj_string_to_type(char *s) {
+	
+	if (strcmp(s, QOBJ_STRING_TYPE_PLAYER) == 0) {
+		return QOBJ_TYPE_PLAYER;
+	} else if (strcmp(s, QOBJ_STRING_TYPE_GRASS) == 0) {
+		return QOBJ_TYPE_GRASS;
+	} else if (strcmp(s, QOBJ_STRING_TYPE_TREE) == 0) {
+		return QOBJ_TYPE_TREE;
+	} else if (strcmp(s, QOBJ_STRING_TYPE_VOID) == 0) {
+		return QOBJ_TYPE_VOID;
+	} else {
+		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+		return (QobjType_t) Q_ERRORCODE_ENUM;
+	}
+
+}
+
+
+/**
  * Convert a @c bool to a `char *`.
  * @param[in] b: relevant @c bool.
  * @return @c char * version of @p b.
@@ -207,5 +232,21 @@ bool_to_string(bool b) {
 		return BOOL_STRING_TRUE;
 	} else {
 		return BOOL_STRING_FALSE;
+	}
+}
+
+
+/**
+ * Convert a `char *` to a bool.
+ * @param[in] s: relevant `char *`.
+ * @return @c bool version of @p s. If @s isn't a possible value, @c false will
+ * be returned anyway.
+ */
+bool
+charstring_to_bool(char *s) {
+	if (strcmp(s, BOOL_STRING_TRUE) == 0) {
+		return true;
+	} else {
+		return false;
 	}
 }
