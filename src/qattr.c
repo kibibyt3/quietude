@@ -264,10 +264,10 @@ qattr_list_attr_remove(QattrList_t* attr_list, QattrKey_t attr_key) {
 
 /**
  * Add key/value pair to a #QattrList_t.
- * @param[out] attr_list: list to gain a key/value pair. Its @c index_ok element
- * is incremented with a successful addition.
+ * @param[out] attr_list: list to gain a key/value pair. Its @ref
+ * #QattrList_t.index_ok is incremented with a successful addition.
  * @param[in]  attr_key: key to add to the #QattrList_t
- * @param[out] datameta: datameta to add to the #QattrList_t
+ * @param[in]  datameta: datameta to add to the #QattrList_t
  * @return #Q_OK or #Q_ERROR.
  */
 int
@@ -281,6 +281,45 @@ qattr_list_attr_set(QattrList_t *attr_list, QattrKey_t attr_key, Qdatameta_t *da
 	attr_list->attrp[index_free].valuep = datameta;
 	(attr_list->index_ok)++; /* Index is no longer available; move to the next */
 	return Q_OK;
+}
+
+
+/**
+ * Alter the value of an already-existing key in a #QattrList_t.
+ * @param[out] attr_list: #QattrList_t whose key is to be altered.
+ * @param[in] attr_key: #QattrKey_t whose value will be set to @p datameta.
+ * @param[in] datameta: #Qatameta_t to add to @p attr_list.
+ * @return #Q_ERROR_NOCHANGE if @p attr_key could not be found, or #Q_OK or 
+ * #Q_ERROR.
+ */
+int
+qattr_list_attr_modify(QattrList_t *attr_list, QattrKey_t attr_key, Qdatameta_t *datameta) {
+	/* Validate attr_key */
+	if ((attr_key < (QattrKey_t) Q_ENUM_VALUE_START) || (attr_key > QATTR_KEY_COUNT)) {
+		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+	}
+	
+	/*
+	 * when the matching key is found, destroy its value and replace it with the
+	 * new one.
+	 */
+	for (int i = 0; i < (int) qattr_list_count_get(attr_list); i++) {
+		if (qattr_list_attr_key_get(attr_list, i) == attr_key) {
+			if (qdatameta_destroy(attr_list->attrp[i].valuep) == Q_ERROR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+			}
+			attr_list->attrp[i].valuep = datameta;
+			return Q_OK;
+		}
+	}
+
+	/* 
+	 * to avoid memory leaks, destroy the parameter if it wasn't successfully set.
+	 */
+	if (qdatameta_destroy(datameta) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+	return Q_ERROR_NOCHANGE;
 }
 
 
