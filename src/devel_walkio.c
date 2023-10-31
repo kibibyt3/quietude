@@ -8,10 +8,13 @@
 
 #include <stdlib.h>
 #include <stddef.h>
+#include <locale.h>
 #include <ncurses.h>
+#include <form.h>
 #include <cdk.h>
 
 #include "qdefs.h"
+#include "iodefs.h"
 #include "qerror.h"
 
 #include "mode.h"
@@ -27,10 +30,20 @@
 /** Default value for #devel_walkio_userstring.                              */
 #define DEVEL_WALKIO_USERSTRING_DEFAULT "INIT"
 
-/** Width of window created by @ref devel_walkio_string_input_choice.        */
+/** Width of window created by @ref devel_walkio_string_input_choice().      */
 #define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_HEIGHT 40
-/** Height of window created by @ref devel_walkio_string_input_choice.       */
+/** Height of window created by @ref devel_walkio_string_input_choice().     */
 #define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_WIDTH 90
+/** Width of window created by @ref devel_walkio_string_input_raw().         */
+#define DEVEL_WALKIO_STRING_INPUT_RAW_WIN_HEIGHT 25
+/** Height of window created by @ref devel_walkio_string_input_raw().        */
+#define DEVEL_WALKIO_STRING_INPUT_RAW_WIN_WIDTH 120
+
+/** Title of the window created by @ref devel_walkio_string_input_raw().     */
+#define DEVEL_WALKIO_STRING_INPUT_RAW_WIN_TITLE \
+	"INPUT REQUESTED"
+
+
 /**
  * Header message of window created by @ref devel_walkio_string_input_choice. 
  */
@@ -185,6 +198,10 @@ int
 devel_walkio_init() {
 	int returnval = Q_OK;
 
+	if (setlocale(LC_ALL, "") == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
 	if (initscr() == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		abort();
@@ -292,10 +309,6 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 	/* deal with #DEVEL_WALK_CMD_EDIT */
 	if (cmd == DEVEL_WALK_CMD_EDIT) {
 		
-		if (curs_set(0) == ERR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-			return (DevelWalkCmd_t) Q_ERROR;
-		}
 
 		attr_list = devel_walkl_loc_attr_list_get(walk_area, curs_loc);
 		if (attr_list == NULL) {
@@ -307,16 +320,28 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 			return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
 		}
 		key = qattr_list_attr_key_get(attr_list, devel_walkio_userint);
-		if (devel_walkio_string_input_choice(key) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-			return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
+		
+		/* handle keys with specific possible input values */
+		if ((key == QATTR_KEY_QOBJECT_TYPE) || (key == QATTR_KEY_CANMOVE)) {
+			if (curs_set(0) == ERR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				return (DevelWalkCmd_t) Q_ERROR;
+			}
+			if (devel_walkio_string_input_choice(key) == Q_ERROR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
+			}
+			if (curs_set(1) == ERR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				return (DevelWalkCmd_t) Q_ERROR;
+			}
+		/* handle keys that take arbitrary string input */
+		} else if ((key == QATTR_KEY_NAME) || (key == QATTR_KEY_DESCRIPTION_BRIEF)
+				|| (key == QATTR_KEY_DESCRIPTION_LONG)) {
+			devel_walkio_string_input_raw(key);
 		}
-		if (curs_set(1) == ERR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-			return (DevelWalkCmd_t) Q_ERROR;
-		}
-	}
 
+	}
 
 	return cmd;
 }
@@ -557,9 +582,23 @@ devel_walkio_info_out(const QwalkArea_t *walk_area, const int *curs_loc, DevelWa
 					returnval = Q_ERROR;
 				}
 			}
-			if (wprintw(info_win, "%s : %s\n",
-						qattr_key_to_string(key),
-						(char *) qattr_value_to_string(attr_list, key))
+
+			/* embolden, underline, and print key */
+			if (wattr_on(info_win, A_BOLD | A_UNDERLINE, NULL) == ERR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				returnval = Q_ERROR;
+			}
+			if (wprintw(info_win, "%s", qattr_key_to_string(key)) == ERR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				returnval = Q_ERROR;
+			}
+			if (wattr_off(info_win, A_BOLD | A_UNDERLINE, NULL) == ERR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				returnval = Q_ERROR;
+			}
+
+			/* print value */
+			if (wprintw(info_win, ": %s\n", qattr_value_to_string(attr_list, key))
 					== ERR) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
 				returnval = Q_ERROR;
@@ -570,7 +609,12 @@ devel_walkio_info_out(const QwalkArea_t *walk_area, const int *curs_loc, DevelWa
 					returnval = Q_ERROR;
 				}
 			}
+			if (wprintw(info_win, "\n") == ERR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				returnval = Q_ERROR;
+			}
 		}
+
 		/* deal with user input */
 		if (isinputloop) {
 			if (wrefresh(info_win) == ERR) {
@@ -714,6 +758,76 @@ devel_walkio_string_input_choice(QattrKey_t key) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 	}
 	/*@i3@*/return returnval;
+}
+
+
+/**
+ * Open a window to get raw string input from the user.
+ */
+char *
+devel_walkio_string_input_raw(void) {
+	FIELD *fields[2];
+	FORM  *form;
+	WINDOW *border_win;
+	WINDOW *form_win;
+	int rows, columns;
+	int y_center, x_center;
+
+	field[0] = new_field(
+			DEVEL_WALKIO_STRING_INPUT_RAW_WIN_HEIGHT,
+			DEVEL_WALKIO_STRING_INPUT_RAW_WIN_WIDTH,
+			0,
+			0,
+			0,
+			0);
+	if (field[0] == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+
+	field[1] = NULL;
+	if ((form = new_form(field)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+	if (scale_form(form, &rows, &columns) != E_OK) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+	io_centerof(LINES, COLS, rows + 2, columns + 2, &y_center, &x_center);
+	
+	/* create the input window at the center of the screen with a border and title */
+	if ((border_win = newwin(rows + 2, columns + 2, y_center, x_center)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+	box(border_win, 0, 0);
+	io_centerof(0, columns + 2,
+			0, strlen(DEVEL_WALKIO_STRING_INPUT_RAW_WIN_TITLE),
+			&y_center, &x_center);
+
+	mvwprintw(border_win, y_center, x_center, DEVEL_WALKIO_STRING_INPUT_RAW_WIN_TITLE);
+	
+	if (set_form_win(form, border_win) != E_OK) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+	if ((form_win = derwin(border_win, rows, columns, 1, 1)) == NULL){
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+	if (set_form_sub(form, form_win) != E_OK) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+	if (post_form(my_form) != E_OK) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+	refresh();
+
 }
 
 
