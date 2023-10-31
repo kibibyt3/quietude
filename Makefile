@@ -5,7 +5,7 @@ CFLAGS = -I include -Og -g3 -Wall -Wstrict-prototypes -Wmissing-prototypes -Wsha
 LDLIBS = -lncurses -lcdk
 LINTFLAGS = -Iinclude -I/usr/local/include -checks +posixlib
 
-GAME_OBJECTS = ./src/qfile.o ./src/qattr.o ./src/qdefs.o ./src/qerror.o ./src/qwalkw.o ./src/qwalkl.o ./src/qwalkio.o
+GAME_OBJECTS = ./src/qfile.o ./src/qattr.o ./src/qdefs.o ./src/ioutils.o ./src/qerror.o ./src/qwalkw.o ./src/qwalkl.o ./src/qwalkio.o
 GAME_SOURCES = $(GAME_OBJECTS:.o=.c)
 
 TEST_OBJECTS = ./src/test.o
