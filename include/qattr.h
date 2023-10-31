@@ -60,6 +60,12 @@ QOBJ_TYPE_VOID
 true;
 
 
+/* DEFAULT QattrKey_t TYPE VALUES ON ERROR */
+
+/** Default value for a string #QattrKey_t (used on error.) */
+#define QATTR_KEY_STRING_DEFAULT "DEFAULT"
+
+
 
 
 /**

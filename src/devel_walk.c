@@ -24,7 +24,7 @@
 
 
 /** Total number of possible #QattrKey_t devel_walk can handle. */
-#define DEVEL_WALK_ATTR_COUNT 2 
+#define DEVEL_WALK_ATTR_COUNT 5 
 
 
 
@@ -204,11 +204,25 @@ devel_walk_area_default_create() {
 QattrList_t *
 devel_attr_list_default_create(QwalkLayerType_t layer_type) {
 	QobjType_t   *obj_type;
+	char         *salias;
+	char         *s;
 	bool         *canmove;
-	Qdatameta_t  *datameta;
-	/*@only@*/QattrList_t  *attr_list;
+	
+	size_t        count;
+	QdataType_t   data_type;
+	QattrKey_t    key;
 
+	Qdata_t      *data;
+	Qdatameta_t  *datameta;
+	QattrList_t  *attr_list;
 	int r;
+
+
+	if ((layer_type != QWALK_LAYER_TYPE_EARTH) && (layer_type != QWALK_LAYER_TYPE_FLOATER)) {
+		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+		return NULL;
+	}
+
 	attr_list = qattr_list_create((size_t) DEVEL_WALK_ATTR_COUNT);
 	if (attr_list == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
@@ -216,59 +230,129 @@ devel_attr_list_default_create(QwalkLayerType_t layer_type) {
 	}
 
 
-
-	/* default #QATTR_KEY_QOBJECT_TYPE init. */
-	obj_type = calloc((size_t) 1, sizeof(*obj_type));
-	if (obj_type == NULL) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		abort();
-	}
-	if (layer_type == QWALK_LAYER_TYPE_EARTH) {
-		*obj_type = (QobjType_t) QATTR_KEY_QOBJECT_TYPE_QWALK_DEFAULT_EARTH;
-	} else if (layer_type == QWALK_LAYER_TYPE_FLOATER) {
-		*obj_type = (QobjType_t) QATTR_KEY_QOBJECT_TYPE_QWALK_DEFAULT_FLOATER;
-	} else {
-		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
-		abort();
-	}
+	/* initialize each default attribute */
+	for (int i = 0; i < DEVEL_WALK_ATTR_COUNT; i++) {
 	
-	datameta = qdatameta_create((Qdata_t *) obj_type, QDATA_TYPE_QOBJECT_TYPE, (size_t) 1);
-	if (datameta == NULL) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		abort();
-	}
+		key = (QattrKey_t) Q_ERRORCODE_ENUM;	
+		salias = QATTR_KEY_STRING_DEFAULT;
 
-	r = qattr_list_attr_set(attr_list, QATTR_KEY_QOBJECT_TYPE, datameta);
-	if (r == Q_ERROR) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-	}
-	
+		/* prep for keys that share a data type */
+		switch (i) {
+
+		/* char * prep */
+		case 1:
+			key = QATTR_KEY_NAME;
+			if (layer_type == QWALK_LAYER_TYPE_EARTH) {
+				salias = QATTR_KEY_NAME_DEFAULT_QWALK_DEFAULT_EARTH;
+			} else {
+				salias = QATTR_KEY_NAME_DEFAULT_QWALK_DEFAULT_FLOATER;
+			}
+			break;
+		case 2:
+			key = QATTR_KEY_DESCRIPTION_BRIEF;
+			if (layer_type == QWALK_LAYER_TYPE_EARTH) {
+				salias = QATTR_KEY_DESCRIPTION_BRIEF_QWALK_DEFAULT_EARTH;
+			} else {
+				salias = QATTR_KEY_DESCRIPTION_BRIEF_QWALK_DEFAULT_FLOATER;
+			}
+			break;
+		case 3:
+			key = QATTR_KEY_DESCRIPTION_LONG;
+			if (layer_type == QWALK_LAYER_TYPE_EARTH) {
+				salias = QATTR_KEY_DESCRIPTION_LONG_QWALK_DEFAULT_EARTH;
+			} else {
+				salias = QATTR_KEY_DESCRIPTION_LONG_QWALK_DEFAULT_FLOATER;
+			}
+			break;
+		}
+		
 
 
-	/* default #QATTR_KEY_CANMOVE init. */
-	canmove = calloc((size_t) 1, sizeof(*canmove));
-	if (canmove == NULL) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		abort();
-	}
-	if (layer_type == QWALK_LAYER_TYPE_EARTH) {
-		*canmove = QATTR_KEY_CANMOVE_QWALK_DEFAULT_EARTH;
-	} else if (layer_type == QWALK_LAYER_TYPE_FLOATER) {
-		*canmove = QATTR_KEY_CANMOVE_QWALK_DEFAULT_FLOATER;
-	} else {
-		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
-		abort();
-	}
+		/* post-prep initializations */
+		switch (i) {
+		
 
-	datameta = qdatameta_create((Qdata_t *) canmove, QDATA_TYPE_BOOL, (size_t) 1);
-	if (datameta == NULL) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		abort();
-	}
+		/* default #QATTR_KEY_QOBJECT_TYPE init */
+		case 0:
+			key = QATTR_KEY_QOBJECT_TYPE;
+			data_type = QDATA_TYPE_QOBJECT_TYPE;
+			count     = (size_t) 1;
 
-	r = qattr_list_attr_set(attr_list, QATTR_KEY_CANMOVE, datameta);
-	if (r == Q_ERROR) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
+			obj_type = calloc(count, sizeof(*obj_type));
+			if (obj_type == NULL) {
+				Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+				abort();
+			}
+			if (layer_type == QWALK_LAYER_TYPE_EARTH) {
+				*obj_type = (QobjType_t) QATTR_KEY_QOBJECT_TYPE_QWALK_DEFAULT_EARTH;
+			} else {
+				*obj_type = (QobjType_t) QATTR_KEY_QOBJECT_TYPE_QWALK_DEFAULT_FLOATER;
+			}
+			data = (Qdata_t *) obj_type;
+			break;
+		
+
+		/* default #QATTR_KEY_NAME init */
+		case 1:
+		
+		/*@fallthrough@*/
+		/* default #QATTR_KEY_DESCRIPTION_BRIEF init */
+		case 2:
+			
+		/*@fallthrough@*/
+		/* default #QATTR_KEY_DESCRIPTION_LONG init  */
+		case 3:
+			data_type = QDATA_TYPE_CHAR_STRING;
+			/* strlen() does not include the terminating character */
+			count     = strlen(salias + (size_t) 1);
+			
+			s = calloc(count, sizeof(*s));
+			if (s == NULL) {
+				Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+				abort();
+			}
+
+			strcpy(s, salias);
+			data = (Qdata_t *) s;
+			break;
+		
+
+		/* default #QATTR_KEY_CANMOVE init */
+		case 4:
+			key = QATTR_KEY_CANMOVE;
+			data_type = QDATA_TYPE_BOOL;
+			count     = (size_t) 1;
+
+			canmove = calloc(count, sizeof(*canmove));
+			if (canmove == NULL) {
+				Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+				abort();
+			}
+
+			if (layer_type == QWALK_LAYER_TYPE_EARTH) {
+				*canmove = QATTR_KEY_CANMOVE_QWALK_DEFAULT_EARTH;
+			} else {
+				*canmove = QATTR_KEY_CANMOVE_QWALK_DEFAULT_FLOATER;
+			}
+			data = (Qdata_t *) canmove;
+			break;
+
+
+		default:
+			Q_ERRORFOUND(QERROR_INDEX_OUTOFRANGE);
+			abort();
+		}
+
+		datameta = qdatameta_create((Qdata_t *) data, data_type, count);
+		if (datameta == NULL) {
+			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+			abort();
+		}
+
+		r = qattr_list_attr_set(attr_list, key, datameta);
+		if (r == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+		}
 	}
 
 
