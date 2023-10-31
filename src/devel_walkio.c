@@ -197,6 +197,10 @@ devel_walkio_init() {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		returnval = Q_ERROR;
 	}
+	if (curs_set(1) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
 	return returnval;
 }
 
