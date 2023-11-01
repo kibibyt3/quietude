@@ -7,11 +7,13 @@
 #include <ncurses.h>
 
 #include "qdefs.h"
+#include "ioutils.h"
 #include "qattr.h"
 #include "qfile.h"
 #include "qerror.h"
 #include "mode.h"
 #include "qwalk.h"
+
 
 /*
 #include "mode.h"
@@ -32,6 +34,14 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	fprintf(stderr, "------END PHONY ERRORS------\n\n\n");
 
 	int r;
+
+	char str[] = "   MY NAME   IS   WWWOWW LITEL DGGO  GGIE    ";
+	
+	if (io_whitespace_trim(str) == Q_ERROR) {
+		abort();
+	}
+
+	printf("%s\n", str);
 
 	int *intstr = calloc((size_t) 5, sizeof(*intstr));
 	assert(intstr != NULL);
