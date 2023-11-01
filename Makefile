@@ -2,7 +2,8 @@ CC = gcc
 LINT.c = splint
 
 CFLAGS = -I include -Og -g3 -Wall -Wstrict-prototypes -Wmissing-prototypes -Wshadow -Wconversion
-LDLIBS = -lncurses -lcdk
+TEST_LDLIBS = -lncurses
+DEVEL_LDLIBS = -lform -lncurses -lcdk
 LINTFLAGS = -Iinclude -I/usr/local/include -checks +posixlib
 
 GAME_OBJECTS = ./src/qfile.o ./src/qattr.o ./src/qdefs.o ./src/ioutils.o ./src/qerror.o ./src/qwalkw.o ./src/qwalkl.o ./src/qwalkio.o
@@ -17,10 +18,10 @@ DEVEL_SOURCES = $(DEVEL_OBJECTS:.o=.c)
 all: test devel_walk
 
 test: $(GAME_OBJECTS) $(TEST_OBJECTS)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
+	$(CC) $(CFLAGS) -o $@ $^ $(TEST_LDLIBS)
 
 devel_walk: $(GAME_OBJECTS) $(DEVEL_OBJECTS)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
+	$(CC) $(CFLAGS) -o $@ $^ $(DEVEL_LDLIBS)
 
 clean:
 	$(RM) src/*.o test devel_walk
