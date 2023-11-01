@@ -15,6 +15,7 @@
 
 #include "qdefs.h"
 #include "iodefs.h"
+#include "ioutils.h"
 #include "qerror.h"
 
 #include "mode.h"
@@ -186,6 +187,7 @@ extern int wattr_on(WINDOW *, attr_t, /*@null@*/void *);
 
 static int devel_walkio_area_out(const QwalkArea_t *, const int *); 
 static int devel_walkio_info_out(const QwalkArea_t *, const int *, DevelWalkIOInfoOutMode_t);
+static int devel_walkio_string_input_raw(const char *);
 static int devel_walkio_string_input_choice(QattrKey_t);
 static DevelWalkCmd_t devel_walkio_input_to_command(int);
 
@@ -198,9 +200,18 @@ int
 devel_walkio_init() {
 	int returnval = Q_OK;
 
+	/*
+	 * ensure #DEVEL_WALKIO_USERSTRING_LENGTH_MAX will fit in the
+	 * @ref devel_walkio_string_input_raw() window.
+	 */
+	if (DEVEL_WALKIO_USERSTRING_LENGTH_MAX >
+			(DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_HEIGHT *
+			 DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_WIDTH)) {
+		Q_ERRORFOUND(QERROR_BADDEFINE);
+	}
 	if (setlocale(LC_ALL, "") == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		abort();
+		returnval = Q_ERROR;
 	}
 	if (initscr() == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
@@ -325,7 +336,7 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 		if ((key == QATTR_KEY_QOBJECT_TYPE) || (key == QATTR_KEY_CANMOVE)) {
 			if (curs_set(0) == ERR) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
-				return (DevelWalkCmd_t) Q_ERROR;
+				return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
 			}
 			if (devel_walkio_string_input_choice(key) == Q_ERROR) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
@@ -333,12 +344,15 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 			}
 			if (curs_set(1) == ERR) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
-				return (DevelWalkCmd_t) Q_ERROR;
+				return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
 			}
 		/* handle keys that take arbitrary string input */
 		} else if ((key == QATTR_KEY_NAME) || (key == QATTR_KEY_DESCRIPTION_BRIEF)
 				|| (key == QATTR_KEY_DESCRIPTION_LONG)) {
-			devel_walkio_string_input_raw(key);
+			if (devel_walkio_string_input_raw("DEFAULT") != Q_OK) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
+			}
 		}
 
 	}
@@ -763,32 +777,42 @@ devel_walkio_string_input_choice(QattrKey_t key) {
 
 /**
  * Open a window to get raw string input from the user.
+ * @param[in] str_init: initial string to place in the window.
+ * @return #Q_OK or #Q_ERROR.
  */
-char *
-devel_walkio_string_input_raw(void) {
+int
+devel_walkio_string_input_raw(const char *str_init) {
 	FIELD *fields[2];
 	FORM  *form;
 	WINDOW *border_win;
 	WINDOW *form_win;
-	int rows, columns;
-	int y_center, x_center;
+	int rows = 0, columns = 0;
+	int y_dummy = 0, x_dummy = 0;
+	/*@partial@*/int *y_center = &y_dummy, *x_center = &x_dummy;
+	int ch;
+	int returnval = Q_OK;
 
-	field[0] = new_field(
+	fields[0] = new_field(
 			DEVEL_WALKIO_STRING_INPUT_RAW_WIN_HEIGHT,
 			DEVEL_WALKIO_STRING_INPUT_RAW_WIN_WIDTH,
 			0,
 			0,
 			0,
 			0);
-	if (field[0] == NULL) {
+	if (fields[0] == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		return NULL;
+		return Q_ERROR;
 	}
 
-	field[1] = NULL;
-	if ((form = new_form(field)) == NULL) {
+	fields[1] = NULL;
+	if ((form = new_form(fields)) == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		abort();
+	}
+	
+	if (field_opts_off(fields[0], (Field_Options) O_BLANK) != E_OK) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
 	}
 
 	if (scale_form(form, &rows, &columns) != E_OK) {
@@ -796,20 +820,25 @@ devel_walkio_string_input_raw(void) {
 		abort();
 	}
 
-	io_centerof(LINES, COLS, rows + 2, columns + 2, &y_center, &x_center);
+	io_centerof(LINES, COLS, rows + 2, columns + 2, y_center, x_center);
 	
 	/* create the input window at the center of the screen with a border and title */
-	if ((border_win = newwin(rows + 2, columns + 2, y_center, x_center)) == NULL) {
+	if ((border_win = newwin(rows + 2, columns + 2, *y_center, *x_center)) == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		abort();
 	}
 	box(border_win, 0, 0);
 	io_centerof(0, columns + 2,
-			0, strlen(DEVEL_WALKIO_STRING_INPUT_RAW_WIN_TITLE),
-			&y_center, &x_center);
+			0, (int) strlen(DEVEL_WALKIO_STRING_INPUT_RAW_WIN_TITLE),
+			y_center, x_center);
 
-	mvwprintw(border_win, y_center, x_center, DEVEL_WALKIO_STRING_INPUT_RAW_WIN_TITLE);
-	
+	if (mvwprintw(border_win, *y_center, *x_center,
+				DEVEL_WALKIO_STRING_INPUT_RAW_WIN_TITLE) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+
+	/* initializations */	
 	if (set_form_win(form, border_win) != E_OK) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		abort();
@@ -822,12 +851,170 @@ devel_walkio_string_input_raw(void) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		abort();
 	}
-	if (post_form(my_form) != E_OK) {
+	if (keypad(form_win, true) == ERR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		abort();
 	}
-	refresh();
+	if (post_form(form) != E_OK) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+	
 
+	
+	
+	/*
+	 * initialize form manually to avoid word-wrap issues if str_init isn't NULL 
+	 */
+	if (str_init != NULL) {
+		for (int i = 0;
+				(str_init[i] != '\0') || (strlen(str_init) < (size_t) DEVEL_WALKIO_USERSTRING_LENGTH_MAX);
+				i++) {
+			if (form_driver(form, (int) str_init[i]) != E_OK) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				returnval = Q_ERROR;
+			}
+		}
+	}
+
+	if (form_driver(form, REQ_VALIDATION) != E_OK) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+
+	if (wrefresh(border_win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+	if (wrefresh(form_win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+
+
+	/*******************
+	 * MAIN LOGIC LOOP
+	 ******************/
+
+	/* confirm input */
+	while ((ch = wgetch(form_win)) != (int) DEVEL_WALKIO_STRING_INPUT_RAW_KEY_ENTRY_CONFIRM) {
+		
+		switch (ch) {
+
+		/* backspace */
+		case DEVEL_WALKIO_STRING_INPUT_RAW_KEY_DEL_PREV:
+			if (form_driver(form, REQ_DEL_PREV) != E_OK) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				returnval = Q_ERROR;
+			}
+			break;
+		
+		/* delete */
+		case DEVEL_WALKIO_STRING_INPUT_RAW_KEY_DEL_CHAR:
+			if (form_driver(form, REQ_DEL_CHAR) != E_OK) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				returnval = Q_ERROR;
+			}
+			break;
+		
+		/* delete all */
+		case DEVEL_WALKIO_STRING_INPUT_RAW_KEY_CLR_FIELD:
+			if (form_driver(form, REQ_CLR_FIELD) != E_OK) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				returnval = Q_ERROR;
+			}
+			break;
+
+		/* arrow right */
+		case DEVEL_WALKIO_STRING_INPUT_RAW_KEY_NEXT_CHAR:
+			if (form_driver(form, REQ_NEXT_CHAR) != E_OK) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				returnval = Q_ERROR;
+			}
+			break;
+		
+		/* arrow left */
+		case DEVEL_WALKIO_STRING_INPUT_RAW_KEY_PREV_CHAR:
+			if (form_driver(form, REQ_PREV_CHAR) != E_OK) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				returnval = Q_ERROR;
+			}
+			break;
+		
+		/* arrow up */
+		case DEVEL_WALKIO_STRING_INPUT_RAW_KEY_UP_CHAR:
+			if (form_driver(form, REQ_UP_CHAR) != E_OK) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				returnval = Q_ERROR;
+			}
+			break;
+		
+		/* arrow down */
+		case DEVEL_WALKIO_STRING_INPUT_RAW_KEY_DOWN_CHAR:
+			if (form_driver(form, REQ_DOWN_CHAR) != E_OK) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				returnval = Q_ERROR;
+			}
+			break;
+		
+		/* goto beginning */
+		case DEVEL_WALKIO_STRING_INPUT_RAW_KEY_BEG_FIELD:
+			if (form_driver(form, REQ_BEG_FIELD) != E_OK) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				returnval = Q_ERROR;
+			}
+			break;
+
+		/* enter character */
+		default:
+			if (form_driver(form, ch) != E_OK) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				returnval = Q_ERROR;
+			}
+			break;
+		}
+	}
+
+	if (form_driver(form, REQ_VALIDATION) != E_OK) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+
+
+	/* update userstring with the unsanitized buffer */
+	/*@i4@*/strcpy(devel_walkio_userstring, field_buffer(fields[0], 0));
+
+	if (io_whitespace_trim(devel_walkio_userstring) != Q_OK) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+
+
+
+	/* free memory */
+	if (delwin(form_win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+	if (delwin(border_win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+	if (unpost_form(form) != E_OK) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+	if (free_form(form) != E_OK) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+	if (free_field(fields[0]) != E_OK) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+
+	/*@i3@*/return returnval;
 }
 
 

@@ -16,6 +16,52 @@
 
 
 /**
+ * @addtogroup DevelWalkioStringInputRawKeys Raw String Input Keys
+ * Keys used to control @ref devel_walkio_string_input_raw().
+ * @{
+ */
+
+/** Key to press to confirm input in @ref devel_walkio_string_input_raw().   */
+#define DEVEL_WALKIO_STRING_INPUT_RAW_KEY_ENTRY_CONFIRM \
+	'\n'
+
+/** Key to press to backspace in @ref devel_walkio_string_input_raw().       */
+#define DEVEL_WALKIO_STRING_INPUT_RAW_KEY_DEL_PREV \
+	KEY_BACKSPACE
+
+/** Key to press to delete in @ref devel_walkio_string_input_raw().          */
+#define DEVEL_WALKIO_STRING_INPUT_RAW_KEY_DEL_CHAR \
+	KEY_DC
+
+/** Key to press to delete all in @ref devel_walkio_string_input_raw().      */
+#define DEVEL_WALKIO_STRING_INPUT_RAW_KEY_CLR_FIELD \
+	KEY_SDC
+
+/** Key to press to arrow right in @ref devel_walkio_string_input_raw().     */
+#define DEVEL_WALKIO_STRING_INPUT_RAW_KEY_NEXT_CHAR \
+	KEY_RIGHT
+
+/** Key to press to arrow left in @ref devel_walkio_string_input_raw().      */
+#define DEVEL_WALKIO_STRING_INPUT_RAW_KEY_PREV_CHAR \
+	KEY_LEFT
+
+/** Key to press to arrow up in @ref devel_walkio_string_input_raw().        */
+#define DEVEL_WALKIO_STRING_INPUT_RAW_KEY_UP_CHAR \
+	KEY_UP
+
+/** Key to press to arrow down in @ref devel_walkio_string_input_raw().      */
+#define DEVEL_WALKIO_STRING_INPUT_RAW_KEY_DOWN_CHAR \
+	KEY_DOWN
+
+/** Key to press to goto beginning in @ref devel_walkio_string_input_raw().  */
+#define DEVEL_WALKIO_STRING_INPUT_RAW_KEY_BEG_FIELD \
+	KEY_HOME
+
+/** @} */
+
+
+
+/**
  * Type for commands sent in the I/O section of devel_walk.
  */
 typedef enum DevelWalkCmd_t {
