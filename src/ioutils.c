@@ -26,11 +26,11 @@
  */
 int
 io_whitespace_trim(char *s) {
-	char ch = 1; /* default value; only used to compare against '\0' */
+	char ch = (char) 1; /* default value; only used to compare against '\0' */
 	int returnval = Q_OK;
 	bool prev_isspace = false;
 	int snew_index = 0;
-	int slen;
+	size_t slen;
 
 	if (s == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
@@ -38,20 +38,21 @@ io_whitespace_trim(char *s) {
 	}
 
 	/* Check if string is empty. */
-	if ((slen = (int) strlen(s) + 1) == 1) {
+	if ((slen = strlen(s) + 1) == (size_t) 1) {
 		return Q_OK;
 	}
 	
-	char snew[slen]; /* stores new string */
-
+	char snew[slen];     /* stores new string            */
+	snew[0] = '\0';      /* with a null-terminating char */
 
 	int i;
+	
 	/* start by removing excess whitepace between words and leading whitespace */
-	for (i = 0; (i < slen) && ((ch = s[i]) != '\0'); i++) {
-		if ((isspace((int) ch) != 0) /* if ch is a space                     */
-				&& (!prev_isspace)       /* and the previous char wasn't a space */
-				&& (i != 0)) {           /* and it isn't a leading whitespace    */
-			snew[snew_index++] = ch;
+	for (i = 0; (ch = s[i]) != '\0'; i++) {
+		if ((isspace((int) ch) != 0)) {
+			if ((!prev_isspace) && (i != 0)) {
+				snew[snew_index++] = ch;
+			}
 			prev_isspace = true;
 		} else {
 			snew[snew_index++] = ch;
@@ -59,14 +60,8 @@ io_whitespace_trim(char *s) {
 		}
 	}
 
-	/* return an error if there was no null-terminating character */
-	if (ch != '\0') {
-		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
-		return Q_ERROR;
-	}
-
 	/* remove trailing whitespace and add null-terminating character */
-	if (isspace((int) snew[snew_index - 1]) != 0) {
+	if (prev_isspace) {
 		snew[snew_index - 1] = '\0';
 	}	else {
 		snew[snew_index] = '\0';
