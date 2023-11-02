@@ -23,6 +23,12 @@
 #define Q_ERRORFOUND(error) \
 	qerror_internal((error), __FILE__, __func__, __LINE__)
 
+/**
+ * Print a stringified argument.
+ * @param[in] arg: argument to stringify.
+ */
+#define IF_STRINGIFY(arg) \
+	if ((arg)) {fprintf(stderr, (#arg));}
 
 
 
