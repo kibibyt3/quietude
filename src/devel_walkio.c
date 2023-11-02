@@ -25,15 +25,6 @@
 
 
 
-/** 
- * Max amount of characters that can be stored in #devel_walkio_userstring. 
- * Must exceed the product of #DEVEL_WALKIO_STRING_INPUT_RAW_WIN_HEIGHT and
- * DEVEL_WALKIO_STRING_INPUT_RAW_WIN_WIDTH.
- */ 
-#define DEVEL_WALKIO_USERSTRING_LENGTH_MAX 5000
-
-/** Default value for #devel_walkio_userstring.                              */
-#define DEVEL_WALKIO_USERSTRING_DEFAULT "INIT"
 
 /** Width of window created by @ref devel_walkio_string_input_choice().      */
 #define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_HEIGHT 40
@@ -802,7 +793,8 @@ devel_walkio_string_input_raw(const char *str_init) {
 	/*@partial@*/int *y_center = &y_dummy, *x_center = &x_dummy;
 	int ch;
 	int returnval = Q_OK;
-
+	int r;
+	
 	fields[0] = new_field(
 			DEVEL_WALKIO_STRING_INPUT_RAW_WIN_HEIGHT,
 			DEVEL_WALKIO_STRING_INPUT_RAW_WIN_WIDTH,
@@ -879,7 +871,6 @@ devel_walkio_string_input_raw(const char *str_init) {
 	 */
 	if (str_init != NULL) {
 		for (int i = 0; str_init[i] != '\0'; i++) {
-			int r;
 			if ((r = form_driver(form, (int) str_init[i])) != E_OK) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
 				switch (r) {
@@ -940,76 +931,62 @@ devel_walkio_string_input_raw(const char *str_init) {
 
 		/* backspace */
 		case DEVEL_WALKIO_STRING_INPUT_RAW_KEY_DEL_PREV:
-			if (form_driver(form, REQ_DEL_PREV) != E_OK) {
-				Q_ERRORFOUND(QERROR_ERRORVAL);
-				returnval = Q_ERROR;
-			}
+			r = form_driver(form, REQ_DEL_PREV);
 			break;
 		
 		/* delete */
 		case DEVEL_WALKIO_STRING_INPUT_RAW_KEY_DEL_CHAR:
-			if (form_driver(form, REQ_DEL_CHAR) != E_OK) {
-				Q_ERRORFOUND(QERROR_ERRORVAL);
-				returnval = Q_ERROR;
-			}
+			r = form_driver(form, REQ_DEL_CHAR);
 			break;
 		
 		/* delete all */
 		case DEVEL_WALKIO_STRING_INPUT_RAW_KEY_CLR_FIELD:
-			if (form_driver(form, REQ_CLR_FIELD) != E_OK) {
-				Q_ERRORFOUND(QERROR_ERRORVAL);
-				returnval = Q_ERROR;
-			}
+			r = form_driver(form, REQ_CLR_FIELD);
 			break;
 
 		/* arrow right */
 		case DEVEL_WALKIO_STRING_INPUT_RAW_KEY_NEXT_CHAR:
-			if (form_driver(form, REQ_NEXT_CHAR) != E_OK) {
-				Q_ERRORFOUND(QERROR_ERRORVAL);
-				returnval = Q_ERROR;
-			}
+			r = form_driver(form, REQ_NEXT_CHAR);
 			break;
 		
 		/* arrow left */
 		case DEVEL_WALKIO_STRING_INPUT_RAW_KEY_PREV_CHAR:
-			if (form_driver(form, REQ_PREV_CHAR) != E_OK) {
-				Q_ERRORFOUND(QERROR_ERRORVAL);
-				returnval = Q_ERROR;
-			}
+			r = form_driver(form, REQ_PREV_CHAR);
 			break;
 		
 		/* arrow up */
 		case DEVEL_WALKIO_STRING_INPUT_RAW_KEY_UP_CHAR:
-			if (form_driver(form, REQ_UP_CHAR) != E_OK) {
-				Q_ERRORFOUND(QERROR_ERRORVAL);
-				returnval = Q_ERROR;
-			}
+			r = form_driver(form, REQ_UP_CHAR);
 			break;
 		
 		/* arrow down */
 		case DEVEL_WALKIO_STRING_INPUT_RAW_KEY_DOWN_CHAR:
-			if (form_driver(form, REQ_DOWN_CHAR) != E_OK) {
-				Q_ERRORFOUND(QERROR_ERRORVAL);
-				returnval = Q_ERROR;
-			}
+			r = form_driver(form, REQ_DOWN_CHAR);
 			break;
 		
 		/* goto beginning */
 		case DEVEL_WALKIO_STRING_INPUT_RAW_KEY_BEG_FIELD:
-			if (form_driver(form, REQ_BEG_FIELD) != E_OK) {
-				Q_ERRORFOUND(QERROR_ERRORVAL);
-				returnval = Q_ERROR;
-			}
+			r = form_driver(form, REQ_BEG_FIELD);
 			break;
 
 		/* enter character */
 		default:
-			if (form_driver(form, ch) != E_OK) {
-				Q_ERRORFOUND(QERROR_ERRORVAL);
-				returnval = Q_ERROR;
-			}
+			r = form_driver(form, ch);
 			break;
 		}
+
+		/* error-checking */
+		IF_STRINGIFY(r == E_BAD_ARGUMENT);
+		IF_STRINGIFY(r == E_BAD_STATE);
+		IF_STRINGIFY(r == E_NOT_POSTED);
+		IF_STRINGIFY(r == E_INVALID_FIELD);
+		IF_STRINGIFY(r == E_NOT_CONNECTED);
+		IF_STRINGIFY(r == E_REQUEST_DENIED);
+		IF_STRINGIFY(r == E_SYSTEM_ERROR);
+		IF_STRINGIFY(r == E_UNKNOWN_COMMAND);
+			
+
+
 	}
 
 	if (form_driver(form, REQ_VALIDATION) != E_OK) {

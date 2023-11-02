@@ -6,6 +6,16 @@
 
 
 
+/** 
+ * Max amount of characters that can be stored in #devel_walkio_userstring. 
+ * Must exceed the product of #DEVEL_WALKIO_STRING_INPUT_RAW_WIN_HEIGHT and
+ * DEVEL_WALKIO_STRING_INPUT_RAW_WIN_WIDTH.
+ */ 
+#define DEVEL_WALKIO_USERSTRING_LENGTH_MAX 5000
+
+/** Default value for #devel_walkio_userstring.                              */
+#define DEVEL_WALKIO_USERSTRING_DEFAULT "INIT"
+
 /** Message if the user uses an incorrect input.                             */
 #define DEVEL_WALKIO_MESSAGE_INPUT_INVALID \
 	"Invalid input..."

@@ -204,7 +204,7 @@ devel_walk_area_default_create() {
 QattrList_t *
 devel_attr_list_default_create(QwalkLayerType_t layer_type) {
 	QobjType_t   *obj_type;
-	char         *salias;
+	char         salias[DEVEL_WALKIO_USERSTRING_LENGTH_MAX];
 	char         *s;
 	bool         *canmove;
 	
@@ -234,7 +234,7 @@ devel_attr_list_default_create(QwalkLayerType_t layer_type) {
 	for (int i = 0; i < DEVEL_WALK_ATTR_COUNT; i++) {
 	
 		key = (QattrKey_t) Q_ERRORCODE_ENUM;	
-		salias = QATTR_KEY_STRING_DEFAULT;
+		strcpy(salias, QATTR_KEY_STRING_DEFAULT);
 
 		/* prep for keys that share a data type */
 		switch (i) {
@@ -243,25 +243,25 @@ devel_attr_list_default_create(QwalkLayerType_t layer_type) {
 		case 1:
 			key = QATTR_KEY_NAME;
 			if (layer_type == QWALK_LAYER_TYPE_EARTH) {
-				salias = QATTR_KEY_NAME_DEFAULT_QWALK_DEFAULT_EARTH;
+				strcpy(salias, QATTR_KEY_NAME_DEFAULT_QWALK_DEFAULT_EARTH);
 			} else {
-				salias = QATTR_KEY_NAME_DEFAULT_QWALK_DEFAULT_FLOATER;
+				strcpy(salias, QATTR_KEY_NAME_DEFAULT_QWALK_DEFAULT_FLOATER);
 			}
 			break;
 		case 2:
 			key = QATTR_KEY_DESCRIPTION_BRIEF;
 			if (layer_type == QWALK_LAYER_TYPE_EARTH) {
-				salias = QATTR_KEY_DESCRIPTION_BRIEF_QWALK_DEFAULT_EARTH;
+				strcpy(salias, QATTR_KEY_DESCRIPTION_BRIEF_QWALK_DEFAULT_EARTH);
 			} else {
-				salias = QATTR_KEY_DESCRIPTION_BRIEF_QWALK_DEFAULT_FLOATER;
+				strcpy(salias, QATTR_KEY_DESCRIPTION_BRIEF_QWALK_DEFAULT_FLOATER);
 			}
 			break;
 		case 3:
 			key = QATTR_KEY_DESCRIPTION_LONG;
 			if (layer_type == QWALK_LAYER_TYPE_EARTH) {
-				salias = QATTR_KEY_DESCRIPTION_LONG_QWALK_DEFAULT_EARTH;
+				strcpy(salias, QATTR_KEY_DESCRIPTION_LONG_QWALK_DEFAULT_EARTH);
 			} else {
-				salias = QATTR_KEY_DESCRIPTION_LONG_QWALK_DEFAULT_FLOATER;
+				strcpy(salias, QATTR_KEY_DESCRIPTION_LONG_QWALK_DEFAULT_FLOATER);
 			}
 			break;
 		}
@@ -304,7 +304,7 @@ devel_attr_list_default_create(QwalkLayerType_t layer_type) {
 		case 3:
 			data_type = QDATA_TYPE_CHAR_STRING;
 			/* strlen() does not include the terminating character */
-			count     = strlen(salias + (size_t) 1);
+			count     = strlen(salias) + (size_t) 1;
 			
 			s = calloc(count, sizeof(*s));
 			if (s == NULL) {
