@@ -302,8 +302,8 @@ qwalk_area_read() {
  * @param[in] walk_area: relevant #QwalkArea_t.
  * @return walk_area->layer_earth or @c NULL if an error occurs.
  */
-QwalkLayer_t
-*qwalk_area_layer_earth_get(const QwalkArea_t *walk_area) {
+QwalkLayer_t *
+qwalk_area_layer_earth_get(const QwalkArea_t *walk_area) {
 	if (walk_area == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return NULL;
