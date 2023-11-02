@@ -25,8 +25,12 @@
 
 
 
-/** Max amount of characters that can be stored in #devel_walkio_userstring. */ 
-#define DEVEL_WALKIO_USERSTRING_LENGTH_MAX 1024
+/** 
+ * Max amount of characters that can be stored in #devel_walkio_userstring. 
+ * Must exceed the product of #DEVEL_WALKIO_STRING_INPUT_RAW_WIN_HEIGHT and
+ * DEVEL_WALKIO_STRING_INPUT_RAW_WIN_WIDTH.
+ */ 
+#define DEVEL_WALKIO_USERSTRING_LENGTH_MAX 5000
 
 /** Default value for #devel_walkio_userstring.                              */
 #define DEVEL_WALKIO_USERSTRING_DEFAULT "INIT"
@@ -201,10 +205,10 @@ devel_walkio_init() {
 	int returnval = Q_OK;
 
 	/*
-	 * ensure #DEVEL_WALKIO_USERSTRING_LENGTH_MAX will fit in the
+	 * ensure #DEVEL_WALKIO_USERSTRING_LENGTH_MAX can hold the entire
 	 * @ref devel_walkio_string_input_raw() window.
 	 */
-	if (DEVEL_WALKIO_USERSTRING_LENGTH_MAX >
+	if (DEVEL_WALKIO_USERSTRING_LENGTH_MAX <
 			(DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_HEIGHT *
 			 DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_WIDTH)) {
 		Q_ERRORFOUND(QERROR_BADDEFINE);
@@ -294,6 +298,7 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 	DevelWalkCmd_t cmd;
 	QattrList_t *attr_list;
 	QattrKey_t key;
+	char *init_str;
 
 	if ((area_win == NULL) || (info_win == NULL)) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
@@ -349,7 +354,13 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 		/* handle keys that take arbitrary string input */
 		} else if ((key == QATTR_KEY_NAME) || (key == QATTR_KEY_DESCRIPTION_BRIEF)
 				|| (key == QATTR_KEY_DESCRIPTION_LONG)) {
-			if (devel_walkio_string_input_raw("DEFAULT") != Q_OK) {
+
+			if ((init_str = qattr_value_to_string(attr_list, key)) == NULL) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
+			}
+
+			if (devel_walkio_string_input_raw(init_str) != Q_OK) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
 				return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
 			}
@@ -867,11 +878,36 @@ devel_walkio_string_input_raw(const char *str_init) {
 	 * initialize form manually to avoid word-wrap issues if str_init isn't NULL 
 	 */
 	if (str_init != NULL) {
-		for (int i = 0;
-				(str_init[i] != '\0') || (strlen(str_init) < (size_t) DEVEL_WALKIO_USERSTRING_LENGTH_MAX);
-				i++) {
-			if (form_driver(form, (int) str_init[i]) != E_OK) {
+		for (int i = 0; str_init[i] != '\0'; i++) {
+			int r;
+			if ((r = form_driver(form, (int) str_init[i])) != E_OK) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
+				switch (r) {
+				case E_BAD_ARGUMENT:
+					fprintf(stderr, "bad arg\n");
+					break;
+				case E_BAD_STATE:
+					fprintf(stderr, "bad state\n");
+					break;
+				case E_NOT_POSTED:
+					fprintf(stderr, "not posted\n");
+					break;
+				case E_INVALID_FIELD:
+					fprintf(stderr, "invalid field\n");
+					break;
+				case E_NOT_CONNECTED:
+					fprintf(stderr, "not connected\n");
+					break;
+				case E_REQUEST_DENIED:
+					fprintf(stderr, "request denied\n");
+					break;
+				case E_SYSTEM_ERROR:
+					fprintf(stderr, "system error\n");
+					break;
+				case E_UNKNOWN_COMMAND:
+					fprintf(stderr, "system error\n");
+					break;
+				}
 				returnval = Q_ERROR;
 			}
 		}
@@ -984,6 +1020,7 @@ devel_walkio_string_input_raw(const char *str_init) {
 
 	/* update userstring with the unsanitized buffer */
 	/*@i4@*/strcpy(devel_walkio_userstring, field_buffer(fields[0], 0));
+	
 
 	if (io_whitespace_trim(devel_walkio_userstring) != Q_OK) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
@@ -993,14 +1030,6 @@ devel_walkio_string_input_raw(const char *str_init) {
 
 
 	/* free memory */
-	if (delwin(form_win) == ERR) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-		returnval = Q_ERROR;
-	}
-	if (delwin(border_win) == ERR) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-		returnval = Q_ERROR;
-	}
 	if (unpost_form(form) != E_OK) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		returnval = Q_ERROR;
@@ -1013,7 +1042,14 @@ devel_walkio_string_input_raw(const char *str_init) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		returnval = Q_ERROR;
 	}
-
+	if (delwin(form_win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+	if (delwin(border_win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
 	/*@i3@*/return returnval;
 }
 

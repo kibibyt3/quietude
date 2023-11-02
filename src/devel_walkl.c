@@ -6,6 +6,7 @@
 
 
 #include <stdlib.h>
+#include <string.h>
 #include <ncurses.h>
 
 #include "qdefs.h"
@@ -20,6 +21,7 @@
 
 static int  devel_walkl_cursor_move(int *, DevelWalkCmd_t);
 static bool devel_walkl_coords_arevalid(int, int, int)/*@*/;
+
 
 
 /**
@@ -59,21 +61,9 @@ devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
 			Qdatameta_t *datameta;
 			QobjType_t obj_type;
 			QobjType_t *obj_typep;
-			/* char  *char_data;      */
-			/* size_t userstring_len; */
+			char  *char_data; 
+			size_t userstring_len;
 
-			/*
-			 * TODO: implement this properly! this section will be invoked whenever we
-			 * need to directly copy player input into a char * value.
-			 *
-			userstring_len = strlen(devel_walkio_userstring_get() + 1);
-			if ((data = calloc(userstring_len, sizeof(*data))) == NULL) {
-				Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-				return Q_ERROR;
-			}
-
-			strcpy(data, devel_walkio_userstring_get());
-			*/
 
 			
 			if ((attr_list = devel_walkl_loc_attr_list_get(walk_area, curs_loc)) == NULL) {
@@ -108,15 +98,37 @@ devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
 				}
 
 				*obj_typep = obj_type;
+				if ((datameta = qdatameta_create((Qdata_t *) obj_typep, 
+								QDATA_TYPE_QOBJECT_TYPE, (size_t) 1)) == NULL) {
+					Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+					abort();
+				}
+				
 				break;
+
+			case QATTR_KEY_NAME:
+			/*@fallthrough@*/
+			case QATTR_KEY_DESCRIPTION_BRIEF:
+			/*@fallthrough@*/
+			case QATTR_KEY_DESCRIPTION_LONG:
+				/*@i1@*/userstring_len = strlen(devel_walkio_userstring_get() + 1);
+				if ((char_data = calloc(userstring_len, sizeof(*char_data))) == NULL) {
+					Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+					return Q_ERROR;
+				}
+				/*@i2@*/strcpy(char_data, devel_walkio_userstring_get());
+
+				if ((datameta = qdatameta_create((Qdata_t *) char_data,
+								QDATA_TYPE_CHAR_STRING, userstring_len)) == NULL) {
+					Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+					return Q_ERROR;
+				}
+
+				break;
+			
 			default:
 				Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 				return Q_ERROR;
-			}
-			if ((datameta = qdatameta_create((Qdata_t *) obj_typep,
-							QDATA_TYPE_QOBJECT_TYPE, (size_t) 1)) == NULL) {
-				Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-				abort();
 			}
 			if (qattr_list_attr_modify(attr_list, key, datameta) == Q_ERROR) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);

@@ -27,7 +27,7 @@
 
 /** Key to press to backspace in @ref devel_walkio_string_input_raw().       */
 #define DEVEL_WALKIO_STRING_INPUT_RAW_KEY_DEL_PREV \
-	KEY_BACKSPACE
+	'\b'
 
 /** Key to press to delete in @ref devel_walkio_string_input_raw().          */
 #define DEVEL_WALKIO_STRING_INPUT_RAW_KEY_DEL_CHAR \
