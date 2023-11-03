@@ -45,6 +45,9 @@ typedef enum Qerror_t {
 	/** Error for unexpected @c NULL value.                                   */
 	QERROR_NULL_VALUE_UNEXPECTED,
 
+	/** Error for a system memory function failing.                           */
+	QERROR_SYSTEM_MEMORY,
+
 	/** Error for an unexpected zero value.                                   */
 	QERROR_ZERO_VALUE_UNEXPECTED,
 
