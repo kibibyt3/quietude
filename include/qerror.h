@@ -28,7 +28,7 @@
  * @param[in] arg: argument to stringify.
  */
 #define IF_STRINGIFY(arg) \
-	if ((arg)) {fprintf(stderr, (#arg));}
+	if ((arg)) {fprintf(stderr, "%s", (#arg));}
 
 
 
