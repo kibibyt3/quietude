@@ -175,7 +175,7 @@ devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
 			case QATTR_KEY_DESCRIPTION_BRIEF:
 			/*@fallthrough@*/
 			case QATTR_KEY_DESCRIPTION_LONG:
-				/*@i1@*/userstring_len = strlen(devel_walkio_userstring_get() + 1);
+				/*@i1@*/userstring_len = strlen(devel_walkio_userstring_get()) + (size_t) 1;
 				if ((char_data = calloc(userstring_len, sizeof(*char_data))) == NULL) {
 					Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 					return Q_ERROR;
