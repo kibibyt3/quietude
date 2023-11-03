@@ -47,6 +47,55 @@ qattr_list_create(size_t count){
 
 
 /**
+ * Clone a #QattrList_t.
+ * @param[in] attr_listr: pointer to #QattrList_t to clone.
+ * @return clone of @p attr_list.
+ */
+QattrList_t *
+qattr_list_clone(const QattrList_t *attr_listr) {
+	QattrList_t *attr_list;
+	size_t count;
+	QattrKey_t attr_key;
+	Qdatameta_t *datameta;
+	int r;
+
+	count = qattr_list_count_get(attr_listr);
+	if (count == (size_t) Q_ERRORCODE_SIZE) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+
+	attr_list = qattr_list_create(count);
+	if (attr_list == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		abort();
+	}
+
+	for (int i = 0; i < (int) count; i++) {
+		attr_key = qattr_list_attr_key_get(attr_listr, i);
+		if (attr_key == (QattrKey_t) Q_ERRORCODE_ENUM) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			abort();
+		}
+		
+		datameta = qdatameta_clone(qattr_list_value_get(attr_listr, attr_key));
+		if (datameta == NULL) {
+			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);;
+			abort();
+		}
+
+		r = qattr_list_attr_set(attr_list, attr_key, datameta);
+		if (r == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			abort();
+		}
+	}
+
+	return attr_list;
+}
+
+
+/**
  * Destroy a #QattrList_t
  * @param[in] qattr_list: #QattrList_t to free from memory
  * @return #Q_OK or #Q_ERROR
