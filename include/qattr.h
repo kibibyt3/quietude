@@ -245,7 +245,8 @@ typedef struct QattrList_t {
 extern /*@null@*//*@partial@*/QattrList_t *qattr_list_create(size_t);
 
 /** Clone a #QattrList_t.                                                */
-extern /*@null@*/QattrList_t *qattr_list_clone(const QattrList_t *);
+/*@unused@*//*@null@*/
+extern QattrList_t *qattr_list_clone(const QattrList_t *);
 
 /** Free a given #QattrList_t from memory.                               */
 extern int qattr_list_destroy(/*@only@*/QattrList_t *);

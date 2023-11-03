@@ -183,6 +183,9 @@ typedef struct Qdatameta_t {
 /** Create a #Qdatameta_t.                    */
 extern /*@null@*//*@only@*/Qdatameta_t *qdatameta_create(/*@keep@*//*@returned@*/Qdata_t *, QdataType_t, size_t);
 
+/** Clone a #Qatameta_t.                      */
+extern /*@null@*//*@only@*/Qdatameta_t *qdatameta_clone(const Qdatameta_t *);
+
 /** Destroy a #Qdatameta_t.                   */
 extern int qdatameta_destroy(/*@only@*/Qdatameta_t *);
 

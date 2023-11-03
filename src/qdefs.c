@@ -46,6 +46,57 @@ qdatameta_create(Qdata_t *datap, QdataType_t type, size_t count) {
 
 
 /**
+ * Clone a #Qdatameta_t.
+ * @param[in] datametar: #Qdatameta_t to clone.
+ * @return clone of @p datameta.
+ */
+Qdatameta_t *
+qdatameta_clone(const Qdatameta_t *datametar) {
+	Qdata_t *data;
+	Qdata_t *datar;
+	QdataType_t type;
+	size_t count;
+	size_t size;
+	Qdatameta_t *datameta;
+
+	if ((count = qdatameta_count_get(datametar)) == Q_ERRORCODE_SIZE) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+
+	if ((type = qdatameta_type_get(datametar)) == (QdataType_t ) Q_ERRORCODE_ENUM) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+
+ 	if ((size = qdata_type_size_get(type)) == Q_ERRORCODE_SIZE) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+	
+	if ((datar = qdatameta_datap_get(datametar)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+
+	if ((data = calloc(count, size)) == NULL) {
+		Q_ERRORFOUND(QERROR_SYSTEM_MEMORY);
+		return NULL;
+	}
+
+	memcpy(data, datar, count * size);
+
+	if ((datameta = qdatameta_create(data, type, count)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+
+	return datameta;
+}
+
+
+
+/**
  * Recursively destroy a #Qdatameta_t.
  * @param[out] datameta: #Qdatameta_t to free from memory.
  * @return #Q_OK or #Q_ERROR.

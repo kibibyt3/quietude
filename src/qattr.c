@@ -59,6 +59,11 @@ qattr_list_clone(const QattrList_t *attr_listr) {
 	Qdatameta_t *datameta;
 	int r;
 
+	if (attr_listr == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return NULL;
+	}
+
 	count = qattr_list_count_get(attr_listr);
 	if (count == (size_t) Q_ERRORCODE_SIZE) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
