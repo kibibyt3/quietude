@@ -29,10 +29,13 @@ static bool devel_walkl_coords_arevalid(int, int, int)/*@*/;
  * @param[out] walk_area: #QwalkArea_t to operate on.
  * @param[out] curs_loc:  y, x, z coords of cursor.
  * @param[in]  cmd:       #DevelWalkCmd_t to execute on @p walk_area.
- * @return #Q_OK or #Q_ERROR.
+ * @return #Q_OK, #Q_ERROR, or #Q_ERROR_NOCHANGE if nothing was pasted.
  */
 int
 devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
+
+	/*@only@*/static QattrList_t *attr_list_clipboard = NULL;
+	QattrList_t *attr_listr;
 
 	/* param validation */
 	if ((walk_area == NULL) || (curs_loc == NULL)) {
@@ -54,6 +57,69 @@ devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
 	/* check if cmd is a modify command */
 	if ((cmd >= DEVEL_WALK_CMD_MODIFY_MIN) && (cmd <= DEVEL_WALK_CMD_MODIFY_MAX)) {
 		
+
+
+		/* handle the copy command */
+		if (cmd == DEVEL_WALK_CMD_COPY) {
+			if ((attr_listr = devel_walkl_loc_attr_list_get(walk_area, curs_loc)) == NULL) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				return Q_ERROR;
+			}
+		
+			if (attr_list_clipboard != NULL) {
+				if (qattr_list_destroy(attr_list_clipboard) == Q_ERROR) {
+					Q_ERRORFOUND(QERROR_ERRORVAL);
+					return Q_ERROR;
+				}
+				attr_list_clipboard = NULL;
+			}
+
+			if ((attr_list_clipboard = qattr_list_clone(attr_listr)) == NULL) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				return Q_ERROR;
+			}
+
+			if (devel_walkio_message_print(DEVEL_WALKIO_MESSAGE_COPY_SUCCESS) == Q_ERROR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				return Q_ERROR;
+			}
+			return Q_OK;
+		}
+
+
+
+		/* handle the paste command */
+		if (cmd == DEVEL_WALK_CMD_PASTE) {
+
+			/* prevent user from pasting from an empty clipboard */
+			if (attr_list_clipboard == NULL) {
+				if (devel_walkio_message_print(DEVEL_WALKIO_MESSAGE_PASTE_ERROR) == Q_ERROR) {
+					Q_ERRORFOUND(QERROR_ERRORVAL);
+					return Q_ERROR;
+				}
+				return Q_ERROR_NOCHANGE;
+			}
+
+			/*@only@*/QattrList_t *attr_list_paste;
+			if ((attr_list_paste = qattr_list_clone(attr_list_clipboard)) == NULL) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				return Q_ERROR;
+			}
+
+			if (devel_walkl_loc_attr_list_set(walk_area, curs_loc, attr_list_paste) == Q_ERROR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				abort();
+			}
+
+			if (devel_walkio_message_print(DEVEL_WALKIO_MESSAGE_PASTE_SUCCESS) == Q_ERROR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				return Q_ERROR;
+			}
+			return Q_OK;
+		}
+		
+		
+		
 		/* handle the edit command */
 		if (cmd == DEVEL_WALK_CMD_EDIT) {
 			QattrList_t *attr_list;
@@ -64,8 +130,6 @@ devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
 			char  *char_data; 
 			size_t userstring_len;
 
-
-			
 			if ((attr_list = devel_walkl_loc_attr_list_get(walk_area, curs_loc)) == NULL) {
 				Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 				return Q_ERROR;
@@ -236,6 +300,64 @@ devel_walkl_loc_attr_list_get(const QwalkArea_t *walk_area, const int *curs_loc)
 	}
 
 	return attr_list;
+}
+
+
+/**
+ * Set a #QattrList_t in a #QwalkArea_t according to coordinates.
+ * The object's old #QattrList_t is free'd.
+ * @param[out] walk_area: contextual #QwalkArea_t.
+ * @param[in] curs_loc:  y, x, z coords in @p walk_area.
+ * @param[in] attr_list: #QattrList_t reference to give to @p walk_area.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+devel_walkl_loc_attr_list_set(QwalkArea_t *walk_area, const int *curs_loc, QattrList_t *attr_list) {
+	QwalkLayer_t *layer;
+	int index;
+
+	if ((walk_area == NULL) || (curs_loc == NULL)) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		if (qattr_list_destroy(attr_list) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+		}
+		return Q_ERROR;
+	}
+	if (!devel_walkl_coords_arevalid(curs_loc[0], curs_loc[1], curs_loc[2])) {
+		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+		if (qattr_list_destroy(attr_list) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+		}
+		return Q_ERROR;
+	}
+
+	if (curs_loc[2] == 0) {
+		layer = qwalk_area_layer_earth_get(walk_area);
+	} else if (curs_loc[2] == 1) {
+		layer = qwalk_area_layer_floater_get(walk_area);
+	} else {
+		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+		if (qattr_list_destroy(attr_list) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+		}
+		return Q_ERROR;
+	}
+
+	if ((index = qwalk_coords_to_index(curs_loc[0], curs_loc[1])) == Q_ERRORCODE_INT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		if (qattr_list_destroy(attr_list) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+		}
+		return Q_ERROR;
+	}
+	
+	if (qattr_list_destroy(layer->objects[index].attr_list) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
+	layer->objects[index].attr_list = attr_list;
+
+	return Q_OK;
 }
 
 

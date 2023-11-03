@@ -22,6 +22,15 @@
 /** Message if the user tries and fails to modify something.                 */
 #define DEVEL_WALKIO_MESSAGE_MODIFY_ERROR \
 	"An error occurred while trying to modify an object..."
+/** Message if the user successfully copies something.                       */
+#define DEVEL_WALKIO_MESSAGE_COPY_SUCCESS \
+	"Successfully copied object!"
+/** Message if the user successfully pastes something.                       */
+#define DEVEL_WALKIO_MESSAGE_PASTE_SUCCESS \
+	"Successfully pasted object!"
+/** Message if the user tries to paste while the clipboard is empty.         */
+#define DEVEL_WALKIO_MESSAGE_PASTE_ERROR \
+	"Clipboard is empty!"
 
 
 
@@ -186,3 +195,6 @@ extern int devel_walkl_tick(/*@null@*/QwalkArea_t *, /*@null@*/int *, DevelWalkC
 /** Get a #QattrLIst_t from a #QwalkARea_t according to coordinates. */
 /*@observer@*//*@null@*/
 extern QattrList_t *devel_walkl_loc_attr_list_get(const QwalkArea_t *, const int *)/*@*/;
+
+/** Set a #QattrLIst_t to a #QwalkARea_t according to coordinates. */
+extern int devel_walkl_loc_attr_list_set(QwalkArea_t *, const int *, /*@only@*/QattrList_t *);
