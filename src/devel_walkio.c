@@ -317,6 +317,10 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 	if (cmd == DEVEL_WALK_CMD_EDIT) {
 		
 
+		if (curs_set(0) == ERR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
+		}
 		attr_list = devel_walkl_loc_attr_list_get(walk_area, curs_loc);
 		if (attr_list == NULL) {
 			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
@@ -330,10 +334,6 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 		
 		/* handle keys with specific possible input values */
 		if ((key == QATTR_KEY_QOBJECT_TYPE) || (key == QATTR_KEY_CANMOVE)) {
-			if (curs_set(0) == ERR) {
-				Q_ERRORFOUND(QERROR_ERRORVAL);
-				return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
-			}
 			if (devel_walkio_string_input_choice(key) == Q_ERROR) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
 				return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
@@ -342,10 +342,15 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
 				return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
 			}
+		
 		/* handle keys that take arbitrary string input */
 		} else if ((key == QATTR_KEY_NAME) || (key == QATTR_KEY_DESCRIPTION_BRIEF)
 				|| (key == QATTR_KEY_DESCRIPTION_LONG)) {
 
+			if (curs_set(1) == ERR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
+			}
 			if ((init_str = qattr_value_to_string(attr_list, key)) == NULL) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
 				return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
