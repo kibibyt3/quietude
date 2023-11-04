@@ -108,37 +108,37 @@ curs_style_set(CursStyle_t curs_style) {
 	
 	switch (curs_style) {
 	case CURS_STYLE_BLINKING_BLOCK:
-		if (printf("\e[\x32 q") < 0) {
+		if (printf(CURS_STYLE_STRING_BLINKING_BLOCK) < 0) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 			return Q_ERROR;
 		}	
 		break;
 	case CURS_STYLE_STEADY_BLOCK:
-		if (printf("\e[\x31 q") < 0) {
+		if (printf(CURS_STYLE_STRING_STEADY_BLOCK) < 0) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 			return Q_ERROR;
 		}
 		break;
 	case CURS_STYLE_BLINKING_UL:
-		if (printf("\e[\x34 q") < 0) {
+		if (printf(CURS_STYLE_STRING_BLINKING_UL) < 0) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 			return Q_ERROR;
 		}
 		break;
 	case CURS_STYLE_STEADY_UL:
-		if (printf("\e[\x33 q") < 0) {
+		if (printf(CURS_STYLE_STRING_STEADY_UL) < 0) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 			return Q_ERROR;
 		}
 		break;
 	case CURS_STYLE_BLINKING_BAR:
-		if (printf("\e[\x36 q") < 0) {
+		if (printf(CURS_STYLE_STRING_BLINKING_BAR) < 0) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 			return Q_ERROR;
 		}
 		break;
 	case CURS_STYLE_STEADY_BAR:
-		if (printf("\e[\x35 q") < 0) {
+		if (printf(CURS_STYLE_STRING_STEADY_BAR) < 0) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 			return Q_ERROR;
 		}
@@ -146,6 +146,10 @@ curs_style_set(CursStyle_t curs_style) {
 	default:
 		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
 		return Q_ERROR;
+	}
+	if (fflush(stdout) != 0) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
 	}
 	return Q_OK;
 }
