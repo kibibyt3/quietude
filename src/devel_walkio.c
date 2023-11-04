@@ -50,72 +50,82 @@
  */
 #define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_PROMPT "Choice: "
 
+
+
 /**
- * @defgroup DevelWalkInputChars devel_walk Input Characters
+ * @addtogroup DevelWalkInputChars devel_walk Input Characters
  * Characters meant to be input by the user in devel_walk.
+ * @{
  */
 
 
-
 /**
- * @ingroup DevelWalkInputChars
  * Input character for #DEVEL_WALK_CMD_CURSOR_MOVE_NORTH.
  */
 #define DEVEL_WALK_ICH_CURSOR_MOVE_NORTH      'w'
 
+/** Alternate to #DEVEL_WALK_ICH_CURSOR_MOVE_NORTH. */
+#define DEVEL_WALK_ICH_CURSOR_MOVE_NORTH_ALT KEY_UP
+
+
 /**
- * @ingroup DevelWalkInputChars
  * Input character for #DEVEL_WALK_CMD_CURSOR_MOVE_SOUTH.
  */
 #define DEVEL_WALK_ICH_CURSOR_MOVE_SOUTH      's'
 
+/** Alternate to #DEVEL_WALK_ICH_CURSOR_MOVE_SOUTH. */
+#define DEVEL_WALK_ICH_CURSOR_MOVE_SOUTH_ALT KEY_DOWN
+
+
 /**
- * @ingroup DevelWalkInputChars
  * Input character for #DEVEL_WALK_CMD_CURSOR_MOVE_EAST.
  */
 #define DEVEL_WALK_ICH_CURSOR_MOVE_EAST       'd'
 
+/** Alternate to #DEVEL_WALK_ICH_CURSOR_MOVE_EAST. */
+#define DEVEL_WALK_ICH_CURSOR_MOVE_EAST_ALT KEY_RIGHT
+
+
 /**
- * @ingroup DevelWalkInputChars
  * Input character for #DEVEL_WALK_CMD_CURSOR_MOVE_WEST.
  */
 #define DEVEL_WALK_ICH_CURSOR_MOVE_WEST       'a'
 
+/** Alternate to #DEVEL_WALK_ICH_CURSOR_MOVE_WEST. */
+#define DEVEL_WALK_ICH_CURSOR_MOVE_WEST_ALT KEY_LEFT
+
+
 /**
- * @ingroup DevelWalkInputChars
  * Input character for #DEVEL_WALK_CMD_CURSOR_TOGGLE_ALTITUDE.
  */
 #define DEVEL_WALK_ICH_CURSOR_TOGGLE_ALTITUDE 'z'
 
 /**
- * @ingroup DevelWalkInputChars
  * Input character for #DEVEL_WALK_CMD_COPY.
  */
 #define DEVEL_WALK_ICH_COPY                   'c'
 
 /**
- * @ingroup DevelWalkInputChars
  * Input character for #DEVEL_WALK_CMD_PASTE.
  */
 #define DEVEL_WALK_ICH_PASTE                  'v'
 
 /**
- * @ingroup DevelWalkInputChars
  * Input character for #DEVEL_WALK_CMD_EDIT.
  */
 #define DEVEL_WALK_ICH_EDIT                   'e'
 
 /**
- * @ingroup DevelWalkInputChars
  * Input character for #DEVEL_WALK_CMD_SAVE.
  */
 #define DEVEL_WALK_ICH_SAVE                   'x'
 
 /**
- * @ingroup DevelWalkInputChars
  * Input character for #DEVEL_WALK_CMD_EXIT.
  */
 #define DEVEL_WALK_ICH_EXIT                   'q'
+
+/** @} */
 
 
 
@@ -1107,15 +1117,23 @@ DevelWalkCmd_t
 devel_walkio_input_to_command(int ch) {
 	switch (ch) {
 	
+	case DEVEL_WALK_ICH_CURSOR_MOVE_NORTH_ALT:
+	/*@fallthrough@*/
 	case DEVEL_WALK_ICH_CURSOR_MOVE_NORTH:
 		return DEVEL_WALK_CMD_CURSOR_MOVE_NORTH;
 	
+	case DEVEL_WALK_ICH_CURSOR_MOVE_SOUTH_ALT:
+	/*@fallthrough@*/
 	case DEVEL_WALK_ICH_CURSOR_MOVE_SOUTH:
 		return DEVEL_WALK_CMD_CURSOR_MOVE_SOUTH;
 	
+	case DEVEL_WALK_ICH_CURSOR_MOVE_EAST_ALT:
+	/*@fallthrough@*/
 	case DEVEL_WALK_ICH_CURSOR_MOVE_EAST:
 		return DEVEL_WALK_CMD_CURSOR_MOVE_EAST;
 	
+	case DEVEL_WALK_ICH_CURSOR_MOVE_WEST_ALT:
+	/*@fallthrough@*/
 	case DEVEL_WALK_ICH_CURSOR_MOVE_WEST:
 		return DEVEL_WALK_CMD_CURSOR_MOVE_WEST;
 	
