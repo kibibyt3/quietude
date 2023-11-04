@@ -14,7 +14,7 @@ dev tools as well as the game proper.
 
 ### Controls
 
-- Arrow keys: navigate
+- Arrow keys: Navigate
 
 # Development tools
 
