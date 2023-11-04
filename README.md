@@ -27,13 +27,13 @@ Development tool to create playable areas in the qwalk module of quietude.
 ### Controls
 
 - In the default mode:
-  - 'wasd' or Arrow keys: Navigate cursor
-  - 'z': Toggle cursor altitude
-  - 'c': Copy current object
-  - 'v': Paste copied object
-  - 'e': Switch to edit mode
-  - 'x': Save
-  - 'q': Exit
+  - `wasd` or Arrow keys: Navigate cursor
+  - `z`: Toggle cursor altitude
+  - `c`: Copy current object
+  - `v`: Paste copied object
+  - `e`: Switch to edit mode
+  - `x`: Save
+  - `q`: Exit
 
 - In edit mode:
   - Arrow keys: Navigate
@@ -47,7 +47,7 @@ Development tool to create playable areas in the qwalk module of quietude.
     - ESC: leave without saving changes.
   - In choice selection submode:
     - Enter: Submit string.
-    - Page Up or CTRL-'b': Scroll up one page.
-    - Page Down or CTRL-'f': Scroll down one page.
+    - Page Up or CTRL-`b`: Scroll up one page.
+    - Page Down or CTRL-`f`: Scroll down one page.
     - Tab: attempt to autocomplete word in entry field.
     - ESC: leave without saving changes.
