@@ -15,16 +15,18 @@ TEST_SOURCES = $(TEST_OBJECTS:.o=.c)
 DEVEL_OBJECTS = ./src/devel_walkl.o ./src/devel_walk_wins.o ./src/devel_walkio.o ./src/devel_walk.o
 DEVEL_SOURCES = $(DEVEL_OBJECTS:.o=.c)
 
+DEVEL_DIR = devel-utils
+
 all: test devel_walk
 
 test: $(GAME_OBJECTS) $(TEST_OBJECTS)
 	$(CC) $(CFLAGS) -o $@ $^ $(TEST_LDLIBS)
 
 devel_walk: $(GAME_OBJECTS) $(DEVEL_OBJECTS)
-	$(CC) $(CFLAGS) -o $@ $^ $(DEVEL_LDLIBS)
+	$(CC) $(CFLAGS) -o $(DEVEL_DIR)/$@ $^ $(DEVEL_LDLIBS)
 
 clean:
-	$(RM) src/*.o test devel_walk
+	$(RM) src/*.o test $(DEVEL_DIR)/devel_walk
 
 .PHONY: docs
 docs:
