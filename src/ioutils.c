@@ -18,9 +18,8 @@
 
 
 
-
 /**
- * @addtogroup CursEscSeqs Cursor Escape Sequences
+ * @defgroup CursEscSeqs Cursor Escape Sequences
  * Escape sequences to change the terminal cursor.
  * @{
  */
