@@ -5,10 +5,10 @@ dev tools as well as the game proper.
 
 # Installation instructions
 
-`git clone https://github.com/kibibyt3/quietude`
-`cd quietude`
-`make`
-`./quietude`
+1. `git clone https://github.com/kibibyt3/quietude`
+2. `cd quietude`
+3. `make`
+4. `./quietude`
 
 # Quietude
 
