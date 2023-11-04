@@ -290,12 +290,25 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 	QattrList_t *attr_list;
 	QattrKey_t key;
 	char *init_str;
-
+	CursStyle_t curs_style = CURS_STYLE_BLINKING_BLOCK;
+	
 	if ((area_win == NULL) || (info_win == NULL)) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
 	}
 	
+	/* change cursor style depending on current layer. */
+	if (curs_loc[2] == 0) {
+		curs_style = CURS_STYLE_BLINKING_UL;
+	} else {
+		curs_style = CURS_STYLE_BLINKING_BLOCK;
+	}
+	if (curs_style_set(curs_style) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
+	}
+
+	/* get input and clear message */
 	ch = wgetch(area_win);
 	if (devel_walkio_message_print(NULL) == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
@@ -311,7 +324,6 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
 	}
-
 
 	/* deal with #DEVEL_WALK_CMD_EDIT */
 	if (cmd == DEVEL_WALK_CMD_EDIT) {
@@ -378,7 +390,7 @@ int
 devel_walkio_out(const QwalkArea_t *walk_area, const int *curs_loc) {
 	int returnval = Q_OK;
 	int r;
-	
+
 	if ((area_win == NULL) || (info_win == NULL)
 			|| (area_border_win == NULL) || (info_border_win == NULL)) {
 		Q_ERRORFOUND(QERROR_MODULE_UNINITIALIZED);
@@ -416,7 +428,7 @@ devel_walkio_out(const QwalkArea_t *walk_area, const int *curs_loc) {
 		returnval = Q_ERROR;
 	}
 
-	/* TODO: maybe change cursor style depending on curs_loc[2]. */
+
 	if (wmove(area_win, curs_loc[0], curs_loc[1]) == ERR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		returnval = Q_ERROR;
