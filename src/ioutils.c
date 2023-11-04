@@ -18,6 +18,31 @@
 
 
 
+
+/**
+ * @addtogroup CursEscSeqs Cursor Escape Sequences
+ * Escape sequences to change the terminal cursor.
+ * @{
+ */
+
+/** Escape sequence for #CURS_STYLE_BLINKING_BLOCK.	*/
+#define CURS_STYLE_STRING_BLINKING_BLOCK "\e[\x32 q"
+/** Escape sequence for #CURS_STYLE_STEADY_BLOCK. 	*/
+#define CURS_STYLE_STRING_STEADY_BLOCK   "\e[\x31 q"
+/** Escape sequence for #CURS_STYLE_BLINKING_UL.		*/
+#define CURS_STYLE_STRING_BLINKING_UL    "\e[\x34 q"
+/** Escape sequence for #CURS_STYLE_STEADY_UL. 			*/
+#define CURS_STYLE_STRING_STEADY_UL      "\e[\x33 q"
+/** Escape sequence for #CURS_STYLE_BLINKING_BAR. 	*/
+#define CURS_STYLE_STRING_BLINKING_BAR   "\e[\x36 q"
+/** Escape sequence for #CURS_STYLE_STEADY_BAR. 		*/
+#define CURS_STYLE_STRING_STEADY_BAR     "\e[\x35 q"
+
+/** @} */
+
+
+
+
 /**
  * Trim leading, trailing, and excess whitespace.
  * e.g. `" This     is a   string. "` -> `"This is a string."`.
@@ -71,6 +96,58 @@ io_whitespace_trim(char *s) {
 	strcpy(s, snew);
 
 	return returnval;
+}
+
+
+/**
+ * Set the cursor style.
+ * @param[in] curs_style: cursor style to use.
+ */
+int
+curs_style_set(CursStyle_t curs_style) {
+	
+	switch (curs_style) {
+	case CURS_STYLE_BLINKING_BLOCK:
+		if (printf("\e[\x32 q") < 0) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
+		}	
+		break;
+	case CURS_STYLE_STEADY_BLOCK:
+		if (printf("\e[\x31 q") < 0) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
+		}
+		break;
+	case CURS_STYLE_BLINKING_UL:
+		if (printf("\e[\x34 q") < 0) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
+		}
+		break;
+	case CURS_STYLE_STEADY_UL:
+		if (printf("\e[\x33 q") < 0) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
+		}
+		break;
+	case CURS_STYLE_BLINKING_BAR:
+		if (printf("\e[\x36 q") < 0) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
+		}
+		break;
+	case CURS_STYLE_STEADY_BAR:
+		if (printf("\e[\x35 q") < 0) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
+		}
+		break;
+	default:
+		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+		return Q_ERROR;
+	}
+	return Q_OK;
 }
 
 
