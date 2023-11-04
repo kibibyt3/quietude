@@ -23,4 +23,6 @@
     Note: This was implemented differently. Instead, it merely creates a new `Qdata\_t *` to give to the `Qdatameta_t` constructor function.
 - [x] make qwalk be able to generate a save file from a human-readable data file 
   - Note: in the end, it proved more sensible to not implement this functionality.
-- [ ] add editing functionality to devel\_walk.
+- [x] add editing functionality to devel\_walk.
+- [ ] add support for the escape key in devel\_walk.
+- [ ] add save/exit functionality to devel\_walk.
