@@ -5,6 +5,7 @@ This directory holds the header files for Q.
 .
 ├── devel_walk.h
 ├── iodefs.h
+├── ioutils.h
 ├── mode.h
 ├── qattr.h
 ├── qcli.h
@@ -16,5 +17,5 @@ This directory holds the header files for Q.
 ├── qwalk.h
 └── README.md
 
-1 directory, 12 files
+1 directory, 13 files
 ```

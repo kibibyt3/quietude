@@ -13,6 +13,7 @@
 ├── include
 │   ├── devel_walk.h
 │   ├── iodefs.h
+│   ├── ioutils.h
 │   ├── mode.h
 │   ├── qattr.h
 │   ├── qcli.h
@@ -31,6 +32,7 @@
 │   ├── devel_walkio.c
 │   ├── devel_walkl.c
 │   ├── devel_walk_wins.c
+│   ├── ioutils.c
 │   ├── main.c
 │   ├── mode.c
 │   ├── qattr.c
@@ -44,5 +46,5 @@
 │   └── test.c
 └── TODO.md
 
-9 directories, 35 files
+9 directories, 37 files
 ```

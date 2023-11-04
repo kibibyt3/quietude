@@ -342,7 +342,7 @@ qattr_list_attr_set(QattrList_t *attr_list, QattrKey_t attr_key, Qdatameta_t *da
  * Alter the value of an already-existing key in a #QattrList_t.
  * @param[out] attr_list: #QattrList_t whose key is to be altered.
  * @param[in] attr_key: #QattrKey_t whose value will be set to @p datameta.
- * @param[in] datameta: #Qatameta_t to add to @p attr_list.
+ * @param[in] datameta: #Qdatameta_t to add to @p attr_list.
  * @return #Q_ERROR_NOCHANGE if @p attr_key could not be found, or #Q_OK or 
  * #Q_ERROR.
  */

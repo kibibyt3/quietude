@@ -54,7 +54,7 @@ typedef enum Qerror_t {
 	/** Error for an unexpected negative value.                               */
 	QERROR_NEGATIVE_VALUE_UNEXPECTED,
 
-	/** Error for a #define whose constraints are not met.                    */
+	/** Error for a `define` const whose constraints are not met.             */
 	QERROR_BADDEFINE,
 
 	/** Error for invalid @c enum constant.                                   */

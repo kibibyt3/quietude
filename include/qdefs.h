@@ -126,7 +126,7 @@ typedef enum QobjType_t {
 } QobjType_t;
 
 /**
- * @defgroup ObjTypeStrings #QobjType_t Strings
+ * @defgroup ObjTypeStrings QobjType_t Strings
  * String versions of #QobjType_t constants.
  */
 /**
@@ -183,7 +183,7 @@ typedef struct Qdatameta_t {
 /** Create a #Qdatameta_t.                    */
 extern /*@null@*//*@only@*/Qdatameta_t *qdatameta_create(/*@keep@*//*@returned@*/Qdata_t *, QdataType_t, size_t);
 
-/** Clone a #Qatameta_t.                      */
+/** Clone a #Qdatameta_t.                     */
 extern /*@null@*//*@only@*/Qdatameta_t *qdatameta_clone(const Qdatameta_t *);
 
 /** Destroy a #Qdatameta_t.                   */

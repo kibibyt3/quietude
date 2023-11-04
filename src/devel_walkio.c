@@ -140,7 +140,7 @@ static char devel_walkio_userstring[DEVEL_WALKIO_USERSTRING_LENGTH_MAX] =
 static int devel_walkio_userint = Q_ERROR;
 
 /**
- * Array of all possible values in @ref QobjTypeStrings.
+ * Array of all possible values in @ref ObjTypeStrings.
  */
 /*@observer@*/static char *qobj_selectable_string_types[] = {
 	QOBJ_STRING_TYPE_PLAYER,
@@ -149,7 +149,7 @@ static int devel_walkio_userint = Q_ERROR;
 	QOBJ_STRING_TYPE_VOID};
 
 /**
- * Number of possible values in @ref qobj_string_types.
+ * Number of possible values in @ref ObjTypeStrings.
  */
 #define QOBJ_SELECTABLE_STRING_TYPE_COUNT 4
 
@@ -372,7 +372,6 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
  * Output a #QwalkArea_t and focus object info.
  * @param[in] walk_area: relevant #QwalkArea_t.
  * @param[in] curs_loc:  y, x, and z coords of cursor.
- * @param[in] isedit:    are we editing the current square?
  * @return #Q_OK or #Q_ERROR.
  */
 int
@@ -532,7 +531,8 @@ devel_walkio_area_out(const QwalkArea_t *walk_area, const int *curs_loc) {
 /**
  * Output the #QattrList_t of a specific #QwalkObj_t.
  * @param[in] walk_area: #QwalkArea_t to operate with.
- * @param[in] curs_loc:  y, x, z coords of the cursor.
+ * @param[in] curs_loc:   y, x, z coords of the cursor.
+ * @param[in] mode:      #DevelWalkIOInfoOutMode_t to operate in.
  * @return #Q_OK or #Q_ERROR.
  */
 int
@@ -1040,7 +1040,7 @@ devel_walkio_string_input_raw(const char *str_init) {
  * Print a text string to the user and display it at the bottom of @p area_win.
  * @param[in] s: message to print. If @c NULL, clears the area to which messages
  * are printed.
- * @return #Q_OK on success or #Q_ERROR if @s is too long for the screen or if 
+ * @return #Q_OK on success or #Q_ERROR if @p s is too long for the screen or if 
  * a different error occurs.
  */
 int

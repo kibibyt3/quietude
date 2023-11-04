@@ -290,8 +290,8 @@ bool_to_string(bool b) {
 /**
  * Convert a `char *` to a bool.
  * @param[in] s: relevant `char *`.
- * @return @c bool version of @p s. If @s isn't a possible value, @c false will
- * be returned anyway.
+ * @return @c bool version of @p s. If @p s isn't a possible value, @c false
+ * will be returned anyway.
  */
 bool
 charstring_to_bool(char *s) {

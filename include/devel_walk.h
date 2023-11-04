@@ -192,9 +192,9 @@ extern int devel_walkio_out(const QwalkArea_t *, const int *);
 /** Modify a #QwalkArea_t according to a #DevelWalkCmd_t.            */
 extern int devel_walkl_tick(/*@null@*/QwalkArea_t *, /*@null@*/int *, DevelWalkCmd_t);
 
-/** Get a #QattrLIst_t from a #QwalkARea_t according to coordinates. */
+/** Get a #QattrList_t from a #QwalkArea_t according to coordinates. */
 /*@observer@*//*@null@*/
 extern QattrList_t *devel_walkl_loc_attr_list_get(const QwalkArea_t *, const int *)/*@*/;
 
-/** Set a #QattrLIst_t to a #QwalkARea_t according to coordinates. */
+/** Set a #QattrList_t to a #QwalkArea_t according to coordinates. */
 extern int devel_walkl_loc_attr_list_set(QwalkArea_t *, const int *, /*@only@*/QattrList_t *);
