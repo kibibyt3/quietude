@@ -33,3 +33,6 @@
 - [x] add save/exit functionality to devel\_walk.
 - [x] make the title of the area window display the name of the current layer in
   devel\_walk
+- [ ] CDK's alphalist is awful on account of it uses ESC (i.e. the fucking
+  escape character) so the program seems to hang for 1 second or so while it
+  waits. rewrite alphalist and make it better!
