@@ -32,7 +32,7 @@
 static /*@null@*//*@only@*/QwalkArea_t *devel_walk_area_default_create(void);
 static /*@null@*//*@only@*/QattrList_t *devel_attr_list_default_create(QwalkLayerType_t);
 static /*@null@*//*@only@*/QwalkArea_t *devel_walk_area_load(const char *);
-int devel_walk_area_write(const QwalkArea_t *, const char *);
+static int devel_walk_area_write(const QwalkArea_t *, const char *);
 
 
 
@@ -92,7 +92,7 @@ int main(int argc, char **argv) {
 		assert((cmd >= (DevelWalkCmd_t) Q_ENUM_VALUE_START) && (cmd <= DEVEL_WALK_CMD_COUNT));
 
 		if (cmd == DEVEL_WALK_CMD_SAVE) {
-			r = devel_walk_area_write(walk_area, file_path) == Q_ERROR;
+			r = devel_walk_area_write(walk_area, file_path);
 			assert(r != Q_ERROR);
 		}
 
