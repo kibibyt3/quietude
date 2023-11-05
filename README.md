@@ -45,7 +45,7 @@ Development tool to create playable areas in the qwalk module of quietude.
     - SHIFT-Delete: Clear field.
     - Home: Go to beginning of field.
     - End: Go to end of field.
-    - ESC: leave without saving changes.
+    - F1: leave without saving changes.
   - In choice selection submode:
     - Enter: Submit string.
     - Page Up or CTRL-`b`: Scroll up one page.
