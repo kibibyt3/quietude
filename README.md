@@ -44,6 +44,7 @@ Development tool to create playable areas in the qwalk module of quietude.
     - Delete: Delete current character.
     - SHIFT-Delete: Clear field.
     - Home: Go to beginning of field.
+    - End: Go to end of field.
     - ESC: leave without saving changes.
   - In choice selection submode:
     - Enter: Submit string.
