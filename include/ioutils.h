@@ -25,7 +25,7 @@ typedef enum CursStyle_t {
 
 /** Find the coordinates at the center of two coordinates. */
 /*@unused@*/
-extern void io_centerof(int, int, int, int, int *, int *);
+extern void io_centerof(int, int, int, int, /*@out@*/int *, /*@out@*/int *);
 
 /** Change cursor style.                                   */
 /*@unused@*/
