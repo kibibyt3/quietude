@@ -25,5 +25,5 @@
   - Note: in the end, it proved more sensible to not implement this functionality.
 - [x] add editing functionality to devel\_walk.
 - [ ] add support for the escape key in devel\_walk.
-- [ ] add save/exit functionality to devel\_walk.
+- [x] add save/exit functionality to devel\_walk.
 - [ ] make the title of the area window display the name of the current layer
