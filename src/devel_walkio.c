@@ -35,18 +35,23 @@
 /** Height of window created by @ref devel_walkio_string_input_raw().        */
 #define DEVEL_WALKIO_STRING_INPUT_RAW_WIN_WIDTH 120
 
+/** Title of area_win when operating on #QWALK_LAYER_TYPE_EARTH.             */
+#define DEVEL_WALKIO_AREA_TITLE_LAYER_EARTH   "EARTH LAYER"
+/** Title of area_win when operating on #QWALK_LAYER_TYPE_FLOATER.           */
+#define DEVEL_WALKIO_AREA_TITLE_LAYER_FLOATER "FLOATER LAYER"
+
 /** Title of the window created by @ref devel_walkio_string_input_raw().     */
 #define DEVEL_WALKIO_STRING_INPUT_RAW_WIN_TITLE \
 	"INPUT REQUESTED"
 
 
 /**
- * Header message of window created by @ref devel_walkio_string_input_choice. 
+ * Header message of window created by @ref devel_walkio_string_input_choice(). 
  */
 #define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_HEADER \
 	"Select one of the following...<CR>(Arrow keys to navigate)"
 /**
- * Prompt message of window created by @ref devel_walkio_string_input_choice.
+ * Prompt message of window created by @ref devel_walkio_string_input_choice().
  */
 #define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_PROMPT "Choice: "
 
@@ -406,6 +411,10 @@ int
 devel_walkio_out(const QwalkArea_t *walk_area, const int *curs_loc) {
 	int returnval = Q_OK;
 	int r;
+	int y_center;
+	int x_center;
+	char area_title[DEVEL_WALK_AREA_WIN_BORDER_COLS];
+	int area_title_len;
 
 	if ((area_win == NULL) || (info_win == NULL)
 			|| (area_border_win == NULL) || (info_border_win == NULL)) {
@@ -425,8 +434,29 @@ devel_walkio_out(const QwalkArea_t *walk_area, const int *curs_loc) {
 		returnval = Q_ERROR;
 	}
 
-	box(info_border_win, 0, 0);
+
+	/* print dynamic layer title in title of area_win */
+	if (curs_loc[2] == 0) {
+		strcpy(area_title, DEVEL_WALKIO_AREA_TITLE_LAYER_EARTH);
+	} else {
+		strcpy(area_title, DEVEL_WALKIO_AREA_TITLE_LAYER_FLOATER);
+	}
+	area_title_len = (int) strlen(area_title);
+	io_centerof(0, DEVEL_WALK_AREA_WIN_BORDER_COLS, 0, area_title_len, &y_center, &x_center);
 	box(area_border_win, 0, 0);
+	if (mvwprintw(area_border_win, y_center, x_center, "%s", area_title) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+	
+	box(info_border_win, 0, 0);
+	
+	if (wmove(area_win, curs_loc[0], curs_loc[1]) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+	
+
 	if (wrefresh(info_border_win) == ERR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		returnval = Q_ERROR;
@@ -445,10 +475,6 @@ devel_walkio_out(const QwalkArea_t *walk_area, const int *curs_loc) {
 	}
 
 
-	if (wmove(area_win, curs_loc[0], curs_loc[1]) == ERR) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-		returnval = Q_ERROR;
-	}
 	return returnval;
 }
 

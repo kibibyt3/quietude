@@ -93,7 +93,15 @@ int main(int argc, char **argv) {
 
 		if (cmd == DEVEL_WALK_CMD_SAVE) {
 			r = devel_walk_area_write(walk_area, file_path);
-			assert(r != Q_ERROR);
+			if (r == Q_ERROR) {
+				if (devel_walkio_message_print(DEVEL_WALKIO_MESSAGE_SAVE_ERROR) == Q_ERROR) {
+					Q_ERRORFOUND(QERROR_ERRORVAL);
+				}
+			} else {
+				if (devel_walkio_message_print(DEVEL_WALKIO_MESSAGE_SAVE_SUCCESS) == Q_ERROR) {
+					Q_ERRORFOUND(QERROR_ERRORVAL);
+				}
+			}
 		}
 
 		if (cmd != DEVEL_WALK_CMD_EXIT) {		
