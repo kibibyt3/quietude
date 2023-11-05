@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <errno.h>
 #include <unistd.h>
 #include <ncurses.h>
 
@@ -31,6 +32,8 @@
 static /*@null@*//*@only@*/QwalkArea_t *devel_walk_area_default_create(void);
 static /*@null@*//*@only@*/QattrList_t *devel_attr_list_default_create(QwalkLayerType_t);
 static /*@null@*//*@only@*/QwalkArea_t *devel_walk_area_load(const char *);
+int devel_walk_area_write(const QwalkArea_t *, const char *);
+
 
 
 
@@ -49,23 +52,14 @@ int main(int argc, char **argv) {
 	WINDOW *area_win, *area_border_win, *info_win, *info_border_win;
 	int curs_loc[] = {0, 0, 0};
 
-	if (strcpy(file_path, QFILE_DEVEL_DIR QFILE_DEVEL_WALK_AREA_DIR QFILE_DEVEL_WALK_DEFAULT) == NULL) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-		exit(EXIT_FAILURE);		
-	}
+	strcpy(file_path, QFILE_DEVEL_DIR QFILE_DEVEL_WALK_AREA_DIR QFILE_DEVEL_WALK_DEFAULT);
 
 	/* parse command line args */
 	while ((opt = getopt(argc, argv, "f:")) != -1) {
 		switch (opt) {
 		case 'f':
-			if (strcpy(file_path, QFILE_DEVEL_DIR QFILE_DEVEL_WALK_AREA_DIR) == NULL) {
-				Q_ERRORFOUND(QERROR_ERRORVAL);
-				exit(EXIT_FAILURE);
-			}
-			if (strcat(file_path, optarg) == NULL) {
-				Q_ERRORFOUND(QERROR_ERRORVAL);
-				exit(EXIT_FAILURE);
-			}
+			strcpy(file_path, QFILE_DEVEL_DIR QFILE_DEVEL_WALK_AREA_DIR); 
+			strcat(file_path, optarg);
 			break;
 		default:
 			fprintf(stderr, "Usage: %s [-f filename]\n", argv[0]);
@@ -97,6 +91,11 @@ int main(int argc, char **argv) {
 		cmd = devel_walkio_in(walk_area, curs_loc);
 		assert((cmd >= (DevelWalkCmd_t) Q_ENUM_VALUE_START) && (cmd <= DEVEL_WALK_CMD_COUNT));
 
+		if (cmd == DEVEL_WALK_CMD_SAVE) {
+			r = devel_walk_area_write(walk_area, file_path) == Q_ERROR;
+			assert(r != Q_ERROR);
+		}
+
 		if (cmd != DEVEL_WALK_CMD_EXIT) {		
 			r = devel_walkl_tick(walk_area, curs_loc, cmd);
 			assert(r != Q_ERROR);
@@ -114,8 +113,8 @@ int main(int argc, char **argv) {
 
 /**
  * Load a #QwalkArea_t from storage.
- * param[in] filepath: the filepath to use to load.
- * return newly loaded #QwalkArea_t.
+ * @param[in] filepath: the filepath to use to load.
+ * @return newly loaded #QwalkArea_t.
  */
 QwalkArea_t *
 devel_walk_area_load(const char *filepath) {
@@ -135,6 +134,36 @@ devel_walk_area_load(const char *filepath) {
 	}
 
 	return walk_area;
+}
+
+
+/**
+ * Write a #QwalkArea_t to storage.
+ * @param[in] walk_area: #QwalkArea_t to write.
+ * @param[in] filepath:  filepath to write to.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+devel_walk_area_write(const QwalkArea_t *walk_area, const char *filepath) {
+	
+	int returnval = Q_OK;
+
+	if (qfile_open(filepath, QFILE_MODE_WRITE) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+	
+	if (qwalk_area_write(walk_area) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+
+	if (qfile_close() == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+
+	return returnval;
 }
 
 
