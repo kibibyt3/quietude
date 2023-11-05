@@ -21,6 +21,7 @@
 
 #define COUNT 5
 #define FILENAME "saves/test.sav"
+#define FILENAME2 "saves/test2.sav"
 
 int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 
@@ -194,7 +195,7 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	
 	walk_area1 = NULL;
 	
-	r = qfile_open(FILENAME, QFILE_MODE_READ);
+	r = qfile_open(FILENAME2, QFILE_MODE_READ);
 	assert(r != Q_ERROR);
 	
 	walk_area = qwalk_area_read();
