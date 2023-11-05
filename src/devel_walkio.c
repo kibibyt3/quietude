@@ -168,6 +168,19 @@ static int devel_walkio_userint = Q_ERROR;
  */
 #define QOBJ_SELECTABLE_STRING_TYPE_COUNT 4
 
+/**
+ * Array of all possible values for a @c bool.
+ */
+/*@observer@*/static char *selectable_bool_types[] = {
+	BOOL_STRING_FALSE,
+	BOOL_STRING_TRUE};
+
+/**
+ * Number of possible values for a @c bool.
+ */
+#define SELECTABLE_BOOL_TYPES_COUNT 2
+
+
 
 /**
  * Mode for @ref devel_walkio_info_out() to operate in.
@@ -776,7 +789,11 @@ devel_walkio_string_input_choice(QattrKey_t key) {
 	case QATTR_KEY_QOBJECT_TYPE:
 		options = qobj_selectable_string_types;
 	 	optionc = QOBJ_SELECTABLE_STRING_TYPE_COUNT;
-		break;	
+		break;
+	case QATTR_KEY_CANMOVE:
+		options = selectable_bool_types;
+		optionc = SELECTABLE_BOOL_TYPES_COUNT;
+		break;
 	default:
 		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 		return Q_ERROR;

@@ -211,4 +211,4 @@ extern size_t qdata_type_size_get(QdataType_t)/*@*/;
 /*@unused@*/extern /*@observer@*/char *bool_to_string(bool)/*@*/;
 
 /** Convert a string to a @c bool.            */
-/*@unused@*/extern bool charstring_to_bool(char *)/*@*/;
+/*@unused@*/extern bool charstring_to_bool(/*@partial@*/char *)/*@*/;

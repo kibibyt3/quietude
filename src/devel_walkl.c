@@ -56,7 +56,7 @@ devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
 
 	/* check if cmd is a modify command */
 	if ((cmd >= DEVEL_WALK_CMD_MODIFY_MIN) && (cmd <= DEVEL_WALK_CMD_MODIFY_MAX)) {
-		
+
 
 
 		/* handle the copy command */
@@ -169,6 +169,28 @@ devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
 				}
 				
 				break;
+
+
+			case QATTR_KEY_CANMOVE:
+				
+				bool *boolptr;
+				if ((boolptr = calloc((size_t) 1, sizeof(*boolptr))) == NULL) {
+					Q_ERRORFOUND(QERROR_SYSTEM_MEMORY);
+					return Q_ERROR;
+				}
+				
+				/*
+				 * devel_walkio sets userstring to the string version of the new value
+				 */
+				*boolptr = charstring_to_bool(devel_walkio_userstring_get());
+
+				if ((datameta = qdatameta_create((Qdata_t *) boolptr, 
+							QDATA_TYPE_BOOL, (size_t) 1)) == NULL) {
+					Q_ERRORFOUND(QERROR_ERRORVAL);
+					abort();
+				}
+				break;
+
 
 			case QATTR_KEY_NAME:
 			/*@fallthrough@*/
