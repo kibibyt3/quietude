@@ -276,6 +276,12 @@ devel_walkio_wins_init(WINDOW *area_argwin, WINDOW *area_border_argwin,
  */
 int
 devel_walkio_end() {
+
+	if (curs_style_set(CURS_STYLE_BLINKING_BLOCK) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+	
 	if (endwin() == ERR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return Q_ERROR;
