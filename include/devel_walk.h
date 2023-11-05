@@ -6,6 +6,16 @@
 
 
 
+/** Total width of the info window. */
+#define DEVEL_WALK_AREA_INFO_WIN_COLS 80
+
+/** Total width of the window to hold the border of the info window. */
+#define DEVEL_WALK_AREA_INFO_WIN_BORDER_COLS (DEVEL_WALK_AREA_INFO_WIN_COLS + 2)
+
+/** Total width of the window to hold the border of the area window. */
+#define DEVEL_WALK_AREA_WIN_BORDER_COLS (COLS - DEVEL_WALK_AREA_INFO_WIN_BORDER_COLS)
+
+
 /** 
  * Max amount of characters that can be stored in #devel_walkio_userstring. 
  * Must exceed the product of #DEVEL_WALKIO_STRING_INPUT_RAW_WIN_HEIGHT and
@@ -31,6 +41,12 @@
 /** Message if the user tries to paste while the clipboard is empty.         */
 #define DEVEL_WALKIO_MESSAGE_PASTE_ERROR \
 	"Clipboard is empty!"
+/** Message if the user successfully saves.                                  */
+#define DEVEL_WALKIO_MESSAGE_SAVE_SUCCESS \
+	"Area successfully saved to disk!"
+/** Message if the user fails to save.                                       */
+#define DEVEL_WALKIO_MESSAGE_SAVE_ERROR \
+	"ERROR: save failed!"
 
 
 

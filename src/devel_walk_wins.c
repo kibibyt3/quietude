@@ -11,12 +11,6 @@
 
 
 
-#define DEVEL_WALK_AREA_INFO_WIN_COLS 80 /**< Total width of the info window. */
-
-/** Total width of the window to hold the border of the info window. */
-#define DEVEL_WALK_AREA_INFO_WIN_BORDER_COLS (DEVEL_WALK_AREA_INFO_WIN_COLS + 2)
-
-
 
 /*@external@*/
 extern int /*@alt void@*/wborder(WINDOW *, chtype, chtype, chtype, chtype, chtype, chtype, chtype, chtype);
@@ -36,7 +30,7 @@ devel_walk_wins_init(WINDOW **area_winp, WINDOW **area_border_winp,
 		WINDOW **info_winp, WINDOW **info_border_winp) {
 
 	int returnval = Q_OK;
-	*area_border_winp = newwin(LINES, (COLS - DEVEL_WALK_AREA_INFO_WIN_BORDER_COLS), 0, 0);
+	*area_border_winp = newwin(LINES, DEVEL_WALK_AREA_WIN_BORDER_COLS, 0, 0);
 	if (*area_border_winp == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		abort();
@@ -44,7 +38,7 @@ devel_walk_wins_init(WINDOW **area_winp, WINDOW **area_border_winp,
 	/* return val from box is ignored because it's guaranteed to return OK. */
 	box(*area_border_winp, 0, 0);
 	
-	*area_winp = derwin(*area_border_winp, LINES - 2, (COLS - DEVEL_WALK_AREA_INFO_WIN_BORDER_COLS) - 2, 1, 1);
+	*area_winp = derwin(*area_border_winp, LINES - 2, DEVEL_WALK_AREA_WIN_BORDER_COLS - 2, 1, 1);
 	if (*area_winp == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		abort();
