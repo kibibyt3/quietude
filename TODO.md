@@ -29,7 +29,8 @@
 - [x] make qwalk be able to generate a save file from a human-readable data file 
   - Note: in the end, it proved more sensible to not implement this functionality.
 - [x] add editing functionality to devel\_walk.
-- [ ] add support for the escape key in devel\_walk.
+- [x] add support for the escape key in devel\_walk.
+  - Note: This was instead implemented using F1.
 - [x] add save/exit functionality to devel\_walk.
 - [x] make the title of the area window display the name of the current layer in
   devel\_walk
