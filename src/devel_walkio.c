@@ -320,6 +320,7 @@ DevelWalkCmd_t
 devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 	
 	int ch;
+	int r;
 	DevelWalkCmd_t cmd;
 	QattrList_t *attr_list;
 	QattrKey_t key;
@@ -402,9 +403,12 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 				return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
 			}
 
-			if (devel_walkio_string_input_raw(init_str) != Q_OK) {
+			if ((r = devel_walkio_string_input_raw(init_str)) == Q_ERROR) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
 				return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
+			} else if (r == Q_ERROR_NOCHANGE) {
+				/* tell logic not to alter anything if user exited w/o saving */
+				return DEVEL_WALK_CMD_WAIT;
 			}
 		}
 
@@ -856,7 +860,8 @@ devel_walkio_string_input_choice(QattrKey_t key) {
 /**
  * Open a window to get raw string input from the user.
  * @param[in] str_init: initial string to place in the window.
- * @return #Q_OK or #Q_ERROR.
+ * @return #Q_OK, #Q_ERROR, or #Q_ERROR_NOCHANGE if the user did not save
+ * changes.
  */
 int
 devel_walkio_string_input_raw(const char *str_init) {
@@ -1000,8 +1005,10 @@ devel_walkio_string_input_raw(const char *str_init) {
 	 * MAIN LOGIC LOOP
 	 ******************/
 
+	bool isnosave = false;
 	/* confirm input */
-	while ((ch = wgetch(form_win)) != (int) DEVEL_WALKIO_STRING_INPUT_RAW_KEY_ENTRY_CONFIRM) {
+	while ((!isnosave) && 
+			((ch = wgetch(form_win)) != (int) DEVEL_WALKIO_STRING_INPUT_RAW_KEY_ENTRY_CONFIRM)){
 		
 		switch (ch) {
 
@@ -1045,6 +1052,16 @@ devel_walkio_string_input_raw(const char *str_init) {
 			r = form_driver(form, REQ_BEG_FIELD);
 			break;
 
+		/* goto end */
+		case DEVEL_WALKIO_STRING_INPUT_RAW_KEY_END_FIELD:
+			r = form_driver(form, REQ_END_FIELD);
+			break;
+
+		/* exit without saving */
+		case DEVEL_WALKIO_STRING_INPUT_RAW_KEY_EXIT:
+			isnosave = true;
+			break;
+
 		/* enter character */
 		default:
 			r = form_driver(form, ch);
@@ -1060,27 +1077,27 @@ devel_walkio_string_input_raw(const char *str_init) {
 		IF_STRINGIFY(r == E_REQUEST_DENIED);
 		IF_STRINGIFY(r == E_SYSTEM_ERROR);
 		IF_STRINGIFY(r == E_UNKNOWN_COMMAND);
-			
-
-
 	}
 
-	if (form_driver(form, REQ_VALIDATION) != E_OK) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-		returnval = Q_ERROR;
-	}
+	/* only update userstring if we're meant to save it */
+	if (!isnosave) {
+		if (form_driver(form, REQ_VALIDATION) != E_OK) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			returnval = Q_ERROR;
+		}
 
 
-	/* update userstring with the unsanitized buffer */
-	/*@i4@*/strcpy(devel_walkio_userstring, field_buffer(fields[0], 0));
+		/* update userstring with the unsanitized buffer */
+		/*@i4@*/strcpy(devel_walkio_userstring, field_buffer(fields[0], 0));
 	
 
-	if (io_whitespace_trim(devel_walkio_userstring) != Q_OK) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-		returnval = Q_ERROR;
+		if (io_whitespace_trim(devel_walkio_userstring) != Q_OK) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			returnval = Q_ERROR;
+		}
+	} else {
+		returnval = Q_ERROR_NOCHANGE;
 	}
-
-
 
 	/* free memory */
 	if (unpost_form(form) != E_OK) {

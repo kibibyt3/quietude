@@ -92,6 +92,14 @@
 #define DEVEL_WALKIO_STRING_INPUT_RAW_KEY_BEG_FIELD \
 	KEY_HOME
 
+/** Key to press to goto end in @ref devel_walkio_string_input_raw().        */
+#define DEVEL_WALKIO_STRING_INPUT_RAW_KEY_END_FIELD \
+	KEY_END
+
+/** Key to exit without saving in @ref devel_walkio_string_input_raw().      */
+#define DEVEL_WALKIO_STRING_INPUT_RAW_KEY_EXIT \
+	KEY_F(1)
+
 /** @} */
 
 
