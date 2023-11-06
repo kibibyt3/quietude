@@ -3,6 +3,8 @@
  * Program file for the modes module of the game.
  */
 
+
+
 #include <assert.h>
 #include <stddef.h>
 
@@ -11,9 +13,8 @@
 #include "mode.h"
 #include "qattr.h"
 #include "qwalk.h"
-#include "qsail.h"
-#include "qcli.h"
-#include "qtalk.h"
+
+
 
 
 /**
@@ -25,6 +26,7 @@ mode_init() {
 	return Q_OK;
 }
 
+
 /**
  * Exit the mode module.
  * @return #Q_OK or #Q_ERROR.
@@ -33,6 +35,7 @@ int
 mode_exit(){
 	return Q_OK;
 }
+
 
 /**
  * Switch from one mode to another.
@@ -47,30 +50,14 @@ mode_exit(){
 int
 mode_switch(ModeSwitchData_t *mode_data_next, Mode_t mode_prev) {
 	
-	/* Validate params against 'impossible' values */
-	assert(mode_prev              != MODE_T_EXIT);
-	assert(mode_data_next->mode != MODE_T_INIT);
-	assert(mode_prev              > 0 && mode_prev           < MODE_T_COUNT);
-	assert(mode_data_next->mode > 0 && mode_data_next->mode < MODE_T_COUNT);
-	
 	/* Put away previous mode unless we just initialized the game */
 	if (mode_prev != MODE_T_INIT){
 		switch (mode_prev) {
 		case MODE_T_WALK:
 			qwalk_end();
 			break;
-		case MODE_T_TALK:
-			qtalk_end();
-			break;
-		case MODE_T_CLI:
-			qcli_end();
-			break;
-		case MODE_T_SAIL:
-			qsail_end();
-			break;
-		case MODE_T_INIT:
-			return Q_ERROR;
-		case MODE_T_EXIT:
+		default:
+			Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 			return Q_ERROR;
 		}
 	}
@@ -81,24 +68,15 @@ mode_switch(ModeSwitchData_t *mode_data_next, Mode_t mode_prev) {
 		case MODE_T_WALK:
 			qwalk_init(mode_data_next->datameta);
 			break;
-		case MODE_T_TALK:
-			qtalk_init(mode_data_next->datameta);
-			break;
-		case MODE_T_CLI:
-			qcli_init(mode_data_next->datameta);
-			break;
-		case MODE_T_SAIL:
-			qsail_init(mode_data_next->datameta);
-			break;
-		case MODE_T_INIT:
-			return Q_ERROR;
-		case MODE_T_EXIT:
+		default:
+			Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 			return Q_ERROR;
 		}	
 	}
 
 	return Q_OK;
 }
+
 
 /**
  * Cause a tick to pass.
@@ -114,30 +92,16 @@ mode_switch(ModeSwitchData_t *mode_data_next, Mode_t mode_prev) {
  */
 int
 mode_tick(Mode_t mode, ModeSwitchData_t *switch_data){
-	ModeSwitchData_t *mode_switch_data;
-	int r;
-	
+
 	/* Pass the tick and aquire its mode switch data */
 	switch (mode){
 	case MODE_T_WALK:
-		r = qwalk_tick(switch_data);
+		if (qwalk_tick(switch_data) == Q_ERROR) {
+			return Q_ERROR;
+		}
 		break;
-	case MODE_T_TALK:
-		r = qtalk_tick(switch_data);
-		break;
-	case MODE_T_CLI:
-		r = qcli_tick(switch_data);
-		break;
-	case MODE_T_SAIL:
-		r = qsail_tick(switch_data);
-		break;
-	case MODE_T_INIT:
-		return Q_ERROR;
-	case MODE_T_EXIT:
-		return Q_ERROR;
-	}
-
-	if (r == Q_ERROR) {
+	default:
+		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 		return Q_ERROR;
 	}
 
