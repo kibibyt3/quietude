@@ -21,7 +21,7 @@
 #define QFILE_SAVE_SAIL "qsail.sav" /**< Filename for qsail save data. */
 
 /** Default filename for walk_area development projects. */
-#define QFILE_DEVEL_WALK_DEFAULT "walk_area.sav"
+#define QFILE_DEVEL_WALK_DEFAULT "walk_area.dat"
 
 
 
