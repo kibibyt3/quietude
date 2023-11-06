@@ -1,8 +1,9 @@
 ```
 .
 ├── data
+│   ├── dialogue
 │   ├── README.md
-│   └── world
+│   └── walk-world
 ├── devel-utils
 │   ├── README.md
 │   └── walk-areas
@@ -16,12 +17,9 @@
 │   ├── ioutils.h
 │   ├── mode.h
 │   ├── qattr.h
-│   ├── qcli.h
 │   ├── qdefs.h
 │   ├── qerror.h
 │   ├── qfile.h
-│   ├── qsail.h
-│   ├── qtalk.h
 │   ├── qwalk.h
 │   └── README.md
 ├── Makefile
@@ -46,5 +44,5 @@
 │   └── test.c
 └── TODO.md
 
-9 directories, 37 files
+10 directories, 34 files
 ```
