@@ -6,7 +6,7 @@
 
 
 /** Maximum number of characters to be stored in a path variable. */
-#define QFILE_MAX_PATH_SIZE 80
+#define QFILE_MAX_PATH_SIZE 255
 
 /** Directory in which to store saves. */
 #define QFILE_SAVES_DIR "saves/"
