@@ -21,7 +21,7 @@
 
 #define COUNT 5
 #define FILENAME "saves/test.sav"
-#define FILENAME2 "saves/test2.sav"
+#define FILENAME2 "data/walk-world/test2.dat"
 
 int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 
