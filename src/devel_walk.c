@@ -410,6 +410,8 @@ devel_walk_print_help() {
 	if (fprintf(stdout,
 				"---QUIETUDE---\n"
 				"\n"
+				"Without a specified filename, projects are saved in walk_area.dat\n"
+				"\n"
 				"Usage: devel_walk [-f filename] [-h]\n"
 				"\n"
 				"-f <filename> Load from and use as save file\n"
