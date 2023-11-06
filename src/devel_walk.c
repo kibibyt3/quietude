@@ -28,12 +28,14 @@
 #define DEVEL_WALK_ATTR_COUNT 5 
 
 
-
-static /*@null@*//*@only@*/QwalkArea_t *devel_walk_area_default_create(void);
-static /*@null@*//*@only@*/QattrList_t *devel_attr_list_default_create(QwalkLayerType_t);
-static /*@null@*//*@only@*/QwalkArea_t *devel_walk_area_load(const char *);
-static int devel_walk_area_write(const QwalkArea_t *, const char *);
-
+/*@null@*//*@only@*/
+static QwalkArea_t *devel_walk_area_default_create(void);
+/*@null@*//*@only@*/
+static QattrList_t *devel_attr_list_default_create(QwalkLayerType_t);
+/*@null@*//*@only@*/
+static QwalkArea_t *devel_walk_area_load(const char *);
+static int          devel_walk_area_write(const QwalkArea_t *, const char *);
+static void         devel_walk_print_help(void);
 
 
 
@@ -52,17 +54,19 @@ int main(int argc, char **argv) {
 	WINDOW *area_win, *area_border_win, *info_win, *info_border_win;
 	int curs_loc[] = {0, 0, 0};
 
-	strcpy(file_path, QFILE_DEVEL_DIR QFILE_DEVEL_WALK_AREA_DIR QFILE_DEVEL_WALK_DEFAULT);
+	strcpy(file_path, QFILE_DEVEL_WALK_DEFAULT);
 
 	/* parse command line args */
-	while ((opt = getopt(argc, argv, "f:")) != -1) {
+	while ((opt = getopt(argc, argv, "hf:")) != -1) {
 		switch (opt) {
+		case 'h':
+			devel_walk_print_help();
+			exit(EXIT_SUCCESS);
 		case 'f':
-			strcpy(file_path, QFILE_DEVEL_DIR QFILE_DEVEL_WALK_AREA_DIR); 
-			strcat(file_path, optarg);
+			strcpy(file_path, optarg); 
 			break;
 		default:
-			fprintf(stderr, "Usage: %s [-f filename]\n", argv[0]);
+			devel_walk_print_help();
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -395,4 +399,23 @@ devel_attr_list_default_create(QwalkLayerType_t layer_type) {
 
 
 	return attr_list;
+}
+
+
+/**
+ * Print the help message to @c stdout and exit.
+ */
+void
+devel_walk_print_help() {
+	if (fprintf(stdout,
+				"---QUIETUDE---\n"
+				"\n"
+				"Usage: devel_walk [-f filename] [-h]\n"
+				"\n"
+				"-f <filename> Load from and use as save file\n"
+				"-h            Print help (this message) and exit\n"
+				) < 0) {
+		Q_ERRORFOUND (QERROR_ERRORVAL);
+	}
+	return;
 }
