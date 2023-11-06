@@ -21,17 +21,17 @@
 
 
 
-static           int         qwalk_logic_obj_move(/*@null@*/QwalkLayer_t *, int, Qdirection_t);
-
-static           int         qwalk_logic_objs_locs_trade(/*@null@*/QwalkLayer_t *, int, int);
-
-static /*@null@*/QobjType_t *qwalk_logic_walk_layer_sanitize(QwalkLayer_t *)/*@*/;
-
-static           void        qwalk_logic_qobj_type_destroy(/*@only@*/QobjType_t *);
-
-static           int         qwalk_logic_find_qobj_index(/*@null@*/QobjType_t *, QobjType_t)/*@*/;
-
-static                       Qdirection_t qwalk_logic_command_move_to_direction(QwalkCommand_t)/*@*/;
+static           int          qwalk_logic_obj_move(/*@null@*/QwalkLayer_t *, int, Qdirection_t);
+static           int          qwalk_logic_objs_locs_trade(/*@null@*/QwalkLayer_t *, int, int);
+static /*@null@*/QobjType_t  *qwalk_logic_walk_layer_sanitize(QwalkLayer_t *)/*@*/;
+static           void         qwalk_logic_qobj_type_destroy(/*@only@*/QobjType_t *);
+static           bool         qwalk_logic_layer_object_canmove(const QwalkLayer_t *, int);
+/*@observer@*/
+static /*@null@*/Qdatameta_t *qwalk_logic_layer_object_attr_value_get(const QwalkLayer_t *, int, QattrKey_t);
+/*@observer@*/
+static /*@null@*/QattrList_t *qwalk_logic_layer_object_attr_list_get(const QwalkLayer_t *, int); 
+static           int          qwalk_logic_find_qobj_index(/*@null@*/QobjType_t *, QobjType_t)/*@*/;
+static           Qdirection_t qwalk_logic_command_move_to_direction(QwalkCommand_t)/*@*/;
 
 
 
@@ -152,8 +152,8 @@ qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command, ModeSwi
  */
 int
 qwalk_logic_obj_move(QwalkLayer_t *walk_layer, int index, Qdirection_t direction) {
-	int r;
-	
+	int returnval = Q_OK;
+
 	int y_old;
 	int x_old;
 
@@ -172,6 +172,11 @@ qwalk_logic_obj_move(QwalkLayer_t *walk_layer, int index, Qdirection_t direction
 	y_new = y_old;
 	x_new = x_old;
 
+	if (walk_layer == NULL) {
+		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+		return Q_ERROR;
+	}
+	
 	/* modify the coords and check if they're allowed */
 	switch (direction) {
 	case QDIRECTION_NORTH:
@@ -197,13 +202,16 @@ qwalk_logic_obj_move(QwalkLayer_t *walk_layer, int index, Qdirection_t direction
 	coord_occupant_mover_index = qwalk_coords_to_index(y_old, x_old);
 	coord_occupant_old_index = qwalk_coords_to_index(y_new, x_new);
 
-	r = qwalk_logic_objs_locs_trade(walk_layer, coord_occupant_mover_index, coord_occupant_old_index);
-
-	if (r == Q_ERROR) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-		return Q_ERROR;
+	/* only trade spots if the previous occupant is allowed to move */
+	if (qwalk_logic_layer_object_canmove(walk_layer, coord_occupant_old_index)) {	
+		if (qwalk_logic_objs_locs_trade(walk_layer, 
+					coord_occupant_mover_index, coord_occupant_old_index) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			returnval = Q_ERROR;
+		}
 	}
-	return Q_OK;
+
+	return returnval;
 }
 
 
@@ -339,6 +347,63 @@ void
 qwalk_logic_qobj_type_destroy(QobjType_t *obj_types) {
 	free(obj_types);
 	return;
+}
+
+
+/**
+ * Check the value of a given object's #QATTR_KEY_CANMOVE attribute.
+ * @param[in] layer: Pointer to the #QwalkLayer_t in question.
+ * @param[in] index: Index in @p layer.
+ * @return #QATTR_KEY_CANMOVE value or #QATTR_KEY_CANMOVE_QWALK_DEFAULT_FLOATER
+ * on an error.
+ */
+bool
+qwalk_logic_layer_object_canmove(const QwalkLayer_t *layer, int index) {
+	/* check if old occupant can move. only move if it can. */
+	Qdatameta_t *datameta;
+	Qdata_t     *data;
+
+	if ((datameta = qwalk_logic_layer_object_attr_value_get(layer, index, QATTR_KEY_CANMOVE)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return QATTR_KEY_CANMOVE_QWALK_DEFAULT_FLOATER;
+	}
+	if ((data = qdatameta_datap_get(datameta)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return QATTR_KEY_CANMOVE_QWALK_DEFAULT_FLOATER;
+	}
+	return *((bool *) data);
+}
+
+
+/**
+ * Get a specific #QattrKey_t value from a #QwalkLayer_t and an index.
+ * @param[in] layer: Pointer to the #QwalkLayer_t in question.
+ * @param[in] index: Index in @p layer.
+ * @param[in] key:  #QattrKey_t of the value to return.
+ * @return desired value or NULL on error.
+ */
+Qdatameta_t *
+qwalk_logic_layer_object_attr_value_get(const QwalkLayer_t *layer,
+		int index, QattrKey_t key) {
+	
+	QattrList_t *attr_list;
+	if ((attr_list = qwalk_logic_layer_object_attr_list_get(layer, index)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+	return qattr_list_value_get(attr_list, key);
+}
+
+
+/**
+ * Get the #QattrList_t of a given occupant of a #QwalkLayer_t.
+ * @param[in] layer: Pointer to the #QwalkLayer_t in question.
+ * @param[in] index: Index in @p layer.
+ * @return desired #QattrList_t or @c NULL.
+ */
+QattrList_t *
+qwalk_logic_layer_object_attr_list_get(const QwalkLayer_t *layer, int index) {
+	return layer->objects[index].attr_list;
 }
 
 
