@@ -17,14 +17,15 @@ int main(int argc, char** argv) {
 	/* Initializations */
 	assert(mode_init() == Q_OK);
 
-	Mode_t            mode_curr             = MODE_T_INIT;
-	ModeSwitchData_t *mode_switch_data_next;
+	ModeSwitchData_t  mode_switch_data_next = {MODE_T_INIT, NULL};
+	ModeSwitchData_t *mode_switch_data_nextptr = &mode_switch_data_next;
+	Mode_t mode_curr = MODE_T_INIT;
 
 	while (mode_switch_data_next.mode != MODE_EXIT) {
-		mode_switch(mode_switch_data_next, mode_curr);
-		mode_curr = (*mode_switch_data_next).mode;
-		do {
-			mode_switch_data_next = mode_tick(mode_curr);
-		} while ((*mode_switch_data_next).mode == mode_curr);
+		mode_switch(mode_switch_data_next);
+		mode_curr = mode_switch_data_next->mode;
+		while (mode_switch_data_next->mode == mode_curr) {
+			mode_tick(mode_switch_data_next);
+		}
 	}
 }
