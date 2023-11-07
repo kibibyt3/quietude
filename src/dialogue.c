@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 #include <stdbool.h>
 
 #include "qdefs.h"
@@ -10,7 +11,20 @@
 
 
 
+
 static long file_size_get(FILE *);
+
+static DialogueTree_t *dialogue_tree_create(const char *title,
+		const DialogueBranch_t **branches, size_t sz);
+
+static DialogueBranch_t *dialogue_branch_create(const char *mnemonic,
+		const DialogueBranch_t **branches, size_t sz);
+
+static DialogueObject_t *dialogue_object_create(char *response,
+		const DialogueCommand_t *commands, const char **args, size_t sz);
+
+static DialogueCommand_t string_to_dialogue_command(const char *s);
+
 
 
 
@@ -101,4 +115,25 @@ file_size_get(FILE *fp) {
 	}
 	rewind(fp);
 	return sz + 1L;
+}
+
+
+/**
+ * Convert a `char *` to a #DialogueCommand_t.
+ * @param[in] s: string in question.
+ * @return converted #DialogueCommand_t or Q_ERRORCODE_ENUM on failure.
+ */
+DialogueCommand_t
+string_to_dialogue_command(const char *s) {
+
+	if (strcmp(s, DIALOGUE_STRING_COMMAND_GOTO) == 0) {
+		return DIALOGUE_COMMAND_GOTO;
+	} else if (strcmp(s, DIALOGUE_STRING_COMMAND_BECOME) == 0) {
+		return DIALOGUE_COMMAND_BECOME;
+	} else if (strcmp(s, DIALOGUE_STRING_COMMAND_EXIT) == 0) {
+		return DIALOGUE_COMMAND_EXIT;
+	} else {
+		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+		return (DialogueCommand_t) Q_ERRORCODE_ENUM;
+	}
 }
