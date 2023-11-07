@@ -24,6 +24,14 @@
 	qerror_internal((error), __FILE__, __func__, __LINE__)
 
 /**
+ * Print a system error and its info to @c stderr.
+ * @param[in] func_name: name of current function.
+ */
+#define Q_ERROR_SYSTEM(func_name) \
+	{qerror_internal((QERROR_SYSTEM), __FILE__, __func__, __LINE__); \
+		perror(func_name);}
+
+/**
  * Print a stringified argument.
  * @param[in] arg: argument to stringify.
  */
