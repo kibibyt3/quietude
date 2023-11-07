@@ -37,3 +37,5 @@
 - [ ] CDK's alphalist is awful on account of it uses ESC (i.e. the fucking
   escape character) so the program seems to hang for 1 second or so while it
   waits. rewrite alphalist and make it better!
+- [ ] Maybe let's add parameter names to function prototypes?
+- [ ] Finish the rough draft of the dialogue module.
