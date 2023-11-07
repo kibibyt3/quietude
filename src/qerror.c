@@ -89,6 +89,10 @@
 #define QERROR_STRING_QDATAMETA_TYPE_COUNT_INCOMPATIBLE \
 	"Qdatameta_t members type and size disagree"
 
+/** String for #QERROR_SYSTEM.                            */
+#define QERROR_STRING_SYSTEM \
+	"System function error (see above for details)"
+
 /** String for #QERROR_ERRORVAL.                          */
 #define QERROR_STRING_ERRORVAL \
 	"An error value was caught returning from a function"
@@ -166,6 +170,9 @@ qerror_internal(Qerror_t error, const char *file, const char *func, int line) {
 		break;
 	case QERROR_QDATAMETA_TYPE_COUNT_INCOMPATIBLE:
 		strcpy(error_string, QERROR_STRING_QDATAMETA_TYPE_COUNT_INCOMPATIBLE);
+		break;
+	case QERROR_SYSTEM:
+		strcpy(error_string, QERROR_STRING_SYSTEM);
 		break;
 	case QERROR_ERRORVAL:
 		strcpy(error_string, QERROR_STRING_ERRORVAL);

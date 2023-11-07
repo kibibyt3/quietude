@@ -28,8 +28,8 @@
  * @param[in] func_name: name of current function.
  */
 #define Q_ERROR_SYSTEM(func_name) \
-	{qerror_internal((QERROR_SYSTEM), __FILE__, __func__, __LINE__); \
-		perror(func_name);}
+	{perror(func_name); \
+		qerror_internal((QERROR_SYSTEM), __FILE__, __func__, __LINE__);}
 
 /**
  * Print a stringified argument.
@@ -95,6 +95,9 @@ typedef enum Qerror_t {
 	/** Error for a #Qdatameta_t whose @c count disagrees with its @c type.   */
 	QERROR_QDATAMETA_TYPE_COUNT_INCOMPATIBLE,
 	
+	/** Special error for use in dealing with functions that use `errno`.     */
+	QERROR_SYSTEM,
+
 	/**
 	 * Catch-all error to propogate error values
 	 * Sometimes for functions from libraries that don't belong to Q.
