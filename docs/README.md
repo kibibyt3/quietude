@@ -13,6 +13,7 @@
 ├── Doxyfile
 ├── include
 │   ├── devel_walk.h
+│   ├── dialogue.h
 │   ├── iodefs.h
 │   ├── ioutils.h
 │   ├── mode.h
@@ -30,6 +31,7 @@
 │   ├── devel_walkio.c
 │   ├── devel_walkl.c
 │   ├── devel_walk_wins.c
+│   ├── dialogue.c
 │   ├── ioutils.c
 │   ├── main.c
 │   ├── mode.c
@@ -44,5 +46,5 @@
 │   └── test.c
 └── TODO.md
 
-10 directories, 34 files
+10 directories, 36 files
 ```
