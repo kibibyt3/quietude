@@ -3,6 +3,7 @@ tree-gen.sh
 test
 devel_walk
 *.sav
+*.dat
 error.txt
 tags
 types_c.taghl
