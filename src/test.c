@@ -13,6 +13,7 @@
 #include "qerror.h"
 #include "mode.h"
 #include "qwalk.h"
+#include "dialogue.h"
 
 
 /*
@@ -22,6 +23,7 @@
 #define COUNT 5
 #define FILENAME "saves/test.sav"
 #define FILENAME2 "data/walk-world/test2.dat"
+#define DIALOGUE_FILENAME "data/dialogue/dialogue_test.qdl"
 
 int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 
@@ -39,6 +41,10 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	char str[] = "   MY NAME   IS   WWWOWW LITEL DGGO  GGIE    ";
 	
 	if (io_whitespace_trim(str) == Q_ERROR) {
+		abort();
+	}
+
+	if (dialogue_init(DIALOGUE_FILENAME) == Q_ERROR) {
 		abort();
 	}
 
