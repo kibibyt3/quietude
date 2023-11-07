@@ -25,17 +25,17 @@
  */
 
 /** Escape sequence for #CURS_STYLE_BLINKING_BLOCK.	*/
-#define CURS_STYLE_STRING_BLINKING_BLOCK "\e[\x32 q"
+#define CURS_STYLE_STRING_BLINKING_BLOCK "\033[\x32 q"
 /** Escape sequence for #CURS_STYLE_STEADY_BLOCK. 	*/
-#define CURS_STYLE_STRING_STEADY_BLOCK   "\e[\x31 q"
+#define CURS_STYLE_STRING_STEADY_BLOCK   "\033[\x31 q"
 /** Escape sequence for #CURS_STYLE_BLINKING_UL.		*/
-#define CURS_STYLE_STRING_BLINKING_UL    "\e[\x34 q"
+#define CURS_STYLE_STRING_BLINKING_UL    "\033[\x34 q"
 /** Escape sequence for #CURS_STYLE_STEADY_UL. 			*/
-#define CURS_STYLE_STRING_STEADY_UL      "\e[\x33 q"
+#define CURS_STYLE_STRING_STEADY_UL      "\033[\x33 q"
 /** Escape sequence for #CURS_STYLE_BLINKING_BAR. 	*/
-#define CURS_STYLE_STRING_BLINKING_BAR   "\e[\x36 q"
+#define CURS_STYLE_STRING_BLINKING_BAR   "\033[\x36 q"
 /** Escape sequence for #CURS_STYLE_STEADY_BAR. 		*/
-#define CURS_STYLE_STRING_STEADY_BAR     "\e[\x35 q"
+#define CURS_STYLE_STRING_STEADY_BAR     "\033[\x35 q"
 
 /** @} */
 
