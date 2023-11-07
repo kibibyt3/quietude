@@ -41,6 +41,9 @@
 /** Generic error for functions that otherwise return a meaningful @c int. */
 #define Q_ERRORCODE_INT -1
 
+/** Generic error for functions that otherwise return a meaningful @c long. */
+#define Q_ERRORCODE_LONG -1L
+
 /** Returned by functions that return @c size_t if an error occurs. */
 #define Q_ERRORCODE_SIZE 0
 
