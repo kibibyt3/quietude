@@ -83,6 +83,11 @@ dialogue_init(const char *qdl_filename) {
 }
 
 
+/**
+ * Get the size of an open file.
+ * @param[in] fp: pointer to open file.
+ * @return size of @p fp or #Q_ERRORCODE_LONG.
+ */
 long
 file_size_get(FILE *fp) {
 	long sz;
