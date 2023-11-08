@@ -248,30 +248,35 @@ dialogue_file_string_isvalid(const char *s) {
 			switch (ch) {
 			case DIALOGUE_PARSE_CHAR_TREE_TITLE_BEG:
 				if (open_title_char_index != -1) {
+					Q_ERROR_INFO;
 					return i;
 				}
 				open_title_char_index = i;
 				break;
 			case DIALOGUE_PARSE_CHAR_TREE_TITLE_END:
 				if (open_title_char_index == -1) {
+					Q_ERROR_INFO;
 					return i;
 				}
 				open_title_char_index = -1;
 				break;
 			case DIALOGUE_PARSE_CHAR_BRANCH_BEG:
 				if (open_branch_char_index != -1) {
+					Q_ERROR_INFO;
 					return i;
 				}
 				open_branch_char_index = i;
 				break;
 			case DIALOGUE_PARSE_CHAR_BRANCH_END:
 				if (open_branch_char_index == -1) {
+					Q_ERROR_INFO;
 					return i;
 				}
 				open_branch_char_index = -1;
 				break;
 			case DIALOGUE_PARSE_CHAR_OBJECT_COMMANDS_BEG:
 				if (open_command_char_index != -1) {
+					Q_ERROR_INFO;
 					return i;
 				}
 				command_has_delimiter = false;
@@ -279,6 +284,7 @@ dialogue_file_string_isvalid(const char *s) {
 				break;
 			case DIALOGUE_PARSE_CHAR_OBJECT_COMMANDS_END:
 				if ((open_command_char_index == -1) || (!command_has_delimiter)) {
+					Q_ERROR_INFO;
 					return i;
 				}
 				open_command_char_index = -1;
@@ -292,18 +298,23 @@ dialogue_file_string_isvalid(const char *s) {
 
 	/* check if any *_BEG chars were left open */
 	if (open_string_char_index != -1) {
+		Q_ERROR_INFO;
 		return open_string_char_index;
 	
 	} else if (open_title_char_index != -1) {
+		Q_ERROR_INFO;
 		return open_title_char_index;
 
 	} else if (open_branch_char_index != -1) {
+		Q_ERROR_INFO;
 		return open_branch_char_index;
 	
 	} else if (open_command_char_index != -1) {
+		Q_ERROR_INFO;
 		return open_command_char_index;
 	}
 
+	Q_ERROR_INFO;
 	return -1;	
 
 }
