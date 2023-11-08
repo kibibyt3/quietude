@@ -36,6 +36,11 @@ static char *dialogue_file_to_string(FILE *fp)/*@modifies fileSystem, fp@*/;
 
 static int dialogue_file_string_isvalid(const char *s)/*@*/;
 
+static int dialogue_sections_count(const char *s,
+		/*@partial@*/int *branchesc, /*@partial@*/int **objectsc,
+		/*@partial@*/int ***commandsc)
+	/*@modifies branchesc, objectsc, *objectsc, commandsc, *commandsc, **commandsc@*/;
+
 static long file_size_get(FILE *fp)/*@modifies fileSystem, fp@*/;
 
 static DialogueCommand_t string_to_dialogue_command(const char *s)/*@*/;
@@ -330,6 +335,66 @@ dialogue_file_string_isvalid(const char *s) {
 	return -1;	
 
 }
+
+
+/**
+ * Find the amount of branches, objects, and commands in a QDL file string.
+ * @param[in] s: file string to parse.
+ * @param[out] branchesc: address to store the number of #DialogueBranch_t
+ * instances.
+ * @param[out] objectsc: address to store a one-dimensional dynamic array of
+ * #DialogueObject_t instances, indexed against @p branchesc.
+ * @param[out] commandsc: address to store a two-dimensional dynamic array of
+ * #DialogueCommand_t instances, indexed from the inside-out against @p objectsc
+ * and @p branchesc, respectively.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+dialogue_sections_count(const char *s, int *branchesc, int **objectsc, int ***commandsc) {
+	int i;
+	char ch;
+	int len = (int) strlen(s);
+	
+	/* handle branches */
+	*branchesc = 0;
+	/* branches pass */
+	for (i = 0; i < len; i++) {
+		ch = s[i];
+		if (ch == DIALOGUE_PARSE_CHAR_BRANCH_END) {
+			(*branchesc)++;
+		}
+	}
+
+	/* handle objects */
+	int branches_index = 0;
+	if ((*objectsc = calloc((size_t) branchesc, sizeof(*objectsc))) == NULL) {
+		Q_ERROR_SYSTEM("calloc()");
+		abort();
+	}
+	/* objects pass */
+	for (i = 0; i < len; i++) {
+		ch = s[i];
+		if (ch == DIALOGUE_PARSE_CHAR_BRANCH_END) {
+			branches_index++;
+		}
+		/* each object has only one commands section */
+		if (ch == DIALOGUE_PARSE_CHAR_OBJECT_COMMANDS_END) {
+			/*
+			 * prevent out-of-bounds memory access for incorrectly-written QDL files
+			 */
+			if (branches_index >= (*branchesc)) { 
+				Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+				abort();
+			}
+			(objectsc[branches_index])++;
+		}
+	}
+
+	return Q_OK;
+}
+
+
+/* TODO: make a destructor function to correspond to dialogue_sections_count */
 
 
 /**
