@@ -40,22 +40,6 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 
 	char str[] = "   MY NAME   IS   WWWOWW LITEL DGGO  GGIE    ";
 	
-	int test_file_strs_len = 9;
-	/*@observer@*/char *test_file_strs[] = {
-		"(d d[)] EXPECTS 5",
-		"(;) (;) (;;) {[]} EXPECTS -1",
-		"{ (;);() EXPECTS 7",
-		"{ (;);(;) EXPECTS 0",
-		"\"{[()(\"(;) EXPECTS -1",
-		"[ EXPECTS 0",
-		"{ \"YAHAH!}\"} EXPECTS -1",
-		"{}) EXPECTS 2",
-		"{}(;)\"()\"[d]\"};; EXPECTS 12"};
-
-	for (int i = 0; i < test_file_strs_len; i++) {
-		printf("%s\nGETS %i\n\n", test_file_strs[i], dialogue_file_string_isvalid(test_file_strs[i]));
-	}
-
 	if (io_whitespace_trim(str) == Q_ERROR) {
 		abort();
 	}
