@@ -11,8 +11,14 @@
 
 
 
+/** Current active #DialogueTree_t (or @c NULL if the module is inactive. */
+/*@null@*//*@only@*/
+static DialogueTree_t *dialogue_tree = NULL;
 
-static long file_size_get(FILE *);
+
+
+/*@null@*/
+static DialogueTree_t *dialogue_file_string_to_tree(const char *)/*@*/;
 
 static DialogueTree_t *dialogue_tree_create(/*@only@*/char *title,
 		/*@only@*/DialogueBranch_t **branches, size_t sz)/*@*/;
@@ -30,6 +36,8 @@ static char *dialogue_file_to_string(FILE *fp)/*@modifies fileSystem, fp@*/;
 
 static int dialogue_file_string_isvalid(const char *s)/*@*/;
 
+static long file_size_get(FILE *fp)/*@modifies fileSystem, fp@*/;
+
 static DialogueCommand_t string_to_dialogue_command(const char *s)/*@*/;
 
 
@@ -41,11 +49,18 @@ static DialogueCommand_t string_to_dialogue_command(const char *s)/*@*/;
  * @return #Q_OK or #Q_ERROR.
  */
 int
-dialogue_init(const char *qdl_filename) {
+dialogue_init(const char *qdl_filename)
+/*@modifies dialogue_tree@*/
+{
 	int returnval = Q_OK;
 	int r;
 	FILE *qdl_file;
 	char *file_string_raw;
+
+	if (dialogue_tree != NULL) {
+		Q_ERRORFOUND(QERROR_MODULE_INITIALIZED);
+		return Q_ERROR;
+	}	
 
 	if ((qdl_file = fopen(qdl_filename, "r")) == NULL) {
 		Q_ERROR_SYSTEM("fopen()");
@@ -67,6 +82,11 @@ dialogue_init(const char *qdl_filename) {
 		fprintf(stderr, "Error found while parsing QDL file %s at character %c "
 				"(character index %i after removal of redundant whitespace).\n",
 				qdl_filename, file_string_raw[r], r);
+		returnval = Q_ERROR;
+	}
+
+	if ((dialogue_tree = dialogue_file_string_to_tree(file_string_raw)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
 		returnval = Q_ERROR;
 	}
 
