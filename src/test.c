@@ -49,7 +49,7 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 		"\"{[()(\"(;) EXPECTS -1",
 		"[ EXPECTS 0",
 		"{ \"YAHAH!}\"} EXPECTS -1",
-		"{}) EXPECTS 2"
+		"{}) EXPECTS 2",
 		"{}(;)\"()\"[d]\"};; EXPECTS 12"};
 
 	for (int i = 0; i < test_file_strs_len; i++) {
