@@ -356,7 +356,7 @@ file_size_get(FILE *fp) {
 /**
  * Convert a `char *` to a #DialogueCommand_t.
  * @param[in] s: string in question.
- * @return converted #DialogueCommand_t or Q_ERRORCODE_ENUM on failure.
+ * @return converted #DialogueCommand_t or #Q_ERRORCODE_ENUM on failure.
  */
 DialogueCommand_t
 string_to_dialogue_command(const char *s) {
