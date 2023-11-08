@@ -151,8 +151,3 @@ typedef struct DialogueTree_t {
 
 
 extern int dialogue_init(const char *);
-/* 
- * TODO: this should be made static in dialogue.c. This is currently only here
- * for testing purposes.
- */
-extern int dialogue_file_string_isvalid(const char *s)/*@*/;

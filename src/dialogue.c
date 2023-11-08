@@ -14,7 +14,6 @@
 
 static long file_size_get(FILE *);
 
-
 static DialogueTree_t *dialogue_tree_create(/*@only@*/char *title,
 		/*@only@*/DialogueBranch_t **branches, size_t sz)/*@*/;
 
@@ -28,6 +27,8 @@ static DialogueObject_t *dialogue_object_create(/*@only@*/char *response,
 
 /*@null@*/
 static char *dialogue_file_to_string(FILE *fp)/*@modifies fileSystem, fp@*/;
+
+static int dialogue_file_string_isvalid(const char *s)/*@*/;
 
 static DialogueCommand_t string_to_dialogue_command(const char *s)/*@*/;
 
