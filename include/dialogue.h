@@ -5,6 +5,50 @@
 
 
 
+/**
+ * Specific member or submember within a #DialogueTree_t to parse for.
+ */
+typedef enum DialogueParseMode_t {
+
+	/** Parse for @ref DialogueTree_t.title. */
+	DIALOGUE_PARSE_MODE_TREE_TITLE = Q_ENUM_VALUE_START,
+	/** Parse for @ref DialogueBranch_t.header. */
+	DIALOGUE_PARSE_MODE_BRANCH_HEADER,
+	/** Parse for @ref DialogueBranch_t.message. */
+	DIALOGUE_PARSE_MODE_BRANCH_MESSAGE,
+	/** Parse for @ref DialogueObject_t.response. */
+	DIALOGUE_PARSE_MODE_OBJECT_RESPONSE,
+	/** Parse for @ref DialogueObject_t.commands. */
+	DIALOGUE_PARSE_MODE_OBJECT_COMMAND,
+	/** Parse for @ref DialogueObject_t.args. */
+	DIALOGUE_PARSE_MODE_OBJECT_ARG,
+
+	DIALOGUE_PARSE_MODE_COUNT = DIALOGUE_PARSE_MODE_OBJECT_ARG
+
+} DialogueParseMode_t;
+
+/**
+ * @defgroup ParseChars Dialogue Parse Characters
+ * Characters that have a special meaning for QDL (Q dialogue) file parsing.
+ * @{
+ */
+/** Beginning character for a @ref DialogueTree_t.title. */
+#define DIALOGUE_PARSE_CHAR_TREE_TITLE_BEG '['
+/** Ending character for a @ref DialogueTree_t.title. */
+#define DIALOGUE_PARSE_CHAR_TREE_TITLE_END ']'
+/** Beginning character for one of the @ref DialogueTree_t.branches. */
+#define DIALOGUE_PARSE_CHAR_BRANCH_BEG '{'
+/** Ending character for one of the @ref DialogueTree_t.branches. */
+#define DIALOGUE_PARSE_CHAR_BRANCH_END '}'
+/** Beginning character for @ref DialogueObject_t.commands. */
+#define DIALOGUE_PARSE_CHAR_OBJECT_COMMANDS_BEG '('
+/** Ending character for @ref DialogueObject_t.commands. */
+#define DIALOGUE_PARSE_CHAR_OBJECT_COMMANDS_END ')'
+/** Delimiter for @ref DialogueObject_t.commands. */
+#define DIALOGUE_PARSE_CHAR_COMMAND_DELIMITER ';'
+/** Beginning/ending character for a string. */
+#define DIALOGUE_PARSE_CHAR_STRING '"'
+/** @} */
 
 /**
  * A specific command executed (sometimes in concordance with an argument)
@@ -107,3 +151,8 @@ typedef struct DialogueTree_t {
 
 
 extern int dialogue_init(const char *);
+/* 
+ * TODO: this should be made static in dialogue.c. This is currently only here
+ * for testing purposes.
+ */
+extern int dialogue_file_string_isvalid(const char *s)/*@*/;

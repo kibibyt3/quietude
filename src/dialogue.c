@@ -194,10 +194,13 @@ dialogue_file_to_string(FILE *fp) {
 		if ((isspace(ch) == 0) || (isstring)) {
 			s[index++] = (char) ch;
 		}
-		if ((char) ch == '"') {
+		if ((char) ch == DIALOGUE_PARSE_CHAR_STRING) {
 			isstring = !isstring;
 			isstring_proper = !isstring_proper;
-		} else if ((((char) ch == '(') || ((char) ch == ')'))
+		} else if ((((char) ch == DIALOGUE_PARSE_CHAR_OBJECT_COMMANDS_BEG) 
+					|| ((char) ch == DIALOGUE_PARSE_CHAR_OBJECT_COMMANDS_END)
+					|| ((char) ch == DIALOGUE_PARSE_CHAR_TREE_TITLE_BEG) 
+					|| ((char) ch == DIALOGUE_PARSE_CHAR_TREE_TITLE_END))
 				&& (!isstring_proper)) {
 			isstring = !isstring;
 		}
@@ -211,6 +214,98 @@ dialogue_file_to_string(FILE *fp) {
 	s[index] = '\0';
 	
 	return s;
+}
+
+
+/**
+ * Check a file string for major syntax errors.
+ * @param[in] s: string to validate.
+ * @return -1 if there are no syntax errors, or the index in @p s of the first
+ * unexpected @ref ParseChars character.
+ */
+int
+dialogue_file_string_isvalid(const char *s) {
+	int len = (int) strlen(s);
+	char ch;
+	int open_string_char_index = -1;
+	int open_title_char_index = -1;
+	int open_branch_char_index = -1;
+	int open_command_char_index = -1;
+	bool command_has_delimiter = false;
+
+	int i;
+
+	/* check for nested sequences and track any sections that never terminate */
+	for (i = 0; i < len; i++) {
+		ch = s[i];
+		if (ch == DIALOGUE_PARSE_CHAR_STRING) {
+			if (open_string_char_index != -1) {
+				open_string_char_index = -1;
+			} else {
+				open_string_char_index = i;
+			}
+		} else if (open_string_char_index != -1) {
+			switch (ch) {
+			case DIALOGUE_PARSE_CHAR_TREE_TITLE_BEG:
+				if (open_title_char_index != -1) {
+					return i;
+				}
+				open_title_char_index = i;
+				break;
+			case DIALOGUE_PARSE_CHAR_TREE_TITLE_END:
+				if (open_title_char_index == -1) {
+					return i;
+				}
+				open_title_char_index = -1;
+				break;
+			case DIALOGUE_PARSE_CHAR_BRANCH_BEG:
+				if (open_branch_char_index != -1) {
+					return i;
+				}
+				open_branch_char_index = i;
+				break;
+			case DIALOGUE_PARSE_CHAR_BRANCH_END:
+				if (open_branch_char_index == -1) {
+					return i;
+				}
+				open_branch_char_index = -1;
+				break;
+			case DIALOGUE_PARSE_CHAR_OBJECT_COMMANDS_BEG:
+				if (open_command_char_index != -1) {
+					return i;
+				}
+				command_has_delimiter = false;
+				open_command_char_index = i;
+				break;
+			case DIALOGUE_PARSE_CHAR_OBJECT_COMMANDS_END:
+				if ((open_command_char_index == -1) || (!command_has_delimiter)) {
+					return i;
+				}
+				open_command_char_index = -1;
+				break;
+			case DIALOGUE_PARSE_CHAR_COMMAND_DELIMITER:
+				command_has_delimiter = true;
+				break;
+			}
+		}
+	}
+
+	/* check if any *_BEG chars were left open */
+	if (open_string_char_index != -1) {
+		return open_string_char_index;
+	
+	} else if (open_title_char_index != -1) {
+		return open_title_char_index;
+
+	} else if (open_branch_char_index != -1) {
+		return open_branch_char_index;
+	
+	} else if (open_command_char_index != -1) {
+		return open_command_char_index;
+	}
+
+	return -1;	
+
 }
 
 
