@@ -40,7 +40,7 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 
 	char str[] = "   MY NAME   IS   WWWOWW LITEL DGGO  GGIE    ";
 	
-	int test_file_strs_len = 8;
+	int test_file_strs_len = 9;
 	/*@observer@*/char *test_file_strs[] = {
 		"(d d[)] EXPECTS 5",
 		"(;) (;) (;;) {[]} EXPECTS -1",

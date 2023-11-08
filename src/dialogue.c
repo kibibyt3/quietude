@@ -244,7 +244,7 @@ dialogue_file_string_isvalid(const char *s) {
 			} else {
 				open_string_char_index = i;
 			}
-		} else if (open_string_char_index != -1) {
+		} else if (open_string_char_index == -1) {
 			switch (ch) {
 			case DIALOGUE_PARSE_CHAR_TREE_TITLE_BEG:
 				if (open_title_char_index != -1) {
