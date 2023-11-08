@@ -43,6 +43,7 @@ static DialogueCommand_t string_to_dialogue_command(const char *s)/*@*/;
 int
 dialogue_init(const char *qdl_filename) {
 	int returnval = Q_OK;
+	int r;
 	FILE *qdl_file;
 	char *file_string_raw;
 
@@ -61,10 +62,11 @@ dialogue_init(const char *qdl_filename) {
 		returnval = Q_ERROR;
 	}
 	
-
-	/* FIXME: debug code */
-	if (printf("%s", file_string_raw) < 0) {
-		Q_ERROR_SYSTEM("printf()");
+	if ((r = dialogue_file_string_isvalid(file_string_raw)) != -1) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		fprintf(stderr, "Error found while parsing QDL file %s at character %c "
+				"(character index %i after removal of redundant whitespace).\n",
+				qdl_filename, file_string_raw[r], r);
 		returnval = Q_ERROR;
 	}
 
