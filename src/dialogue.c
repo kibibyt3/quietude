@@ -380,13 +380,11 @@ dialogue_sections_count(const char *s, int *branchesc, int **objectsc, int ***co
 			(*branchesc)++;
 		}
 	}
-	printf("*branchesc = %i\n", *branchesc);
 
 	/* handle objects */
 	int branches_index = 0;
 
 	/* relies on calloc()'s initialization of all bytes to zero */
-	printf("calloc(%zu, %zu)\n", (size_t) *branchesc, sizeof(**objectsc));
 	if ((*objectsc = calloc((size_t) *branchesc, sizeof(**objectsc))) == NULL) {
 		Q_ERROR_SYSTEM("calloc()");
 		abort();
@@ -397,7 +395,6 @@ dialogue_sections_count(const char *s, int *branchesc, int **objectsc, int ***co
 		if (ch == DIALOGUE_PARSE_CHAR_STRING) {
 			isstring = !isstring;
 		} else if ((ch == DIALOGUE_PARSE_CHAR_BRANCH_END) && (!isstring)) {
-			printf("(*objectsc)[%i] = %i\n", branches_index, (*objectsc)[branches_index]);
 			branches_index++;
 		} else if ((ch == DIALOGUE_PARSE_CHAR_OBJECT_COMMANDS_END) && (!isstring)) {
 			/* each object has only one commands section */
@@ -416,14 +413,12 @@ dialogue_sections_count(const char *s, int *branchesc, int **objectsc, int ***co
 	int objects_index = 0;
 	branches_index = 0;
 	/* alloc memory for the pointers (which correspond to objects) */
-	printf("calloc(%zu, %zu)\n", (size_t) *branchesc, sizeof(**commandsc));
 	if ((*commandsc = calloc((size_t) *branchesc, sizeof(**commandsc))) == NULL) {
 		Q_ERROR_SYSTEM("calloc()");
 		abort();
 	}
 	/* alloc memory for the commands proper and initialize to zero */
 	for (i = 0; i < *branchesc; i++) {
-		printf("calloc(%zu, %zu)\n", (size_t) (*objectsc)[i], sizeof(***commandsc));
 		/*@i5@*/if (((*commandsc)[i] = calloc((size_t) (*objectsc)[i], sizeof(***commandsc))) == NULL) {
 			Q_ERROR_SYSTEM("calloc()");
 			abort();
@@ -442,8 +437,6 @@ dialogue_sections_count(const char *s, int *branchesc, int **objectsc, int ***co
 				Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
 				abort();
 			}
-			printf("(*commandsc)[%i][%i] = %i\n",
-					branches_index, objects_index, (*commandsc)[branches_index][objects_index]);
 			objects_index++;
 		} else if ((ch == DIALOGUE_PARSE_CHAR_COMMAND_DELIMITER) && (!isstring)) {
 			/*@i3@*/if (objects_index >= (*objectsc)[branches_index]) {
