@@ -37,7 +37,7 @@ static char *dialogue_file_to_string(FILE *fp)/*@modifies fileSystem, fp@*/;
 static int dialogue_file_string_isvalid(const char *s)/*@*/;
 
 static int dialogue_sections_count(const char *s,
-		/*@partial@*/int *branchesc, /*@partial@*/int **objectsc,
+		/*@out@*/int *branchesc, /*@partial@*/int **objectsc,
 		/*@partial@*/int ***commandsc)
 	/*@modifies branchesc, objectsc, *objectsc, commandsc, *commandsc, **commandsc@*/;
 
@@ -90,10 +90,23 @@ dialogue_init(const char *qdl_filename)
 		returnval = Q_ERROR;
 	}
 
+	int branchesc;
+	int *objectsc;
+	int **commandsc;
+
+	if (dialogue_sections_count(file_string_raw, &branchesc, &objectsc, &commandsc) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		free(file_string_raw);
+		return Q_ERROR;
+	}
+
+	/*
+	 * TODO: implement
 	if ((dialogue_tree = dialogue_file_string_to_tree(file_string_raw)) == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		returnval = Q_ERROR;
 	}
+	*/
 
 	free(file_string_raw);
 	return returnval;
@@ -364,10 +377,14 @@ dialogue_sections_count(const char *s, int *branchesc, int **objectsc, int ***co
 			(*branchesc)++;
 		}
 	}
+	printf("*branchesc = %i\n", *branchesc);
 
 	/* handle objects */
 	int branches_index = 0;
-	if ((*objectsc = calloc((size_t) branchesc, sizeof(*objectsc))) == NULL) {
+
+	/* relies on calloc()'s initialization of all bytes to zero */
+	printf("calloc(%zu, %zu)\n", (size_t) *branchesc, sizeof(**objectsc));
+	if ((*objectsc = calloc((size_t) *branchesc, sizeof(**objectsc))) == NULL) {
 		Q_ERROR_SYSTEM("calloc()");
 		abort();
 	}
@@ -375,6 +392,7 @@ dialogue_sections_count(const char *s, int *branchesc, int **objectsc, int ***co
 	for (i = 0; i < len; i++) {
 		ch = s[i];
 		if (ch == DIALOGUE_PARSE_CHAR_BRANCH_END) {
+			printf("(*objectsc)[%i] = %i\n", branches_index, (*objectsc)[branches_index]);
 			branches_index++;
 		}
 		/* each object has only one commands section */
@@ -382,11 +400,53 @@ dialogue_sections_count(const char *s, int *branchesc, int **objectsc, int ***co
 			/*
 			 * prevent out-of-bounds memory access for incorrectly-written QDL files
 			 */
-			if (branches_index >= (*branchesc)) { 
+			if (branches_index >= *branchesc) { 
 				Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
 				abort();
 			}
-			(objectsc[branches_index])++;
+			((*objectsc)[branches_index])++;
+		}
+	}
+
+	/* handle commands */
+	int objects_index = 0;
+	branches_index = 0;
+	/* alloc memory for the pointers (which correspond to objects) */
+	printf("calloc(%zu, %zu)\n", (size_t) *branchesc, sizeof(**commandsc));
+	if ((*commandsc = calloc((size_t) *branchesc, sizeof(**commandsc))) == NULL) {
+		Q_ERROR_SYSTEM("calloc()");
+		abort();
+	}
+	/* alloc memory for the commands proper and initialize to zero */
+	for (i = 0; i < *branchesc; i++) {
+		printf("calloc(%zu, %zu)\n", (size_t) (*objectsc)[i], sizeof(***commandsc));
+		/*@i5@*/if (((*commandsc)[i] = calloc((size_t) (*objectsc)[i], sizeof(***commandsc))) == NULL) {
+			Q_ERROR_SYSTEM("calloc()");
+			abort();
+		}
+	}
+	/* commands pass */
+	for (i = 0; i < len; i++) {
+		ch = s[i];
+		if (ch == DIALOGUE_PARSE_CHAR_BRANCH_END) {
+			printf("(*commandsc)[%i][%i] = %i\n",
+					branches_index, objects_index, (*commandsc)[branches_index][objects_index]);
+			branches_index++;
+			objects_index = 0;
+		} else if (ch == DIALOGUE_PARSE_CHAR_OBJECT_COMMANDS_END) {
+			if (branches_index >= *branchesc) {
+				Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+				abort();
+			}
+			printf("(*commandsc)[%i][%i] = %i\n",
+					branches_index, objects_index, (*commandsc)[branches_index][objects_index]);
+			objects_index++;
+		} else if (ch == DIALOGUE_PARSE_CHAR_COMMAND_DELIMITER) {
+			/*@i3@*/if (objects_index >= (*objectsc)[branches_index]) {
+				Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+				abort();
+			}
+			/*@i3@*/((*commandsc)[branches_index][objects_index])++;
 		}
 	}
 
