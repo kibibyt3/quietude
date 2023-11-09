@@ -367,13 +367,16 @@ dialogue_sections_count(const char *s, int *branchesc, int **objectsc, int ***co
 	int i;
 	char ch;
 	int len = (int) strlen(s);
-	
+	bool isstring = false;
+
 	/* handle branches */
 	*branchesc = 0;
 	/* branches pass */
 	for (i = 0; i < len; i++) {
 		ch = s[i];
-		if (ch == DIALOGUE_PARSE_CHAR_BRANCH_END) {
+		if (ch == DIALOGUE_PARSE_CHAR_STRING) {
+			isstring = !isstring;
+		} else if ((ch == DIALOGUE_PARSE_CHAR_BRANCH_END) && (!isstring)) {
 			(*branchesc)++;
 		}
 	}
@@ -391,12 +394,13 @@ dialogue_sections_count(const char *s, int *branchesc, int **objectsc, int ***co
 	/* objects pass */
 	for (i = 0; i < len; i++) {
 		ch = s[i];
-		if (ch == DIALOGUE_PARSE_CHAR_BRANCH_END) {
+		if (ch == DIALOGUE_PARSE_CHAR_STRING) {
+			isstring = !isstring;
+		} else if ((ch == DIALOGUE_PARSE_CHAR_BRANCH_END) && (!isstring)) {
 			printf("(*objectsc)[%i] = %i\n", branches_index, (*objectsc)[branches_index]);
 			branches_index++;
-		}
-		/* each object has only one commands section */
-		if (ch == DIALOGUE_PARSE_CHAR_OBJECT_COMMANDS_END) {
+		} else if ((ch == DIALOGUE_PARSE_CHAR_OBJECT_COMMANDS_END) && (!isstring)) {
+			/* each object has only one commands section */
 			/*
 			 * prevent out-of-bounds memory access for incorrectly-written QDL files
 			 */
@@ -428,12 +432,12 @@ dialogue_sections_count(const char *s, int *branchesc, int **objectsc, int ***co
 	/* commands pass */
 	for (i = 0; i < len; i++) {
 		ch = s[i];
-		if (ch == DIALOGUE_PARSE_CHAR_BRANCH_END) {
-			printf("(*commandsc)[%i][%i] = %i\n",
-					branches_index, objects_index, (*commandsc)[branches_index][objects_index]);
+		if (ch == DIALOGUE_PARSE_CHAR_STRING) {
+			isstring = !isstring;
+		} else if ((ch == DIALOGUE_PARSE_CHAR_BRANCH_END) && (!isstring)) {
 			branches_index++;
 			objects_index = 0;
-		} else if (ch == DIALOGUE_PARSE_CHAR_OBJECT_COMMANDS_END) {
+		} else if ((ch == DIALOGUE_PARSE_CHAR_OBJECT_COMMANDS_END) && (!isstring)) {
 			if (branches_index >= *branchesc) {
 				Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
 				abort();
@@ -441,7 +445,7 @@ dialogue_sections_count(const char *s, int *branchesc, int **objectsc, int ***co
 			printf("(*commandsc)[%i][%i] = %i\n",
 					branches_index, objects_index, (*commandsc)[branches_index][objects_index]);
 			objects_index++;
-		} else if (ch == DIALOGUE_PARSE_CHAR_COMMAND_DELIMITER) {
+		} else if ((ch == DIALOGUE_PARSE_CHAR_COMMAND_DELIMITER) && (!isstring)) {
 			/*@i3@*/if (objects_index >= (*objectsc)[branches_index]) {
 				Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
 				abort();
