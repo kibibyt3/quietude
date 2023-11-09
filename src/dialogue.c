@@ -405,7 +405,7 @@ dialogue_sections_count(const char *s, int *branchesc, int **objectsc, int ***co
 				Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
 				abort();
 			}
-			((*objectsc)[branches_index])++;
+			/*@i3@*/((*objectsc)[branches_index])++;
 		}
 	}
 
@@ -443,7 +443,7 @@ dialogue_sections_count(const char *s, int *branchesc, int **objectsc, int ***co
 				Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
 				abort();
 			}
-			/*@i3@*/((*commandsc)[branches_index][objects_index])++;
+			/*@i5@*/((*commandsc)[branches_index][objects_index])++;
 		}
 	}
 
