@@ -7,6 +7,7 @@
 #include "qdefs.h"
 #include "qerror.h"
 
+#include "splint_types.h"
 #include "dialogue.h"
 
 
@@ -19,6 +20,9 @@ static DialogueTree_t *dialogue_tree = NULL;
 
 /*@null@*/
 static DialogueTree_t *dialogue_file_string_to_tree(const char *)/*@*/;
+
+/** Maximum number of characters within a single section in a QDL file. */
+#define DIALOGUE_SECTION_SIZE_MAX 1000
 
 static DialogueTree_t *dialogue_tree_create(/*@only@*/char *title,
 		/*@only@*/DialogueBranch_t **branches, size_t sz)/*@*/;
@@ -39,7 +43,9 @@ static int dialogue_file_string_isvalid(const char *s)/*@*/;
 static int dialogue_sections_count(const char *s,
 		/*@out@*/int *branchesc, /*@partial@*/int **objectsc,
 		/*@partial@*/int ***commandsc)
-	/*@modifies branchesc, objectsc, *objectsc, commandsc, *commandsc, **commandsc@*/;
+	/*@modifies branchesc, objectsc, commandsc@*/;
+
+static void dialogue_sections_counter_destroy(int branchesc, /*@only@*/int *objectsc, /*@only@*/int **commandsc);
 
 static long file_size_get(FILE *fp)/*@modifies fileSystem, fp@*/;
 
@@ -65,7 +71,7 @@ dialogue_init(const char *qdl_filename)
 	if (dialogue_tree != NULL) {
 		Q_ERRORFOUND(QERROR_MODULE_INITIALIZED);
 		return Q_ERROR;
-	}	
+	}
 
 	if ((qdl_file = fopen(qdl_filename, "r")) == NULL) {
 		Q_ERROR_SYSTEM("fopen()");
@@ -94,22 +100,284 @@ dialogue_init(const char *qdl_filename)
 	int *objectsc;
 	int **commandsc;
 
-	if (dialogue_sections_count(file_string_raw, &branchesc, &objectsc, &commandsc) == Q_ERROR) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-		free(file_string_raw);
-		return Q_ERROR;
-	}
-
-	/*
-	 * TODO: implement
 	if ((dialogue_tree = dialogue_file_string_to_tree(file_string_raw)) == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		returnval = Q_ERROR;
 	}
-	*/
 
 	free(file_string_raw);
 	return returnval;
+}
+
+
+DialogueTree_t *
+dialogue_file_string_to_tree(const char *s) {
+
+	int branchesc;
+	int *objectsc;
+	int **commandsc;
+	int slen;
+
+	/* Generic buffers */
+	char container[DIALOGUE_SECTION_SIZE_MAX] = '\0';
+
+	/* Tree buffers */
+	DialogueTree_t tree = NULL;
+	char *title = NULL;
+	DialogueBranch_t **branches = NULL;
+	size_t tree_sz = 0;
+	
+	/* Branch buffers */
+	DialogueBranch_t *branch = NULL;
+	char *header = NULL;
+	char *message = NULL;
+	DialogueObject_t *objects = NULL;
+	size_t branch_sz = 0;
+
+	/* Object buffers */
+	DialogueObject_t *object = NULL;
+	char *response = NULL;
+	DialogueCommand_t *commands = NULL;
+	char *command_str = NULL;
+	char **args = NULL;
+	char *arg = NULL;
+	size_t object_size = NULL;
+
+	if (dialogue_sections_count(s, &branchesc, &objectsc, &commandsc) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+
+	/* 
+	 * we can expect a tree title here because that's the first thing in every QDL
+	 * file
+	 */
+	DialogueParseMode_t parse_mode = DIALOGUE_PARSE_MODE_TREE_TITLE;
+
+	container_index = 0;
+	/* Main parse loop. */
+	int slen = strlen(s); 
+	char ch;
+	bool isstring = false;
+	bool iscommand = false; /* TODO: remove this and just handle spaces specially */
+	int branches_index = 0;
+	int objects_index = 0;
+	int commands_index = 0;
+	for (int i = 0; i < slen; i++) {
+		ch = s[i];
+
+		/* handle the string character and command character seperately*/
+		if (ch == DIALOGUE_PARSE_CHAR_STRING) {
+			isstring = !isstring;
+
+
+
+			/* save the branch header and start an object's response
+		 	*  branch headers are saved here because their only terminating character is
+		 	*  the beginning of another string (namely an object's response)
+		 	*/
+			if ((isstring == false)
+					&& (parse_mode == DIALOGUE_PARSE_MODE_BRANCH_HEADER)) {
+				
+				/* save the branch header */
+				parse_mode = DIALOGUE_PARSE_MODE_OBJECT_RESPONSE;
+				container[container_index] = '\0';
+				header = calloc(strlen(container) + (size_t) 1, sizeof(*header));
+				if (header == NULL) {
+					Q_ERROR_SYSTEM("calloc()");
+					abort();
+				}
+				strcpy(header, container);
+				container_index = 0;
+				
+				/* start an object */
+				commands_index = 0;
+				if (objects_index < objectsc[branches_index]) {
+					commands = calloc((size_t) commandsc[branches_index][objects_index],
+							sizeof(*commands));
+					if (commands == NULL) {
+						Q_ERROR_SYSTEM("calloc()");
+						abort();
+					}
+					args = calloc((size_t) commandsc[branches_index][objects_index],
+							sizeof(*args));
+					if (args == NULL) {
+						Q_ERROR_SYSTEM("calloc()");
+						abort();
+					}
+				}
+			}
+
+
+
+		} else {
+
+			switch (ch) {
+
+			/* start the tree title */
+			case DIALOGUE_PARSE_CHAR_TREE_TITLE_BEG:
+				parse_mode = DIALOGUE_PARSE_MODE_TREE_TITLE;
+				break;
+
+
+
+			/* save the tree title and start a new branch */
+			case DIALOGUE_PARSE_CHAR_TREE_TITLE_END:
+
+				/* save the title */
+				assert(parse_mode == DIALOGUE_PARSE_MODE_TREE_TITLE);
+				parse_mode = DIALOGUE_PARSE_MODE_BRANCH_HEADER;
+				container[container_index] = '\0';
+				title = calloc(strlen(container) + (size_t) 1, sizeof(*title));
+				if (title == NULL) {
+					Q_ERROR_SYSTEM("calloc()");
+					abort();
+				}
+				strcpy(title, container);
+				container_index = 0;
+				header = NULL;
+				message = NULL;
+				objects = NULL;
+
+				/* start a new branch */
+				objects_index = 0;
+				objects = calloc((size_t) objectsc[branches_index], sizeof(*objects));
+				if (objects == NULL) {
+					Q_ERROR_SYSTEM("calloc()");
+				}
+
+				break;
+
+
+
+			/* save the old branch and start a new one if there's another left */
+			case DIALOGUE_PARSE_CHAR_BRANCH_END:
+				parse_mode = DIALOGUE_PARSE_MODE_BRANCH_HEADER;
+
+				/* check that none of the buffers to be used are empty */
+				if ((header == NULL) || (message == NULL) || (objects == NULL)) {
+					Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+					abort();
+				}
+
+				/* save the old branch */
+				branches[branches_index] = dialogue_branch_create(header, message, objects, 
+						(size_t) objectsc[branches_index]);
+				if (branches[branches_index] == NULL) {
+					Q_ERRORFOUND(QERROR_ERRORVAL);
+					abort();
+				}
+				header = NULL;
+				message = NULL;
+				objects = NULL;
+
+				/* create the new branch (if applicable) */
+				branches_index++;
+				objects_index = 0;
+				if (branches_index < branchesc) {
+					objects = calloc((size_t) objectsc[branches_index], sizeof(*objects));
+					if (objects == NULL) {
+						Q_ERROR_SYSTEM("calloc()");
+						abort();
+					}
+				}
+				break;
+
+
+
+			/* save the branch header */
+			case DIALOGUE_PARSE_CHAR_BRANCH_BEG:
+				assert(parse_mode == DIALOGUE_PARSE_MODE_BRANCH_HEADER);
+				parse_mode = DIALOGUE_PARSE_MODE_BRANCH_MESSAGE;
+				container[container_index] = '\0';
+				header = calloc(strlen(container) + (size_t) 1, sizeof(*header));
+				if (header == NULL) {
+					Q_ERROR_SYSTEM("calloc()");
+					abort();
+				}
+				strcpy(title, container);
+				container_index = 0;
+				break;
+
+
+
+			/* save the object's response and start a command */
+			case DIALOGUE_PARSE_CHAR_OBJECT_COMMANDS_BEG:
+
+				/* save the object's response */
+				assert(parse_mode == DIALOGUE_PARSE_MODE_OBJECT_RESPONSE);
+				parse_mode = DIALOGUE_PARSE_MODE_OBJECT_COMMAND;
+				container[container_index] = '\0';
+				response = calloc(strlen(container) + (size_t) 1, sizeof(*response));
+				if (response == NULL) {
+					Q_ERROR_SYSTEM("calloc()");
+					abort();
+				}
+				strcpy(response, container);
+				container_index = 0;
+			
+				/* start a command */
+				commands_index = 0;
+				args[commands_index] = calloc(
+						(size_t) commandsc[branches_index][object_index],
+						sizeof(**args));
+				if (args[commands_index] == NULL) {
+					Q_ERROR_SYSTEM("calloc()");
+				}
+
+				break;
+
+
+
+			/* save the object and, if possible, start a new one */
+			case DIALOGUE_PARSE_CHAR_OBJECT_COMMANDS_END:
+
+				assert(parse_mode == DIALOGUE_PARSE_MODE_OBJECT_COMMAND);
+				/* save the old object */
+				objects[object_index] = dialogue_object_create(response, commands, args,
+						(size_t) commandsc[branches_index][objects_index]);
+				if (objects[object_index] == NULL) {
+					Q_ERROR_SYSTEM("calloc()");
+					abort();
+				}
+				response = NULL;
+				commands = NULL;
+				args = NULL;
+
+				/* start a new object (if applicable) */
+				objects_index++;
+				commands_index = 0;
+				if (objects_index < objectsc[branches_index]) {
+					commands = calloc((size_t) commandsc[branches_index][objects_index],
+							sizeof(*commands));
+					if (commands == NULL) {
+						Q_ERROR_SYSTEM("calloc()");
+						abort();
+					}
+					/* 
+					 * this breaks with the pattern because args is a pointer-to-pointer
+					 */
+					args = calloc((size_t) 1, sizeof(*args));
+					if (args == NULL) {
+						Q_ERROR_SYSTEM("calloc()");
+						abort();
+					}
+				}
+				break;
+
+
+
+			default:
+				container[container_index++] = ch;
+
+
+			}
+		}
+	}
+
+	dialogue_sections_counter_destroy(branchesc, objectsc, commandsc);
+
+	return tree;
 }
 
 
@@ -121,8 +389,8 @@ dialogue_init(const char *qdl_filename)
  * @return pointer to new #DialogueTree_t.
  */
 DialogueTree_t *
-dialogue_tree_create(char *title, 
-		 DialogueBranch_t **branches, size_t sz) {
+dialogue_tree_create(char *title,
+		DialogueBranch_t **branches, size_t sz) {
 	
 	DialogueTree_t *tree;
 
@@ -149,7 +417,7 @@ dialogue_tree_create(char *title,
  * @return pointer to new #DialogueBranch_t.
  */
 DialogueBranch_t *
-dialogue_branch_create(char *header, 
+dialogue_branch_create(char *header,
 		char *message, DialogueObject_t **objects, size_t sz) {
 
 	DialogueBranch_t *branch;
@@ -363,7 +631,8 @@ dialogue_file_string_isvalid(const char *s) {
  * @return #Q_OK or #Q_ERROR.
  */
 int
-dialogue_sections_count(const char *s, int *branchesc, int **objectsc, int ***commandsc) {
+dialogue_sections_count(const char *s, int *branchesc, PartialIntp_t *objectsc,
+		PartialPartialIntpp_t *commandsc) {
 	int i;
 	char ch;
 	int len = (int) strlen(s);
@@ -443,13 +712,26 @@ dialogue_sections_count(const char *s, int *branchesc, int **objectsc, int ***co
 				Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
 				abort();
 			}
-			/*@i5@*/((*commandsc)[branches_index][objects_index])++;
+			((*commandsc)[branches_index][objects_index])++;
 		}
 	}
 
 	return Q_OK;
 }
 
+
+void
+dialogue_sections_counter_destroy(int branchesc, int *objectsc, /*@only@*/OnlyIntp_t *commandsc) {
+	int branches_index;
+
+	for (branches_index = 0; branches_index < branchesc; branches_index++) {
+		free(commandsc[branches_index]);
+	}
+	free(commandsc);
+	free(objectsc);
+
+	return;
+}
 
 /* TODO: make a destructor function to correspond to dialogue_sections_count */
 
