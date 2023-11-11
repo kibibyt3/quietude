@@ -138,7 +138,7 @@ dialogue_file_string_to_tree(const char *s) {
 	DialogueObject_t *object = NULL;
 	char *response = NULL;
 	DialogueCommand_t *commands = NULL;
-	char *command_str = NULL;
+	DialogueCommand_t command = (DialogueCommand_t) 0;
 	char **args = NULL;
 	char *arg = NULL;
 	size_t object_size = NULL;
@@ -159,7 +159,6 @@ dialogue_file_string_to_tree(const char *s) {
 	int slen = strlen(s); 
 	char ch;
 	bool isstring = false;
-	bool iscommand = false; /* TODO: remove this and just handle spaces specially */
 	int branches_index = 0;
 	int objects_index = 0;
 	int commands_index = 0;
@@ -318,21 +317,59 @@ dialogue_file_string_to_tree(const char *s) {
 			
 				/* start a command */
 				commands_index = 0;
-				args[commands_index] = calloc(
-						(size_t) commandsc[branches_index][object_index],
+				
+				break;
+
+
+
+			/* save the command and start an arg */
+			case DIALOGUE_PARSE_CHAR_COMMAND_ARG_SEPARATOR:
+				if (parse_mode == DIALOGUE_PARSE_MODE_OBJECT_COMMAND) {
+					/* save the command */
+					container[container_index] = '\0';
+					if ((command = string_to_dialogue_command(container))
+							== (DialogueTree_t) Q_ERRORCODE_ENUM) {
+						Q_ERRORFOUND(QERROR_ERRORVAL);
+						abort();
+					}
+					commands[commands_index] = command;
+
+					/* start an arg */
+					parse_mode = DIALOGUE_PARSE_MODE_OBJECT_ARG;
+				}
+				break;
+
+
+
+			/* save the arg and, if possible, start a command */
+			case DIALOGUE_PARSE_CHAR_COMMAND_DELIMITER:
+				assert(parse_mode == DIALOGUE_PARSE_MODE_OBJECT_COMMAND);
+				container[container_index] = '\0';
+				args[commands_index] = calloc(strlen(container) + (size_t) 1,
 						sizeof(**args));
 				if (args[commands_index] == NULL) {
 					Q_ERROR_SYSTEM("calloc()");
+					abort();
 				}
+				commands_index++;
+
+				/* start a command (if applicable) 
+				 * (checking if it's applicable is handled by
+				 * DIALOGUE_PARSE_CHAR_OBJECT_COMMANDS_END*/
+				parse_mode = DIALOGUE_PARSE_MODE_OBJECT_COMMAND;
 
 				break;
-
 
 
 			/* save the object and, if possible, start a new one */
 			case DIALOGUE_PARSE_CHAR_OBJECT_COMMANDS_END:
 
 				assert(parse_mode == DIALOGUE_PARSE_MODE_OBJECT_COMMAND);
+				if ((response == NULL) || (commands == NULL) || (args == NULL)) {
+					Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+					abort();
+				}
+				
 				/* save the old object */
 				objects[object_index] = dialogue_object_create(response, commands, args,
 						(size_t) commandsc[branches_index][objects_index]);
@@ -357,7 +394,7 @@ dialogue_file_string_to_tree(const char *s) {
 					/* 
 					 * this breaks with the pattern because args is a pointer-to-pointer
 					 */
-					args = calloc((size_t) 1, sizeof(*args));
+					args = calloc((size_t) commandsc[branches_index][object_index], sizeof(*args));
 					if (args == NULL) {
 						Q_ERROR_SYSTEM("calloc()");
 						abort();
@@ -732,8 +769,6 @@ dialogue_sections_counter_destroy(int branchesc, int *objectsc, /*@only@*/OnlyIn
 
 	return;
 }
-
-/* TODO: make a destructor function to correspond to dialogue_sections_count */
 
 
 /**

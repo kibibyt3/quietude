@@ -44,6 +44,8 @@ typedef enum DialogueParseMode_t {
 #define DIALOGUE_PARSE_CHAR_OBJECT_COMMANDS_BEG '('
 /** Ending character for @ref DialogueObject_t.commands. */
 #define DIALOGUE_PARSE_CHAR_OBJECT_COMMANDS_END ')'
+/** Character to separate a command from its arg. */
+#define DIALOGUE_PARSE_CHAR_COMMAND_ARG_SEPARATOR ' '
 /** Delimiter for @ref DialogueObject_t.commands. */
 #define DIALOGUE_PARSE_CHAR_COMMAND_DELIMITER ';'
 /** Beginning/ending character for a string. */
