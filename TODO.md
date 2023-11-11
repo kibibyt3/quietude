@@ -39,6 +39,9 @@
   waits. rewrite alphalist and make it better!
 - [ ] Maybe let's add parameter names to function prototypes?
 - [ ] Finish the rough draft of the dialogue module.
+  - [ ] Debug the initialization function therein.
+  - [ ] Finish (and perhaps relocate to its own module) the logic section.
+  - [ ] Finish the I/O section.
 - [ ] Rewrite `dialogue_file_string_to_tree()` such that it's divided into
   subfunctions all of which take a substring of whatever they need to work on.
   e.g. `DialogueObject_t dialogue_file_string_to_object(char *file_substring)`.
