@@ -22,7 +22,8 @@
 │   ├── qerror.h
 │   ├── qfile.h
 │   ├── qwalk.h
-│   └── README.md
+│   ├── README.md
+│   └── splint_types.h
 ├── Makefile
 ├── README.md
 ├── saves
@@ -46,5 +47,5 @@
 │   └── test.c
 └── TODO.md
 
-10 directories, 36 files
+10 directories, 37 files
 ```
