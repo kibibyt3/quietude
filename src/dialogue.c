@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdbool.h>
+#include <assert.h>
 
 #include "qdefs.h"
 #include "qerror.h"
@@ -96,10 +97,6 @@ dialogue_init(const char *qdl_filename)
 		returnval = Q_ERROR;
 	}
 
-	int branchesc;
-	int *objectsc;
-	int **commandsc;
-
 	if ((dialogue_tree = dialogue_file_string_to_tree(file_string_raw)) == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		returnval = Q_ERROR;
@@ -109,42 +106,42 @@ dialogue_init(const char *qdl_filename)
 	return returnval;
 }
 
-
+/*@ignore@*/
 DialogueTree_t *
 dialogue_file_string_to_tree(const char *s) {
 
-	int branchesc;
-	int *objectsc;
-	int **commandsc;
+	int branchesc = 0;
+	int *objectsc = NULL;
+	int **commandsc = NULL;
 	int slen;
 
 	/* Generic buffers */
-	char container[DIALOGUE_SECTION_SIZE_MAX] = '\0';
+	/*@reldef@*/char container[DIALOGUE_SECTION_SIZE_MAX];
+	container[0] = '\0';
 
 	/* Tree buffers */
-	DialogueTree_t tree = NULL;
+	DialogueTree_t *tree = NULL;
 	char *title = NULL;
 	DialogueBranch_t **branches = NULL;
-	size_t tree_sz = 0;
 	
 	/* Branch buffers */
-	DialogueBranch_t *branch = NULL;
 	char *header = NULL;
 	char *message = NULL;
-	DialogueObject_t *objects = NULL;
-	size_t branch_sz = 0;
+	DialogueObject_t **objects = NULL;
 
 	/* Object buffers */
-	DialogueObject_t *object = NULL;
 	char *response = NULL;
 	DialogueCommand_t *commands = NULL;
 	DialogueCommand_t command = (DialogueCommand_t) 0;
-	char **args = NULL;
-	char *arg = NULL;
-	size_t object_size = NULL;
+	/*@only@*/char **args = NULL;
 
 	if (dialogue_sections_count(s, &branchesc, &objectsc, &commandsc) == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+
+	if ((branchesc == 0) || (objectsc == NULL) || (commandsc == NULL)) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return NULL;
 	}
 
@@ -154,39 +151,43 @@ dialogue_file_string_to_tree(const char *s) {
 	 */
 	DialogueParseMode_t parse_mode = DIALOGUE_PARSE_MODE_TREE_TITLE;
 
-	container_index = 0;
+	int container_index = 0;
 	/* Main parse loop. */
-	int slen = strlen(s); 
+	slen = (int) strlen(s); 
 	char ch;
 	bool isstring = false;
 	int branches_index = 0;
 	int objects_index = 0;
 	int commands_index = 0;
+
+	if ((branches = calloc((size_t) branchesc, sizeof(*branches))) == NULL) {
+		Q_ERROR_SYSTEM("calloc()");
+		dialogue_sections_counter_destroy(branchesc, objectsc, commandsc);
+		return NULL;
+	}
 	for (int i = 0; i < slen; i++) {
 		ch = s[i];
 
-		/* handle the string character and command character seperately*/
+		/* handle the string character and command character seperately */
 		if (ch == DIALOGUE_PARSE_CHAR_STRING) {
 			isstring = !isstring;
 
-
-
-			/* save the branch header and start an object's response
+			/* save the branch message and start an object's response
 		 	*  branch headers are saved here because their only terminating character is
 		 	*  the beginning of another string (namely an object's response)
 		 	*/
 			if ((isstring == false)
-					&& (parse_mode == DIALOGUE_PARSE_MODE_BRANCH_HEADER)) {
+					&& (parse_mode == DIALOGUE_PARSE_MODE_BRANCH_MESSAGE)) {
 				
 				/* save the branch header */
 				parse_mode = DIALOGUE_PARSE_MODE_OBJECT_RESPONSE;
 				container[container_index] = '\0';
-				header = calloc(strlen(container) + (size_t) 1, sizeof(*header));
-				if (header == NULL) {
+				message = calloc(strlen(container) + (size_t) 1, sizeof(*header));
+				if (message == NULL) {
 					Q_ERROR_SYSTEM("calloc()");
 					abort();
 				}
-				strcpy(header, container);
+				strcpy(message, container);
 				container_index = 0;
 				
 				/* start an object */
@@ -206,10 +207,11 @@ dialogue_file_string_to_tree(const char *s) {
 					}
 				}
 			}
+		}
 
 
 
-		} else {
+		if (!isstring) {
 
 			switch (ch) {
 
@@ -294,7 +296,7 @@ dialogue_file_string_to_tree(const char *s) {
 					Q_ERROR_SYSTEM("calloc()");
 					abort();
 				}
-				strcpy(title, container);
+				strcpy(header, container);
 				container_index = 0;
 				break;
 
@@ -324,11 +326,23 @@ dialogue_file_string_to_tree(const char *s) {
 
 			/* save the command and start an arg */
 			case DIALOGUE_PARSE_CHAR_COMMAND_ARG_SEPARATOR:
+				
+				/* check that we're not just in the title */
+				if (parse_mode == DIALOGUE_PARSE_MODE_TREE_TITLE) {
+					container[container_index++] = ch;
+					break;
+				}
+
+				container[container_index] = '\0';
+				if (commands == NULL) {
+					Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+					abort();
+				}
 				if (parse_mode == DIALOGUE_PARSE_MODE_OBJECT_COMMAND) {
 					/* save the command */
 					container[container_index] = '\0';
 					if ((command = string_to_dialogue_command(container))
-							== (DialogueTree_t) Q_ERRORCODE_ENUM) {
+							== (DialogueCommand_t) Q_ERRORCODE_ENUM) {
 						Q_ERRORFOUND(QERROR_ERRORVAL);
 						abort();
 					}
@@ -336,6 +350,7 @@ dialogue_file_string_to_tree(const char *s) {
 
 					/* start an arg */
 					parse_mode = DIALOGUE_PARSE_MODE_OBJECT_ARG;
+					container_index = 0;
 				}
 				break;
 
@@ -343,7 +358,13 @@ dialogue_file_string_to_tree(const char *s) {
 
 			/* save the arg and, if possible, start a command */
 			case DIALOGUE_PARSE_CHAR_COMMAND_DELIMITER:
-				assert(parse_mode == DIALOGUE_PARSE_MODE_OBJECT_COMMAND);
+				if (args == NULL) {
+					Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+					abort();
+				}
+				
+				/* save the arg */
+				assert(parse_mode == DIALOGUE_PARSE_MODE_OBJECT_ARG);
 				container[container_index] = '\0';
 				args[commands_index] = calloc(strlen(container) + (size_t) 1,
 						sizeof(**args));
@@ -355,8 +376,10 @@ dialogue_file_string_to_tree(const char *s) {
 
 				/* start a command (if applicable) 
 				 * (checking if it's applicable is handled by
-				 * DIALOGUE_PARSE_CHAR_OBJECT_COMMANDS_END*/
+				 * DIALOGUE_PARSE_CHAR_OBJECT_COMMANDS_END
+				 */
 				parse_mode = DIALOGUE_PARSE_MODE_OBJECT_COMMAND;
+				container_index = 0;
 
 				break;
 
@@ -365,15 +388,17 @@ dialogue_file_string_to_tree(const char *s) {
 			case DIALOGUE_PARSE_CHAR_OBJECT_COMMANDS_END:
 
 				assert(parse_mode == DIALOGUE_PARSE_MODE_OBJECT_COMMAND);
-				if ((response == NULL) || (commands == NULL) || (args == NULL)) {
+				parse_mode = DIALOGUE_PARSE_MODE_OBJECT_RESPONSE;
+				if ((response == NULL) || (commands == NULL)
+						|| (args == NULL) || (objects == NULL)) {
 					Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 					abort();
 				}
 				
 				/* save the old object */
-				objects[object_index] = dialogue_object_create(response, commands, args,
+				objects[objects_index] = dialogue_object_create(response, commands, args,
 						(size_t) commandsc[branches_index][objects_index]);
-				if (objects[object_index] == NULL) {
+				if (objects[objects_index] == NULL) {
 					Q_ERROR_SYSTEM("calloc()");
 					abort();
 				}
@@ -394,7 +419,7 @@ dialogue_file_string_to_tree(const char *s) {
 					/* 
 					 * this breaks with the pattern because args is a pointer-to-pointer
 					 */
-					args = calloc((size_t) commandsc[branches_index][object_index], sizeof(*args));
+					args = calloc((size_t) commandsc[branches_index][objects_index], sizeof(*args));
 					if (args == NULL) {
 						Q_ERROR_SYSTEM("calloc()");
 						abort();
@@ -406,16 +431,26 @@ dialogue_file_string_to_tree(const char *s) {
 
 			default:
 				container[container_index++] = ch;
-
+				break;
 
 			}
 		}
+	}
+
+	if (title == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		abort();
+	}
+	if ((tree = dialogue_tree_create(title, branches, (size_t) branchesc)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
 	}
 
 	dialogue_sections_counter_destroy(branchesc, objectsc, commandsc);
 
 	return tree;
 }
+/*@end@*/
 
 
 /**
@@ -530,14 +565,19 @@ dialogue_file_to_string(FILE *fp) {
 	int index = 0;
 	int ch;
 	bool isstring = false;
+	bool isstring_fake = false;
 	bool isstring_proper = false;
+	int ch_prev = (int) '\0';
 	while ((ch = fgetc(fp)) != EOF) {
 
 		/* 
 		 * track if we're in a string or string-like sequence and only add 
-		 * whitespace characters if we are
+		 * whitespace characters if we are. also ensure that it isn't a stray
+		 * whitespace within a command section.
 		 */
-		if ((isspace(ch) == 0) || (isstring)) {
+		if ((isspace(ch) == 0) 
+				|| ((isstring) && !((ch_prev == (int) DIALOGUE_PARSE_CHAR_COMMAND_DELIMITER)
+						&& (isstring_fake)))) {
 			s[index++] = (char) ch;
 		}
 		if ((char) ch == DIALOGUE_PARSE_CHAR_STRING) {
@@ -549,16 +589,19 @@ dialogue_file_to_string(FILE *fp) {
 					|| ((char) ch == DIALOGUE_PARSE_CHAR_TREE_TITLE_END))
 				&& (!isstring_proper)) {
 			isstring = !isstring;
+			isstring_fake = !isstring_fake;
 		}
+
+		ch_prev = ch;
 	}
-	
+
 	/* check if file error indicator is set */
 	if (ferror(fp) != 0) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 	}
 
 	s[index] = '\0';
-	
+
 	return s;
 }
 
