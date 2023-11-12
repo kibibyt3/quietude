@@ -152,4 +152,4 @@ typedef struct DialogueTree_t {
 
 
 
-extern int dialogue_init(const char *)/*@modifies internalState@*/;
+extern int dialogue_logic_init(const char *)/*@modifies internalState@*/;

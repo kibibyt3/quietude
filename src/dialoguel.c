@@ -104,7 +104,7 @@ static DialogueCommand_t string_to_dialogue_command(const char *s)/*@*/;
  * @return #Q_OK or #Q_ERROR.
  */
 int
-dialogue_init(const char *qdl_filename)
+dialogue_logic_init(const char *qdl_filename)
 /*@modifies dialogue_tree@*/
 {
 	int returnval = Q_OK;
