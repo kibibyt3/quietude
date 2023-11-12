@@ -138,6 +138,9 @@ typedef struct DialogueBranch_t {
  */
 typedef struct DialogueTree_t {
 
+	/** Current @ref DialogueBranch_t.header we're using. */
+	char *header_active;
+
 	/** Title of #DialogueTree_t. */
 	char *title; 
 

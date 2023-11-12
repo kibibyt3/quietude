@@ -21,6 +21,11 @@
 
 
 
+/** Header to search for and start at in a #DialogueTree_t. */
+#define DIALOGUE_HEADER_ACTIVE_DEFAULT "INIT"
+
+
+
 /** Current active #DialogueTree_t (or @c NULL if the module is inactive. */
 /*@null@*//*@only@*/
 static DialogueTree_t *dialogue_tree = NULL;
@@ -33,6 +38,13 @@ static DialogueTree_t *dialogue_file_string_to_tree(const char *)/*@*/;
 /** Maximum number of characters within a single section in a QDL file. */
 #define DIALOGUE_SECTION_SIZE_MAX 1000
 
+
+/**
+ * @defgroup DialogueConstructors Dialogue Constructors
+ * Constructor functions for the dialogue internal interface.
+ * @{
+ */
+
 static DialogueTree_t *dialogue_tree_create(/*@only@*/char *title,
 		/*@only@*/DialogueBranch_t **branches, size_t sz)/*@*/;
 
@@ -44,12 +56,22 @@ static DialogueObject_t *dialogue_object_create(/*@only@*/char *response,
 		/*@only@*/DialogueCommand_t *commands, /*@only@*/char **args, 
 		size_t sz)/*@*/;
 
+/** @} */
+
+
+static int dialogue_tree_header_active_set(
+		DialogueTree_t *tree, /*@observer@*/char *header_active)
+	/*@modifies tree->header_active@*/;
+
 
 /**
  * @defgroup DialogueGetters Dialogue Getters
  * Getter functions for the dialogue internal interface.
  * @{
  */
+
+/*@observer@*/
+char *dialogue_tree_header_active_get(const DialogueTree_t *tree)/*@*/;
 
 /*@observer@*/
 static char *dialogue_tree_title_get(const DialogueTree_t *tree)/*@*/;
@@ -522,6 +544,17 @@ dialogue_tree_create(char *title,
 		abort();
 	}
 
+	/* Allocate and set the header_active for the tree. */
+	size_t default_header_active_sz = strlen(DIALOGUE_HEADER_ACTIVE_DEFAULT) +
+		(size_t) 1;
+	if ((tree->header_active = calloc(default_header_active_sz,
+					sizeof(tree->header_active))) == NULL) {
+		Q_ERROR_SYSTEM("calloc()");
+		abort();
+	}
+	
+	strcpy(tree->header_active, DIALOGUE_HEADER_ACTIVE_DEFAULT);
+
 	tree->title = title;
 	tree->branches = branches;
 	tree->sz = sz;
@@ -586,6 +619,44 @@ dialogue_object_create(char *response,
 
 	return obj;
 
+}
+
+
+/**
+ * Resize the memory associated with the old active header and set a new one.
+ * @param[out] tree: #DialogueTree_t whose @ref DialogueTree_t.header_active
+ * member is to be changed.
+ * @param[in] header_active: string to assign to @p tree.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+dialogue_tree_header_active_set(DialogueTree_t *tree, char *header_active) {
+	
+	size_t sz = strlen(header_active) + (size_t) 1;
+	if (sz > (size_t) DIALOGUE_SECTION_SIZE_MAX) {
+		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+		return Q_ERROR;
+	}
+	
+	if ((tree->header_active = realloc(tree->header_active, sz)) == NULL) {
+		Q_ERROR_SYSTEM("realloc()");
+		abort();
+	}
+
+	strcpy(tree->header_active, header_active);
+
+	return Q_OK;
+}
+
+
+/**
+ * Get @ref DialogueTree_t.header_active.
+ * @param[in] tree: parent #DialogueTree_t.
+ * @return requested header.
+ */
+char *
+dialogue_tree_header_active_get(const DialogueTree_t *tree) {
+	return tree->header_active; 
 }
 
 
