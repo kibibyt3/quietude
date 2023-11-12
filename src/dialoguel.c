@@ -1,3 +1,11 @@
+/**
+ * @file dialoguel.c
+ * Program file for the dialogue module.
+ * This module concerns conversations with NPCs.
+ */
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -39,7 +47,7 @@ static DialogueObject_t *dialogue_object_create(/*@only@*/char *response,
 
 /**
  * @defgroup DialogueGetters Dialogue Getters
- * Getter functions for the Dialogue internal interface.
+ * Getter functions for the dialogue internal interface.
  * @{
  */
 
