@@ -44,7 +44,7 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 		abort();
 	}
 
-	if (dialogue_init(DIALOGUE_FILENAME) == Q_ERROR) {
+	if (dialogue_logic_init(DIALOGUE_FILENAME) == Q_ERROR) {
 		abort();
 	}
 
