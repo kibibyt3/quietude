@@ -67,8 +67,11 @@ typedef enum DialogueCommand_t {
 	/** Exit the #DialogueTree_t. */
 	DIALOGUE_COMMAND_EXIT,
 
+	/** Used to fill the slot of an empty command. */
+	DIALOGUE_COMMAND_EMPTY,
+
 	/** Total number of possible values for a #DialogueCommand_t. */
-	DIALOGUE_COMMAND_COUNT = DIALOGUE_COMMAND_EXIT
+	DIALOGUE_COMMAND_COUNT = DIALOGUE_COMMAND_EMPTY
 
 } DialogueCommand_t;
 
@@ -155,4 +158,14 @@ typedef struct DialogueTree_t {
 
 
 
-extern int dialogue_logic_init(const char *)/*@modifies internalState@*/;
+/*@null@*/
+extern DialogueTree_t *dialogue_logic_init(const char *)/*@*/;
+
+extern int dialogue_logic_tick(DialogueTree_t *tree, int choice)
+	/*@modifies internalState, tree@*/;
+
+extern DialogueCommand_t dialogue_command_external_get(void)
+	/*@globals internalState@*/;
+
+/*@observer@*/
+extern char *dialogue_arg_external_get(void)/*@globals internalState*/;

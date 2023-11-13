@@ -21,22 +21,36 @@
 
 
 
+/** Maximum number of characters within a single section in a QDL file. */
+#define DIALOGUE_SECTION_SIZE_MAX 1000
+
 /** Header to search for and start at in a #DialogueTree_t. */
 #define DIALOGUE_HEADER_ACTIVE_DEFAULT "INIT"
 
+/**
+ * Value for @ref DialogueTree_t.header_active when it must exit.
+ * Namely used in the event of #DIALOGUE_COMMAND_EXIT.
+ */
+#define DIALOGUE_HEADER_ACTIVE_EXIT "EXIT"
 
 
-/** Current active #DialogueTree_t (or @c NULL if the module is inactive. */
-/*@null@*//*@only@*/
-static DialogueTree_t *dialogue_tree = NULL;
+
+
+/** Argument to be accessed by other modules. */
+/*@i1@*/static char arg_external[DIALOGUE_SECTION_SIZE_MAX] = "";
+
+/** Command to be accessed by other modules. */
+static DialogueCommand_t command_external = DIALOGUE_COMMAND_EMPTY;
 
 
 
-/*@null@*/
+
+static int dialogue_command_handler(DialogueTree_t *tree,
+		DialogueCommand_t command, const char *arg)
+		/*@modifies tree, command_external, arg_external@*/;
+
+	/*@null@*/
 static DialogueTree_t *dialogue_file_string_to_tree(const char *)/*@*/;
-
-/** Maximum number of characters within a single section in a QDL file. */
-#define DIALOGUE_SECTION_SIZE_MAX 1000
 
 
 /**
@@ -60,8 +74,15 @@ static DialogueObject_t *dialogue_object_create(/*@only@*/char *response,
 
 
 static int dialogue_tree_header_active_set(
-		DialogueTree_t *tree, /*@observer@*/char *header_active)
+		DialogueTree_t *tree, const char *header_active)
 	/*@modifies tree->header_active@*/;
+
+/*@null@*//*@observer@*/
+DialogueBranch_t *dialogue_tree_active_branch_get(const DialogueTree_t *tree);
+
+/*@observer@*//*@null@*/
+static DialogueBranch_t *dialogue_branch_search_from_header(
+		const DialogueTree_t* tree, const char *header)/*@*/;
 
 
 /**
@@ -131,35 +152,27 @@ static DialogueCommand_t string_to_dialogue_command(const char *s)/*@*/;
 /**
  * Initialize the dialogue module.
  * @param[in] qdl_filename: the `*.qdl` file to parse.
- * @return #Q_OK or #Q_ERROR.
+ * @return initialized #DialogueTree_t or `NULL` on error.
  */
-int
-dialogue_logic_init(const char *qdl_filename)
-/*@modifies dialogue_tree@*/
-{
-	int returnval = Q_OK;
+DialogueTree_t *
+dialogue_logic_init(const char *qdl_filename) {
 	int r;
 	FILE *qdl_file;
 	char *file_string_raw;
-
-	if (dialogue_tree != NULL) {
-		Q_ERRORFOUND(QERROR_MODULE_INITIALIZED);
-		return Q_ERROR;
-	}
+	DialogueTree_t *tree;
 
 	if ((qdl_file = fopen(qdl_filename, "r")) == NULL) {
 		Q_ERROR_SYSTEM("fopen()");
-		return Q_ERROR;
+		return NULL;
 	}
 
 	if ((file_string_raw = dialogue_file_to_string(qdl_file)) == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		return Q_ERROR;
+		return NULL;
 	}
 
 	if (fclose(qdl_file) == EOF) {
 		Q_ERROR_SYSTEM("fclose()");
-		returnval = Q_ERROR;
 	}
 	
 	if ((r = dialogue_file_string_isvalid(file_string_raw)) != -1) {
@@ -167,17 +180,133 @@ dialogue_logic_init(const char *qdl_filename)
 		fprintf(stderr, "Error found while parsing QDL file %s at character %c "
 				"(character index %i after removal of redundant whitespace).\n",
 				qdl_filename, file_string_raw[r], r);
-		returnval = Q_ERROR;
 	}
 
-	if ((dialogue_tree = dialogue_file_string_to_tree(file_string_raw)) == NULL) {
+	if ((tree = dialogue_file_string_to_tree(file_string_raw)) == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		returnval = Q_ERROR;
 	}
 
 	free(file_string_raw);
-	return returnval;
+	return tree;
 }
+
+
+/**
+ * Pass a tick in the dialogue logic module.
+ * Specifically executes the tick on @p tree.
+ * @param[in] tree: #DialogueTree_t to pass a tick in.
+ * @param[in] choice: index of the object selected by the user.
+ * @return #Q_OK or #Q_ERROR. 
+ */
+int
+dialogue_logic_tick(DialogueTree_t *tree, int choice)
+/*@modifies command_external, tree@*/
+{
+	
+	DialogueBranch_t *branch;
+	DialogueObject_t *obj_choice;
+	DialogueCommand_t command;
+	char *arg;
+	size_t obj_sz;
+
+	/* set the external command pair to its initialized value */
+	command_external = DIALOGUE_COMMAND_EMPTY;
+
+	if ((branch = dialogue_tree_active_branch_get(tree)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+
+	if ((obj_choice = dialogue_branch_object_get(branch, choice)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+
+	obj_sz = dialogue_object_sz_get(obj_choice);
+	
+	/* handle commands */
+	for (int i = 0; (size_t) i < obj_sz; i++) {
+		if ((command = dialogue_object_command_get(obj_choice, i))
+				== (DialogueCommand_t) Q_ERRORCODE_ENUM) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
+		}
+		if ((arg = dialogue_object_arg_get(obj_choice, i)) == NULL) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
+		}
+		if (dialogue_command_handler(tree, command, arg) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
+		}
+	}
+
+	return Q_OK;
+}
+
+
+/**
+ * Handle a #DialogueCommand_t/argument pair.
+ * Specifically execute the pair on a #DialogueTree_t.
+ * @param[out] tree: #DialogueTree_t in question.
+ * @param[in] command: #DialogueCommand_t to execute.
+ * @param[in] arg: argument to execute.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+dialogue_command_handler(DialogueTree_t *tree,
+		DialogueCommand_t command, const char *arg) {
+	
+	if ((command < (DialogueCommand_t) Q_ENUM_VALUE_START)
+			|| (command > DIALOGUE_COMMAND_COUNT)) {
+		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+		return Q_ERROR;
+	}
+	switch (command) {
+	case DIALOGUE_COMMAND_GOTO:
+		if (dialogue_tree_header_active_set(tree, arg) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
+		}
+		break;
+	case DIALOGUE_COMMAND_EXIT:
+		if (dialogue_tree_header_active_set(tree, DIALOGUE_HEADER_ACTIVE_EXIT)
+				== Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
+		}
+		break;
+	
+	/* handle commands meant exclusively for the module using dialogue */
+	default:
+		if (arg == arg_external) {
+			Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+			return Q_ERROR;
+		}
+		command_external = command;
+		/*@i2@*/strcpy(arg_external, arg);
+		return Q_OK;
+	}
+
+	return Q_OK;
+}
+
+
+DialogueCommand_t
+dialogue_command_external_get() 
+/*@globals command_external@*/
+{
+	return command_external;
+}
+
+
+char *
+dialogue_arg_external_get()
+/*@globals arg_external@*/
+{
+	return arg_external;
+}
+
 
 /*@ignore@*/
 DialogueTree_t *
@@ -630,7 +759,8 @@ dialogue_object_create(char *response,
  * @return #Q_OK or #Q_ERROR.
  */
 int
-dialogue_tree_header_active_set(DialogueTree_t *tree, char *header_active) {
+dialogue_tree_header_active_set(DialogueTree_t *tree,
+		const char *header_active) {
 	
 	size_t sz = strlen(header_active) + (size_t) 1;
 	if (sz > (size_t) DIALOGUE_SECTION_SIZE_MAX) {
@@ -646,6 +776,56 @@ dialogue_tree_header_active_set(DialogueTree_t *tree, char *header_active) {
 	strcpy(tree->header_active, header_active);
 
 	return Q_OK;
+}
+
+
+/**
+ * Get the currently active #DialogueBranch_t in a #DialogueTree_t.
+ * @param[in] tree: #DialogueTree_t whose active #DialogueBranch_t is to be
+ * found.
+ * @return the active #DialogueBranch_t or `NULL` on error.
+ */
+DialogueBranch_t *
+dialogue_tree_active_branch_get(const DialogueTree_t *tree){
+
+	DialogueBranch_t *branch;
+	char *header_active;
+
+	header_active = dialogue_tree_header_active_get(tree);
+	if ((branch = dialogue_branch_search_from_header(tree, header_active)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+	
+	return branch;
+}
+
+
+/**
+ * Search through every header in a tree and check for a match.
+ * @param[in] tree: #DialogueTree_t to search through.
+ * @param[in] header: @ref DialogueBranch_t.header to search for.
+ * @return #DialogueObject_t whose member @ref DialogueBranch_t.header was a
+ * match for @p header, or NULL if an error occurred or @p header's match could
+ * not be found.
+ */
+DialogueBranch_t *
+dialogue_branch_search_from_header(const DialogueTree_t* tree, const char *header) {
+	size_t sz;
+	DialogueBranch_t *branch;
+
+	sz = dialogue_tree_sz_get(tree);
+	for (int i = 0; (size_t) i < sz; i++) {
+		if ((branch = dialogue_tree_branch_get(tree, i)) == NULL) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return NULL;
+		}
+		if (strcmp(dialogue_branch_header_get(branch), header) == 0) {
+			return branch;
+		}
+	}
+
+	return NULL;
 }
 
 
