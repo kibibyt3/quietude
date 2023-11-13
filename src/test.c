@@ -44,7 +44,13 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 		abort();
 	}
 
-	if (dialogue_logic_init(DIALOGUE_FILENAME) == Q_ERROR) {
+
+	DialogueTree_t *dialogue_tree;
+	if ((dialogue_tree = dialogue_logic_init(DIALOGUE_FILENAME)) == NULL) {
+		abort();
+	}
+
+	if (dialogue_logic_tick(dialogue_tree, 0) == Q_ERROR) {
 		abort();
 	}
 
@@ -256,5 +262,5 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	datameta = NULL;
 	r = endwin();
 	assert(r != Q_ERROR);
-	/*@i1@*/return 0;
+	/*@i2@*/return 0;
 }
