@@ -33,6 +33,8 @@
 │   ├── devel_walkl.c
 │   ├── devel_walk_wins.c
 │   ├── dialogue.c
+│   ├── dialogueio.c
+│   ├── dialoguel.c
 │   ├── ioutils.c
 │   ├── main.c
 │   ├── mode.c
@@ -47,5 +49,5 @@
 │   └── test.c
 └── TODO.md
 
-10 directories, 37 files
+10 directories, 39 files
 ```
