@@ -215,16 +215,18 @@ extern DialogueBranch_t *dialogue_tree_active_branch_get(
 /*@observer@*/
 char *dialogue_tree_header_active_get(const DialogueTree_t *tree)/*@*/;
 
-/*@observer@*/
+/* TODO: use this in the dialogue I/O module */
+/*@observer@*//*@unused@*/
 extern char *dialogue_tree_title_get(const DialogueTree_t *tree)/*@*/;
 
-/*@observer@*//*@null@*/
+/*@observer@*//*@null@*//*@unused@*/
 extern DialogueBranch_t *dialogue_tree_branch_get(
 		const DialogueTree_t *tree, int index)/*@*/;
 
+/*@unused@*/
 extern size_t dialogue_tree_sz_get(const DialogueTree_t *tree)/*@*/;
 
-/*@observer@*/
+/*@observer@*//*@unused@*/
 extern char *dialogue_branch_header_get(const DialogueBranch_t *branch)/*@*/;
 
 /*@observer@*/
@@ -262,7 +264,8 @@ extern DialogueBranch_t *dialogue_branch_search_from_header(
  * @{
  */
 
-extern void dialogue_io_init(WINDOW *argwin)/*@modifies InternalState@*/;
-extern int dialogue_io_event(DialogueTree_t *tree)/*@modifies InternalState@*/;
+extern void dialogue_io_init(/*@dependent@*/WINDOW *argwin)
+	/*@modifies internalState@*/;
+extern int dialogue_io_event(DialogueTree_t *tree)/*@modifies internalState@*/;
 
 /** @} */

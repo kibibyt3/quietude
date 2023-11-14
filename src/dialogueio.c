@@ -127,7 +127,7 @@ dialogue_io_tick(DialogueBranch_t *branch, int choice) {
 	 */
 	line += (DIALOGUE_IO_PADDING_MESSAGE_RESPONSE + 1);
 
-	for (int i = 0; i < sz; i++) {
+	for (int i = 0; (size_t) i < sz; i++) {
 		
 		if ((obj = dialogue_branch_object_get(branch, i)) == NULL) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
