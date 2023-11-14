@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdbool.h>
+#include <string.h>
+
 #include <ncurses.h>
 
 #include "qdefs.h"
@@ -50,10 +52,29 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 		abort();
 	}
 
-	if (dialogue_logic_tick(dialogue_tree, 0) == Q_ERROR) {
-		abort();
-	}
+	initscr();
+	noecho();
+	cbreak();
+	curs_set(0);
 
+	dialogue_io_init(stdscr);
+
+	char *header_active;
+	int choice;
+
+	do {
+		if ((choice = dialogue_io_event(dialogue_tree)) == Q_ERRORCODE_INT) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			abort();
+		}
+		if (dialogue_logic_tick(dialogue_tree, choice) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			abort();
+		}
+		header_active = dialogue_tree_header_active_get(dialogue_tree);
+	} while (strcmp(header_active, DIALOGUE_HEADER_ACTIVE_EXIT) != 0);
+
+	endwin();
 	printf("%s\n", str);
 
 	int *intstr = calloc((size_t) 5, sizeof(*intstr));
