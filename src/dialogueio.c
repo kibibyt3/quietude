@@ -151,6 +151,13 @@ dialogue_io_tick(DialogueBranch_t *branch, int choice) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
 			}
 		}
+
+		line += (DIALOGUE_IO_PADDING_RESPONSE_RESPONSE + 1);
+	}
+
+	if (wrefresh(win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERRORCODE_CHAR;
 	}
 
 	if ((ch = wgetch(win)) == ERR) {
