@@ -41,6 +41,9 @@
 /** Generic error for functions that otherwise return a meaningful @c int. */
 #define Q_ERRORCODE_INT -1
 
+/** Generic error for functions that otherwise return a meaningful @c char. */
+#define Q_ERRORCODE_CHAR '\0'
+
 /** Generic error for functions that otherwise return a meaningful @c long. */
 #define Q_ERRORCODE_LONG -1L
 
@@ -52,6 +55,7 @@
 
 /** Returned by functions that return `int *` if an error occurs.  */
 #define Q_ERRORCODE_INTSTRING  "ERROR"
+
 
 /**
  * Returned by functions that return an internal enum if an error occurs.
