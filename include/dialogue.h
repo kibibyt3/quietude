@@ -169,3 +169,58 @@ extern DialogueCommand_t dialogue_command_external_get(void)
 
 /*@observer@*/
 extern char *dialogue_arg_external_get(void)/*@globals internalState*/;
+
+/*@null@*//*@observer@*/
+extern DialogueBranch_t *dialogue_tree_active_branch_get(
+		const DialogueTree_t *tree);
+
+
+/**
+ * @defgroup DialogueGetters Dialogue Getters
+ * Getter functions for the dialogue internal interface.
+ * @{
+ */
+
+/*@observer@*/
+char *dialogue_tree_header_active_get(const DialogueTree_t *tree)/*@*/;
+
+/*@observer@*/
+extern char *dialogue_tree_title_get(const DialogueTree_t *tree)/*@*/;
+
+/*@observer@*//*@null@*/
+extern DialogueBranch_t *dialogue_tree_branch_get(
+		const DialogueTree_t *tree, int index)/*@*/;
+
+extern size_t dialogue_tree_sz_get(const DialogueTree_t *tree)/*@*/;
+
+/*@observer@*/
+extern char *dialogue_branch_header_get(const DialogueBranch_t *branch)/*@*/;
+
+/*@observer@*/
+extern char *dialogue_branch_message_get(const DialogueBranch_t *branch)/*@*/;
+
+/*@observer@*//*@null@*/
+extern DialogueObject_t *dialogue_branch_object_get(
+		const DialogueBranch_t *branch, int index)/*@*/;
+
+extern size_t dialogue_branch_sz_get(const DialogueBranch_t *branch)/*@*/;
+
+/*@observer@*/
+extern char *dialogue_object_response_get(const DialogueObject_t *obj)/*@*/;
+
+extern DialogueCommand_t dialogue_object_command_get(
+		const DialogueObject_t *obj, int index)/*@*/;
+
+/*@observer@*//*@null@*/
+extern char *dialogue_object_arg_get(
+		const DialogueObject_t *obj, int index)/*@*/;
+
+extern size_t dialogue_object_sz_get(const DialogueObject_t *obj)/*@*/;
+
+/** @} */
+
+
+/*@observer@*//*@null@*/
+extern DialogueBranch_t *dialogue_branch_search_from_header(
+		const DialogueTree_t* tree, const char *header)/*@*/;
+
