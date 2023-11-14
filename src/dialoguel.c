@@ -517,6 +517,7 @@ dialogue_file_string_to_tree(const char *s) {
 					Q_ERROR_SYSTEM("calloc()");
 					abort();
 				}
+				strcpy(args[commands_index], container);
 				commands_index++;
 
 				/* start a command (if applicable) 
@@ -575,9 +576,18 @@ dialogue_file_string_to_tree(const char *s) {
 
 
 			default:
-				container[container_index++] = ch;
+				/* 
+				 * until we implement escape characters, string chars are always literal
+				 */
+				if (ch != DIALOGUE_PARSE_CHAR_STRING) {
+					container[container_index++] = ch;
+				}
 				break;
 
+			}
+		} else {
+			if (ch != DIALOGUE_PARSE_CHAR_STRING) {
+				container[container_index++] = ch;
 			}
 		}
 	}
