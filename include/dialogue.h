@@ -16,7 +16,7 @@
 /** Navigate downwards. */
 #define DIALOGUE_ICH_MOVE_DOWN 's'
 /** Select a choice. */
-#define DIALOGUE_ICH_SELECT    '\r'
+#define DIALOGUE_ICH_SELECT    '\n'
 /** @} */
 
 
@@ -32,6 +32,14 @@
  * Namely the padding betwixt each @ref DialogueObject_t.response.
  */
 #define DIALOGUE_IO_PADDING_RESPONSE_RESPONSE 1
+
+/**
+ * Value for @ref DialogueTree_t.header_active when it must exit.
+ * Namely used in the event of #DIALOGUE_COMMAND_EXIT.
+ */
+#define DIALOGUE_HEADER_ACTIVE_EXIT "EXIT"
+
+
 
 
 /**
