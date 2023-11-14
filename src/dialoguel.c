@@ -29,12 +29,6 @@
 /** Header to search for and start at in a #DialogueTree_t. */
 #define DIALOGUE_HEADER_ACTIVE_DEFAULT "INIT"
 
-/**
- * Value for @ref DialogueTree_t.header_active when it must exit.
- * Namely used in the event of #DIALOGUE_COMMAND_EXIT.
- */
-#define DIALOGUE_HEADER_ACTIVE_EXIT "EXIT"
-
 
 
 
