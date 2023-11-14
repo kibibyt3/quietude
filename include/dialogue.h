@@ -6,6 +6,34 @@
 
 
 /**
+ * @defgroup DialogueControls Dialogue Controls
+ * Keyboard controls for operating the dialogue menu.
+ * @{
+ */
+/** Navigate upwards. */
+#define DIALOGUE_ICH_MOVE_UP   'w'
+/** Navigate downwards. */
+#define DIALOGUE_ICH_MOVE_DOWN 's'
+/** Select a choice. */
+#define DIALOGUE_ICH_SELECT    '\r'
+/** @} */
+
+
+/** 
+ * Lines of padding between header and options in dialogue I/O.
+ * Namely the padding betwixt @ref DialogueBranch_t.message and the first @ref
+ * DialogueObject_t.response.
+ */
+#define DIALOGUE_IO_PADDING_MESSAGE_RESPONSE 2
+
+/**
+ * Lines of padding between each option in dialogue I/O.
+ * Namely the padding betwixt each @ref DialogueObject_t.response.
+ */
+#define DIALOGUE_IO_PADDING_RESPONSE_RESPONSE 1
+
+
+/**
  * Specific member or submember within a #DialogueTree_t to parse for.
  */
 typedef enum DialogueParseMode_t {
@@ -26,6 +54,7 @@ typedef enum DialogueParseMode_t {
 	DIALOGUE_PARSE_MODE_COUNT = DIALOGUE_PARSE_MODE_OBJECT_ARG
 
 } DialogueParseMode_t;
+
 
 /**
  * @defgroup ParseChars Dialogue Parse Characters
@@ -51,6 +80,7 @@ typedef enum DialogueParseMode_t {
 /** Beginning/ending character for a string. */
 #define DIALOGUE_PARSE_CHAR_STRING '"'
 /** @} */
+
 
 /**
  * A specific command executed (sometimes in concordance with an argument)
@@ -224,3 +254,14 @@ extern size_t dialogue_object_sz_get(const DialogueObject_t *obj)/*@*/;
 extern DialogueBranch_t *dialogue_branch_search_from_header(
 		const DialogueTree_t* tree, const char *header)/*@*/;
 
+
+/**
+ * @defgroup DialogueIOInterface Dialogue IO Interface
+ * Interface for the I/O half of NPC dialogue.
+ * @{
+ */
+
+extern void dialogue_io_init(WINDOW *argwin)/*@modifies InternalState@*/;
+extern int dialogue_io_event(DialogueTree_t *tree)/*@modifies InternalState@*/;
+
+/** @} */
