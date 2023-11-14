@@ -52,10 +52,22 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 		abort();
 	}
 
-	initscr();
-	noecho();
-	cbreak();
-	curs_set(0);
+	if (initscr() == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+	if (noecho() == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+	if (cbreak() == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+	if (curs_set(0) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
 
 	dialogue_io_init(stdscr);
 
@@ -74,7 +86,10 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 		header_active = dialogue_tree_header_active_get(dialogue_tree);
 	} while (strcmp(header_active, DIALOGUE_HEADER_ACTIVE_EXIT) != 0);
 
-	endwin();
+	if (endwin() == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
 	printf("%s\n", str);
 
 	int *intstr = calloc((size_t) 5, sizeof(*intstr));
