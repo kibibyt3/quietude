@@ -1,6 +1,7 @@
 /**
  * @file dialogue.h
  * Header file for the dialogue module.
+ * Depends on ncurses.h.
  */
 
 

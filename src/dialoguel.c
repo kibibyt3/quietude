@@ -13,6 +13,8 @@
 #include <stdbool.h>
 #include <assert.h>
 
+#include <ncurses.h>
+
 #include "qdefs.h"
 #include "qerror.h"
 
