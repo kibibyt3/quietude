@@ -45,6 +45,6 @@
 - [ ] Rewrite `dialogue_file_string_to_tree()` such that it's divided into
   subfunctions all of which take a substring of whatever they need to work on.
   e.g. `DialogueObject_t dialogue_file_string_to_object(char *file_substring)`.
-- [ ] Add destructor functions to dialogue.
+- [x] Add destructor functions to dialogue.
 - [ ] Add ability to add/remove object attributes in devel\_walk.
 - [ ] Add the ability to show the tree title in the dialogue I/O
