@@ -234,8 +234,8 @@ typedef struct Qattr_t {
  * (e.g. for tying to an object).
  */
 typedef struct QattrList_t {
-	size_t   count;    /**< The number of #Qattr_t in the list                */
-	/*@only@*/Qattr_t *attrp;    /**< The actual collection of #Qattr_t       */
+	size_t   count;    /**< The number of #Qattr_t in the list */
+	/*@only@*/Qattr_t *attrp;    /**< The actual collection of #Qattr_t structs */
 	size_t   index_ok; /**< The earliest index of attrp that isn't yet in use */
 } QattrList_t;
 
@@ -248,6 +248,8 @@ extern /*@null@*//*@partial@*/QattrList_t *qattr_list_create(size_t);
 /*@unused@*//*@null@*/
 extern QattrList_t *qattr_list_clone(const QattrList_t *);
 
+/** Resize a #QattrList_t.                                               */
+
 /** Free a given #QattrList_t from memory.                               */
 extern int qattr_list_destroy(/*@only@*/QattrList_t *);
 
@@ -257,13 +259,13 @@ extern int qattr_list_write(const QattrList_t *);
 /** Read a #QattrList_t from storage.                                    */
 extern /*@null@*//*@only@*/QattrList_t *qattr_list_read(void);
 
-/*
-** Transfers control of a #Qattr_t to the caller *
-extern *@null@*Qdatameta_t *qattr_list_attr_remove(QattrList_t *, QattrKey_t);
-*/
-
 /** Return the value associated with a key in a #QattrList_t.             */
-extern /*@null@*//*@observer@*/Qdatameta_t *qattr_list_value_get(/*@returned@*/const QattrList_t *, QattrKey_t)/*@*/;
+extern /*@null@*//*@observer@*/Qdatameta_t *qattr_list_value_get(
+		/*@returned@*/const QattrList_t *, QattrKey_t)/*@*/;
+
+/** Convert a #QattrKey_t to an index in a #QattrList_t.                  */
+extern int qattr_list_key_to_index(
+		const QattrList_t *attr_list, QattrKey_t attr_key)/*@*/;
 
 /** Return @ref QattrList_t.count.                                        */
 /*@unused@*/extern size_t qattr_list_count_get(const QattrList_t *)/*@*/;
@@ -274,8 +276,16 @@ extern /*@null@*//*@observer@*/Qdatameta_t *qattr_list_value_get(/*@returned@*/c
 /** Return @ref Qattr_t.key from a #QattrList_t as addressed by an index. */
 /*@unused@*/extern QattrKey_t qattr_list_attr_key_get(const QattrList_t *, int)/*@*/;
 
+/** Trade the places of two #QattrKey_t members of a #QattrList_t.        */
+extern void qattr_list_attrs_swap(QattrList_t *attr_list,
+		size_t mover_index, size_t movend_index)/*@modifies attr_list@*/;
+
 /** Set a #QattrKey_t/#Qdatameta_t pair in the given #QattrList_t.        */
 extern int qattr_list_attr_set(QattrList_t *, QattrKey_t, /*@only@*/Qdatameta_t *);
+
+/** Delete a #Qattr_t in the given #QattrList_t.                          */
+extern int qattr_list_attr_delete(QattrList_t *attr_list, QattrKey_t key)
+	/*@modifies attr_list@*/;
 
 /** Modify the value of an existing #QattrKey_t.                          */
 /*@unused@*/extern int qattr_list_attr_modify(QattrList_t *, QattrKey_t, /*@only@*/Qdatameta_t *);

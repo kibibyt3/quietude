@@ -219,19 +219,43 @@ qattr_list_read() {
 Qdatameta_t*
 qattr_list_value_get(const QattrList_t *attr_list, QattrKey_t attr_key) {
 
-	Qdatameta_t *value = NULL;
 	if (attr_list == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return NULL;
 	}
-	/* We need only iterate through those elements which have been properly added */
-	for (int i = 0; i < (int) (attr_list->index_ok); i++){
-		if (attr_list->attrp[i].key == attr_key){
-			value = attr_list->attrp[i].valuep;
-			break;
+
+	int index;
+	
+	if ((index = qattr_list_key_to_index(attr_list, attr_key)) == Q_ERRORCODE_INT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+
+	return attr_list->attrp[index].valuep;
+}
+
+
+/**
+ * Convert a #QattrKey_t to an index in a #QattrList_t.
+ * @param[in] attr_list: relevant #QattrList_t.
+ * @param[in] attr_key: #QattrKey_t to search for.
+ * @return desired index or #Q_ERRORCODE_INT on error.
+ */
+int
+qattr_list_key_to_index(const QattrList_t *attr_list, QattrKey_t attr_key) {
+	
+	if (attr_list == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERRORCODE_INT;
+	}
+
+	for (int i = 0; i < (int) (attr_list->index_ok); i++) {
+		if (attr_list->attrp[i].key == attr_key) {
+			return i;
 		}
 	}
-	return value;
+
+	return Q_ERRORCODE_INT;
 }
 
 
@@ -286,36 +310,6 @@ qattr_list_attr_key_get(const QattrList_t *attr_list, int index) {
 }
 
 
-/*
- * Remove a #Qattr_t from a #QattrList_t.
- * The @c valuep member of the #Qattr_t is set to be equal to @c NULL and the @c
- * key member to #QATTR_KEY_EMPTY when an error does not occur.
- * @param[in] attr_key: key whose value is to be found
- * @param[in] attr_list: list whose keys are to be parsed
- * @return #Qdatameta_t containing the value or @c NULL if the key doesn't exist.
- */
-/*
-Qdatameta_t*
-qattr_list_attr_remove(QattrList_t* attr_list, QattrKey_t attr_key) {
-
-	Qdatameta_t *value = NULL;
-	if (attr_list == NULL) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return NULL;
-	}
-	* We need only iterate through those elements which have been properly added *
-	for (int i = 0; i < (int) (attr_list->index_ok); i++){
-		if (attr_list->attrp[i].key == attr_key){
-			value = attr_list->attrp[i].valuep;
-			attr_list->attrp[i].valuep = NULL;
-			attr_list->attrp[i].key = QATTR_KEY_EMPTY;
-			break;
-		}
-	}
-	return value;
-}
-*/
-
 /**
  * Add key/value pair to a #QattrList_t.
  * @param[out] attr_list: list to gain a key/value pair. Its @ref
@@ -335,6 +329,68 @@ qattr_list_attr_set(QattrList_t *attr_list, QattrKey_t attr_key, Qdatameta_t *da
 	attr_list->attrp[index_free].valuep = datameta;
 	(attr_list->index_ok)++; /* Index is no longer available; move to the next */
 	return Q_OK;
+}
+
+
+/**
+ * Trade the places of two #Qattr_t members in a #QattrList_t.
+ * @param[out] attr_list: #QattrList_t to switch the members of.
+ * @param[in] mover_index: index of the #Qattr_t to move.
+ * @param[in] movend_index; index of the #Qattr_t to be displaced.
+ * @return #Q_OK or #Q_ERROR.
+ */
+void
+qattr_list_attrs_swap(QattrList_t *attr_list,
+		size_t mover_index, size_t movend_index) {
+
+	/*@only@*/Qattr_t movend_buffer;
+	/*@only@*/Qattr_t mover_buffer;
+	movend_buffer = attr_list->attrp[movend_index];
+	mover_buffer = attr_list->attrp[mover_index];
+	attr_list->attrp[movend_index] = mover_buffer;
+	attr_list->attrp[mover_index] = movend_buffer;
+
+	return;
+}
+
+/** 
+ * Delete a #QattrKey_t/#Qdatameta_t pair in the given #QattrList_t.
+ * If the selected #Qattr_t is not the final one in @p attr_list, replace the
+ * deleted element's spot with the final element.
+ * @param[out] attr_list: #QattrList_t to remove a #Qattr_t from.
+ * @param[in] key: key in @p attr_list whose parent #Qattr_t should be removed.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+qattr_list_attr_delete(QattrList_t *attr_list, QattrKey_t key) {
+
+	int index;
+	int returnval = Q_OK;
+
+	if ((index = qattr_list_key_to_index(attr_list, key)) == Q_ERRORCODE_INT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+
+	if (attr_list->attrp[index].key != QATTR_KEY_EMPTY) {
+		if (qdatameta_destroy(attr_list->attrp[index].valuep) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			returnval = Q_ERROR;
+		}
+	}
+
+	attr_list->attrp[index].key = QATTR_KEY_EMPTY;
+
+	/* 
+	 * if it's not the final attribute index-wise, trade its place with the final
+	 * attribute.
+	 */
+	(attr_list->index_ok)--;
+	if ((size_t) index != attr_list->index_ok) {
+		qattr_list_attrs_swap(attr_list, (size_t) index, attr_list->index_ok);
+	}
+
+	return returnval;
 }
 
 
