@@ -146,6 +146,87 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	printf("%i, %i, %i, %i, %i\n", val[0], val[1], val[2], val[3], val[4]);
 	val = NULL;
 
+	QattrList_t *attribute_list;
+	Qdatameta_t *attr_datameta;
+	char *attr_string;
+
+	size_t attr_readonly_size = (size_t) 5;
+	attribute_list = qattr_list_create((size_t) 5);
+	if (attribute_list == NULL) {
+		abort();
+	}
+	
+	/*@observer@*/
+	const char *attr_readonly[] = {"poopy", "baka", "words", "elephant", "sick"};
+	const QattrKey_t key_readonly[] = {QATTR_KEY_NAME, QATTR_KEY_QOBJECT_TYPE,
+				QATTR_KEY_DEBUG, QATTR_KEY_DESCRIPTION_BRIEF, QATTR_KEY_DESCRIPTION_LONG};
+
+	for (size_t sz = 0; sz < attr_readonly_size; sz++) {
+		if ((attr_string = calloc(strlen(attr_readonly[sz]) + (size_t) 1,
+						sizeof(*attr_string))) == NULL) {
+			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+			abort();
+		}
+		strcpy(attr_string, attr_readonly[sz]);
+		if ((attr_datameta = qdatameta_create((Qdata_t *) attr_string,
+						QDATA_TYPE_CHAR_STRING, strlen(attr_readonly[sz]) + (size_t) 1))
+				== NULL) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			abort();
+		}
+		if (qattr_list_attr_set(attribute_list, key_readonly[sz], attr_datameta)
+				== Q_ERROR) {
+			abort();
+		}
+	}
+
+	printf("Expects: 3; Gets: %i\n", qattr_list_key_to_index(
+				attribute_list, QATTR_KEY_DESCRIPTION_BRIEF));
+
+	qattr_list_attrs_swap(attribute_list, 1, (size_t) 3);
+
+	Qdatameta_t *attr_datameta_observer;
+	QattrKey_t attribute_key;
+
+	if ((attribute_key = qattr_list_attr_key_get(attribute_list, 3)) == (QattrKey_t) Q_ERRORCODE_ENUM) {
+		abort();
+	}
+	if ((attr_datameta_observer = qattr_list_value_get(attribute_list, attribute_key)) == NULL) {
+		abort();
+	}
+
+	char *outstr = (char *) qdatameta_datap_get(attr_datameta_observer);
+
+	if (outstr == NULL) {
+		abort();
+	}
+
+	printf("Expects: baka; Gets: %s\n", outstr);
+
+	if (qattr_list_attr_delete(attribute_list, attribute_key) == Q_ERROR) {
+		abort();
+	}
+
+	if ((attribute_key = qattr_list_attr_key_get(attribute_list, 3)) == (QattrKey_t) Q_ERRORCODE_ENUM) {
+		abort();
+	}
+
+	if ((attr_datameta_observer = qattr_list_value_get(attribute_list, attribute_key)) == NULL) {
+		abort();
+	}
+
+	outstr = (char *) qdatameta_datap_get(attr_datameta_observer);
+
+	if (outstr == NULL) {
+		abort();
+	}
+
+	printf("Expects: sick; Gets: %s\n", outstr);
+
+	if (qattr_list_destroy(attribute_list) == Q_ERROR) {
+		abort();
+	}
+
 	QattrList_t *attr_list;
 	attr_list = qattr_list_create((size_t) 1);
 	assert(attr_list != NULL);
@@ -153,7 +234,6 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	assert(r != Q_ERROR);
 	datameta2 = NULL;	
 	Qdatameta_t *datameta3;
-	
 	datameta3 = qattr_list_value_get(attr_list, QATTR_KEY_NAME);
 	
 	val = (int *) qdatameta_datap_get(datameta3);
