@@ -9,7 +9,10 @@
 #include <ncurses.h>
 
 #include "qdefs.h"
+#include "splint_types.h"
+
 #include "ioutils.h"
+
 #include "qattr.h"
 #include "qfile.h"
 #include "qerror.h"
@@ -91,6 +94,8 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 		abort();
 	}
 	printf("%s\n", str);
+
+	dialogue_tree_destroy(dialogue_tree);
 
 	int *intstr = calloc((size_t) 5, sizeof(*intstr));
 	assert(intstr != NULL);
@@ -298,5 +303,5 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	datameta = NULL;
 	r = endwin();
 	assert(r != Q_ERROR);
-	/*@i2@*/return 0;
+	/*@i1@*/return 0;
 }
