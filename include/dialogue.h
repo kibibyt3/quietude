@@ -1,7 +1,7 @@
 /**
  * @file dialogue.h
  * Header file for the dialogue module.
- * Depends on ncurses.h.
+ * Depends on ncurses.h and splint_types.h.
  */
 
 
@@ -144,12 +144,16 @@ typedef struct DialogueObject_t {
 	 * Arguments for each #DialogueCommand_t.
 	 * Indexed in lockstep with @ref DialogueObject_t.commands.
 	 */
-	char **args;
+	OnlyCharp_t *args;
 
 	/** Total number of pointers in @ref DialogueObject_t.commands. */
 	size_t sz;
 
 } DialogueObject_t;
+
+
+/** Type to stand in for `/\*@only*\/ DialogueObject_t *`. */
+typedef /*@only@*/DialogueObject_t *OnlyDialogueObjectp_t;
 
 
 /**
@@ -173,12 +177,16 @@ typedef struct DialogueBranch_t {
 	/**
 	 * Collection of each #DialogueObject_t that resides in the #DialogueBranch_t.
 	 */
-	DialogueObject_t **objects;
+	OnlyDialogueObjectp_t *objects;
 
 	/** Total number of pointers in @ref DialogueBranch_t.objects. */
 	size_t sz;
 
 } DialogueBranch_t;
+
+
+/** Type to stand in for `/\*@only*\/ DialogueBranch_t *`. */
+typedef /*@only@*/DialogueBranch_t *OnlyDialogueBranchp_t;
 
 
 /**
@@ -193,7 +201,7 @@ typedef struct DialogueTree_t {
 	char *title; 
 
 	/** Every #DialogueBranch_t in the #DialogueTree_t. */
-	DialogueBranch_t **branches;
+	OnlyDialogueBranchp_t *branches;
 
 	/** Total number of pointers in @ref DialogueTree_t.branches. */
 	size_t sz;
@@ -222,7 +230,7 @@ extern DialogueBranch_t *dialogue_tree_active_branch_get(
 
 /**
  * @defgroup DialogueConstructors Dialogue Constructors
- * Constructor functions for the dialogue internal interface.
+ * Constructor functions for the dialogue interface.
  * @{
  */
 
@@ -239,6 +247,25 @@ extern DialogueObject_t *dialogue_object_create(/*@only@*/char *response,
 
 /** @} */
 
+
+/**
+ * @defgroup DialogueDestructors Dialogue Destructors
+ * Destructor functions for the dialogue interface.
+ * @{
+ */
+
+extern void dialogue_tree_destroy(/*@only@*/DialogueTree_t *tree)
+	/*@modifies tree@*/;
+
+/*@unused@*/
+extern void dialogue_branch_destroy(/*@only@*/DialogueBranch_t *branch)
+	/*@modifies branch@*/;
+
+/*@unused@*/
+extern void dialogue_object_destroy(/*@only@*/DialogueObject_t *obj)
+	/*@modifies obj@*/;
+
+/** @} */
 
 /**
  * @defgroup DialogueGetters Dialogue Getters

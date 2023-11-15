@@ -17,8 +17,8 @@
 
 #include "qdefs.h"
 #include "qerror.h"
-
 #include "splint_types.h"
+
 #include "dialogue.h"
 
 

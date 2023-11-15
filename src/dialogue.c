@@ -13,6 +13,7 @@
 
 #include "qdefs.h"
 #include "qerror.h"
+#include "splint_types.h"
 
 #include "dialogue.h"
 
@@ -111,6 +112,72 @@ dialogue_object_create(char *response,
 
 	return obj;
 
+}
+
+
+/**
+ * Destroy a #DialogueTree_t.
+ * @param[out] tree: #DialogueTree_t to destroy.
+ */
+void
+dialogue_tree_destroy(DialogueTree_t *tree) {
+	size_t sz;
+	sz = dialogue_tree_sz_get(tree);
+
+	for (int i = 0; (size_t) i < sz; i++) {
+		dialogue_branch_destroy(tree->branches[i]);
+	}
+
+	free(tree->branches);
+	free(tree->header_active);
+	free(tree->title);
+
+	free(tree);
+	return;
+}
+
+
+/**
+ * Destroy a #DialogueBranch_t.
+ * @param[out] branch: #DialogueBranch_t to destroy.
+ */
+void
+dialogue_branch_destroy(DialogueBranch_t *branch) {
+	size_t sz;
+	sz = dialogue_branch_sz_get(branch);
+
+	for (int i = 0; (size_t) i < sz; i++) {
+		dialogue_object_destroy(branch->objects[i]);
+	}
+
+	free(branch->objects);
+	free(branch->header);
+	free(branch->message);
+
+	free(branch);
+	return;
+}
+
+
+/**
+ * Destroy a #DialogueObject_t.
+ * @param[out] obj: #DialogueObject_t to destroy.
+ */
+void
+dialogue_object_destroy(DialogueObject_t *obj) {
+	size_t sz;
+	sz = dialogue_object_sz_get(obj);
+
+	for (int i = 0; (size_t) i < sz; i++) {
+		free(obj->args[i]);
+	}
+
+	free(obj->args);
+	free(obj->response);
+	free(obj->commands);
+
+	free(obj);
+	return;
 }
 
 
