@@ -39,6 +39,12 @@
  */
 #define DIALOGUE_HEADER_ACTIVE_EXIT "EXIT"
 
+/** Maximum number of characters within a single section in a QDL file. */
+#define DIALOGUE_SECTION_SIZE_MAX 1000
+
+/** Header to search for and start at in a #DialogueTree_t. */
+#define DIALOGUE_HEADER_ACTIVE_DEFAULT "INIT"
+
 
 
 
@@ -212,6 +218,26 @@ extern char *dialogue_arg_external_get(void)/*@globals internalState*/;
 /*@null@*//*@observer@*/
 extern DialogueBranch_t *dialogue_tree_active_branch_get(
 		const DialogueTree_t *tree);
+
+
+/**
+ * @defgroup DialogueConstructors Dialogue Constructors
+ * Constructor functions for the dialogue internal interface.
+ * @{
+ */
+
+extern DialogueTree_t *dialogue_tree_create(/*@only@*/char *title,
+		/*@only@*/DialogueBranch_t **branches, size_t sz)/*@*/;
+
+extern DialogueBranch_t *dialogue_branch_create(/*@only@*/char *header,
+		/*@only@*/char *message, /*@only@*/DialogueObject_t **objects, size_t sz)
+		/*@*/;
+
+extern DialogueObject_t *dialogue_object_create(/*@only@*/char *response,
+		/*@only@*/DialogueCommand_t *commands, /*@only@*/char **args, 
+		size_t sz)/*@*/;
+
+/** @} */
 
 
 /**

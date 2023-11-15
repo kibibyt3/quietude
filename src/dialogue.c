@@ -19,6 +19,102 @@
 
 
 /**
+ * Create a #DialogueTree_t.
+ * @param[in] title: @ref DialogueTree_t.title.
+ * @param[in] branches: @ref DialogueTree_t.branches.
+ * @param[in] sz: @ref DialogueTree_t.sz.
+ * @return pointer to new #DialogueTree_t.
+ */
+DialogueTree_t *
+dialogue_tree_create(char *title,
+		DialogueBranch_t **branches, size_t sz) {
+	
+	DialogueTree_t *tree;
+
+	if ((tree = calloc((size_t) 1, sizeof(*tree))) == NULL) {
+		Q_ERROR_SYSTEM("calloc()");
+		abort();
+	}
+
+	/* Allocate and set the header_active for the tree. */
+	size_t default_header_active_sz = strlen(DIALOGUE_HEADER_ACTIVE_DEFAULT) +
+		(size_t) 1;
+	if ((tree->header_active = calloc(default_header_active_sz,
+					sizeof(tree->header_active))) == NULL) {
+		Q_ERROR_SYSTEM("calloc()");
+		abort();
+	}
+	
+	strcpy(tree->header_active, DIALOGUE_HEADER_ACTIVE_DEFAULT);
+
+	tree->title = title;
+	tree->branches = branches;
+	tree->sz = sz;
+
+	return tree;
+
+}
+
+
+/**
+ * Create a #DialogueBranch_t.
+ * @param[in] header: @ref DialogueBranch_t.header.
+ * @param[in] message: @ref DialogueBranch_t.message.
+ * @param[in] branches: @ref DialogueBranch_t.objects.
+ * @param[in] sz: @ref DialogueBranch_t.sz.
+ * @return pointer to new #DialogueBranch_t.
+ */
+DialogueBranch_t *
+dialogue_branch_create(char *header,
+		char *message, DialogueObject_t **objects, size_t sz) {
+
+	DialogueBranch_t *branch;
+
+	if ((branch = calloc((size_t) 1, sizeof(*branch))) == NULL) {
+		Q_ERROR_SYSTEM("calloc()");
+		abort();
+	}
+
+	branch->header = header;
+	branch->message = message;
+	branch->objects = objects;
+	branch->sz = sz;
+
+	return branch;
+
+}
+
+
+/**
+ * Create a #DialogueObject_t.
+ * @param[in] response: @ref DialogueObject_t.response.
+ * @param[in] commands: @ref DialogueObject_t.commands.
+ * @param[in] args: @ref DialogueObject_t.args.
+ * @param[in] sz: @ref DialogueObject_t.sz.
+ * @return pointer to new #DialogueObject_t.
+ */
+DialogueObject_t *
+dialogue_object_create(char *response, 
+		DialogueCommand_t *commands, char **args, size_t sz) {
+
+	DialogueObject_t *obj;
+
+	if ((obj = calloc((size_t) 1, sizeof(*obj))) == NULL) {
+		Q_ERROR_SYSTEM("calloc()");
+		abort();
+	}
+
+	obj->response = response;
+	obj->commands = commands;
+	obj->args = args;
+	obj->sz = sz;
+
+	return obj;
+
+}
+
+
+/**
  * Search through every header in a tree and check for a match.
  * @param[in] tree: #DialogueTree_t to search through.
  * @param[in] header: @ref DialogueBranch_t.header to search for.
