@@ -47,3 +47,4 @@
   e.g. `DialogueObject_t dialogue_file_string_to_object(char *file_substring)`.
 - [ ] Add destructor functions to dialogue.
 - [ ] Add ability to add/remove object attributes in devel\_walk.
+- [ ] Add the ability to show the tree title in the dialogue I/O
