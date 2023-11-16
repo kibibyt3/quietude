@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <assert.h>
+#include <stdio.h>
 
 #include "qdefs.h"
 #include "qerror.h"
@@ -189,15 +190,18 @@ qattr_list_resize(QattrList_t *qattr_list, int dilation_addend) {
 		}
 	/*@i1@*/}
 
+	size_t index_ok_old;
+	/*@i1@*/index_ok_old = qattr_list_index_ok_get(qattr_list);
+
 	/* clean up leftover attributes in the original */
-	while (sz < count_orig) {
-		/*@i2@*/if (qdatameta_destroy(qattr_list->attrp[sz].valuep) == Q_ERROR) {
+	while (sz < index_ok_old) {
+		/*@i1@*/if (qdatameta_destroy(qattr_list->attrp[sz].valuep) == Q_ERROR) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 			abort();
 		}
 		sz++;
 	}
-	/*@i2@*/free(qattr_list->attrp);
+	/*@i1@*/free(qattr_list->attrp);
 	/*@i1@*/free(qattr_list);
 
 	return list_new;
