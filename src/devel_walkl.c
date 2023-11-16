@@ -24,6 +24,10 @@ static bool devel_walkl_coords_arevalid(int, int, int)/*@*/;
 
 
 
+/* 
+ * TODO: maybe write individual wrappers for each command. this starts to get
+ * messy.
+ */
 /**
  * Pass a logic tick for devel_walk.
  * @param[out] walk_area: #QwalkArea_t to operate on.
@@ -118,7 +122,25 @@ devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
 			return Q_OK;
 		}
 		
-		
+		/* handle the attr delete command */
+		if (cmd == DEVEL_WALK_CMD_ATTR_DELETE) {
+			QattrList_t *attr_list;
+			QattrKey_t key;
+			if ((attr_list = devel_walkl_loc_attr_list_get(walk_area, curs_loc)) == NULL) {
+				Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+				return Q_ERROR;
+			}
+			if ((key = qattr_list_attr_key_get(attr_list, devel_walkio_userint_get()))
+					== (QattrKey_t) Q_ERRORCODE_ENUM) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				return Q_ERROR;
+			}
+			/*@i1@*/if (qattr_list_attr_delete(attr_list, key) == Q_ERROR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				return Q_ERROR;
+			}
+			return Q_OK;
+		}
 		
 		/* handle the edit command */
 		if (cmd == DEVEL_WALK_CMD_EDIT) {
@@ -216,7 +238,7 @@ devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
 				Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 				return Q_ERROR;
 			}
-			if (qattr_list_attr_modify(attr_list, key, datameta) == Q_ERROR) {
+			/*@i1@*/if (qattr_list_attr_modify(attr_list, key, datameta) == Q_ERROR) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
 			}
 		}

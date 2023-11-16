@@ -149,7 +149,12 @@ typedef enum DevelWalkCmd_t {
 	 * Namely that of the last object that #DEVEL_WALK_CMD_COPY was used on.
 	 */
 	DEVEL_WALK_CMD_PASTE,
-	
+
+	/**
+	 * Delete a specific attribute from an object.
+	 */
+	DEVEL_WALK_CMD_ATTR_DELETE,
+
 	/** Edit the #QattrList_t of the #QwalkObj_t the cursor is pointing at. */
 	DEVEL_WALK_CMD_EDIT,
 

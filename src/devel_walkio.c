@@ -49,7 +49,7 @@
  * Header message of window created by @ref devel_walkio_string_input_choice(). 
  */
 #define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_HEADER \
-	"Select one of the following...<CR>(Arrow keys to navigate)"
+	"Select one of the following... (Arrow keys to navigate)"
 /**
  * Prompt message of window created by @ref devel_walkio_string_input_choice().
  */
@@ -63,7 +63,6 @@
  * @{
  */
 
-
 /**
  * Input character for #DEVEL_WALK_CMD_CURSOR_MOVE_NORTH.
  */
@@ -71,7 +70,6 @@
 
 /** Alternate to #DEVEL_WALK_ICH_CURSOR_MOVE_NORTH. */
 #define DEVEL_WALK_ICH_CURSOR_MOVE_NORTH_ALT KEY_UP
-
 
 /**
  * Input character for #DEVEL_WALK_CMD_CURSOR_MOVE_SOUTH.
@@ -81,7 +79,6 @@
 /** Alternate to #DEVEL_WALK_ICH_CURSOR_MOVE_SOUTH. */
 #define DEVEL_WALK_ICH_CURSOR_MOVE_SOUTH_ALT KEY_DOWN
 
-
 /**
  * Input character for #DEVEL_WALK_CMD_CURSOR_MOVE_EAST.
  */
@@ -90,7 +87,6 @@
 /** Alternate to #DEVEL_WALK_ICH_CURSOR_MOVE_EAST. */
 #define DEVEL_WALK_ICH_CURSOR_MOVE_EAST_ALT KEY_RIGHT
 
-
 /**
  * Input character for #DEVEL_WALK_CMD_CURSOR_MOVE_WEST.
  */
@@ -98,7 +94,6 @@
 
 /** Alternate to #DEVEL_WALK_ICH_CURSOR_MOVE_WEST. */
 #define DEVEL_WALK_ICH_CURSOR_MOVE_WEST_ALT KEY_LEFT
-
 
 /**
  * Input character for #DEVEL_WALK_CMD_CURSOR_TOGGLE_ALTITUDE.
@@ -114,6 +109,11 @@
  * Input character for #DEVEL_WALK_CMD_PASTE.
  */
 #define DEVEL_WALK_ICH_PASTE                  'v'
+
+/**
+ * Input character for #DEVEL_WALK_CMD_ATTR_DELETE.
+ */
+#define DEVEL_WALK_ICH_ATTR_DELETE            'r'
 
 /**
  * Input character for #DEVEL_WALK_CMD_EDIT.
@@ -414,7 +414,20 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 			}
 		}
 
+	} else if (cmd == DEVEL_WALK_CMD_ATTR_DELETE) {
+		/* deal with #DEVEL_WALK_CMD_ATTR_DELETE */
+		
+		if (curs_set(0) == ERR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
+		}
+		if (devel_walkio_info_out(
+					walk_area, curs_loc, DEVEL_WALKIO_INFO_OUT_MODE_CHOICE) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
+		}
 	}
+
 
 	return cmd;
 }
@@ -1190,45 +1203,48 @@ devel_walkio_message_print(char *s) {
 DevelWalkCmd_t
 devel_walkio_input_to_command(int ch) {
 	switch (ch) {
-	
+
 	case DEVEL_WALK_ICH_CURSOR_MOVE_NORTH_ALT:
 	/*@fallthrough@*/
 	case DEVEL_WALK_ICH_CURSOR_MOVE_NORTH:
 		return DEVEL_WALK_CMD_CURSOR_MOVE_NORTH;
-	
+
 	case DEVEL_WALK_ICH_CURSOR_MOVE_SOUTH_ALT:
 	/*@fallthrough@*/
 	case DEVEL_WALK_ICH_CURSOR_MOVE_SOUTH:
 		return DEVEL_WALK_CMD_CURSOR_MOVE_SOUTH;
-	
+
 	case DEVEL_WALK_ICH_CURSOR_MOVE_EAST_ALT:
 	/*@fallthrough@*/
 	case DEVEL_WALK_ICH_CURSOR_MOVE_EAST:
 		return DEVEL_WALK_CMD_CURSOR_MOVE_EAST;
-	
+
 	case DEVEL_WALK_ICH_CURSOR_MOVE_WEST_ALT:
 	/*@fallthrough@*/
 	case DEVEL_WALK_ICH_CURSOR_MOVE_WEST:
 		return DEVEL_WALK_CMD_CURSOR_MOVE_WEST;
-	
+
 	case DEVEL_WALK_ICH_CURSOR_TOGGLE_ALTITUDE:
 		return DEVEL_WALK_CMD_CURSOR_TOGGLE_ALTITUDE;
-	
+
 	case DEVEL_WALK_ICH_COPY:
 		return DEVEL_WALK_CMD_COPY;
-	
+
 	case DEVEL_WALK_ICH_PASTE:
 		return DEVEL_WALK_CMD_PASTE;
-	
+
+	case DEVEL_WALK_ICH_ATTR_DELETE:
+		return DEVEL_WALK_CMD_ATTR_DELETE;
+
 	case DEVEL_WALK_ICH_EDIT:
 		return DEVEL_WALK_CMD_EDIT;
-	
+
 	case DEVEL_WALK_ICH_SAVE:
 		return DEVEL_WALK_CMD_SAVE;
-	
+
 	case DEVEL_WALK_ICH_EXIT:
 		return DEVEL_WALK_CMD_EXIT;
-	
+
 	default:
 		if (devel_walkio_message_print(DEVEL_WALKIO_MESSAGE_INPUT_INVALID) == Q_ERROR) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
