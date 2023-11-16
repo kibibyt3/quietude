@@ -20,8 +20,21 @@
 /** @} */
 
 
+
+/**
+ * Divider betwixt the title and message.
+ * i.e., divider betwixt DialogueTree_t.title and DialogueBranch_t.message.
+ */
+#define DIALOGUE_IO_DIVIDER \
+	"--------------"
+
+/**
+ * Lines of padding above and below #DIALOGUE_IO_DIVIDER.
+ */
+#define DIALOGUE_IO_PADDING_DIVIDER 1
+
 /** 
- * Lines of padding between header and options in dialogue I/O.
+ * Lines of padding between message and options in dialogue I/O.
  * Namely the padding betwixt @ref DialogueBranch_t.message and the first @ref
  * DialogueObject_t.response.
  */

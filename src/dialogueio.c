@@ -22,8 +22,8 @@ static WINDOW *win = NULL;
 
 
 
-static char dialogue_io_tick(DialogueBranch_t *branch, int choice)
-	/*@modifies win@*/;
+static char dialogue_io_tick(DialogueBranch_t *branch, const char *title,
+		int choice)/*@modifies win@*/;
 
 
 
@@ -56,6 +56,9 @@ dialogue_io_event(DialogueTree_t *tree)
 	size_t optc;
 	char ch;
 	int choice = 0;
+	char *title;
+
+	title = dialogue_tree_title_get(tree);
 
 	header_active = dialogue_tree_header_active_get(tree);
 	if ((branch = dialogue_branch_search_from_header(tree, header_active))
@@ -66,7 +69,7 @@ dialogue_io_event(DialogueTree_t *tree)
 
 	optc = dialogue_branch_sz_get(branch);
 	do {
-		if ((ch = dialogue_io_tick(branch, choice)) == Q_ERRORCODE_CHAR) {
+		if ((ch = dialogue_io_tick(branch, title, choice)) == Q_ERRORCODE_CHAR) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 			return Q_ERROR;
 		}
@@ -98,7 +101,7 @@ dialogue_io_event(DialogueTree_t *tree)
  * Execute a single input/output step for dialogue.
  */
 char
-dialogue_io_tick(DialogueBranch_t *branch, int choice) {
+dialogue_io_tick(DialogueBranch_t *branch, const char *title, int choice) {
 	
 	size_t sz;
 	char *message;
@@ -118,14 +121,27 @@ dialogue_io_tick(DialogueBranch_t *branch, int choice) {
 	if (wclear(win) == ERR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 	}
-	if (mvwprintw(win, line, 0, "%s", message) == ERR) {
+
+	if (mvwprintw(win, line, 0, "%s", title) == ERR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		return Q_ERRORCODE_CHAR;
 	}
 
 	/* 
 	 * this because the concept padding assumes by default a minimum one newline
 	 */
+	line += (DIALOGUE_IO_PADDING_DIVIDER + 1);
+
+	if (mvwprintw(win, line, 0, "%s", DIALOGUE_IO_DIVIDER) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
+	line += (DIALOGUE_IO_PADDING_DIVIDER + 1);
+
+	if (mvwprintw(win, line, 0, "%s", message) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERRORCODE_CHAR;
+	}
+
 	line += (DIALOGUE_IO_PADDING_MESSAGE_RESPONSE + 1);
 
 	for (int i = 0; (size_t) i < sz; i++) {
