@@ -158,8 +158,8 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	
 	/*@observer@*/
 	const char *attr_readonly[] = {"poopy", "baka", "words", "elephant", "sick"};
-	const QattrKey_t key_readonly[] = {QATTR_KEY_NAME, QATTR_KEY_QOBJECT_TYPE,
-				QATTR_KEY_DEBUG, QATTR_KEY_DESCRIPTION_BRIEF, QATTR_KEY_DESCRIPTION_LONG};
+	const QattrKey_t key_readonly[] = {QATTR_KEY_NAME, QATTR_KEY_NAME,
+				QATTR_KEY_NAME, QATTR_KEY_DESCRIPTION_BRIEF, QATTR_KEY_DESCRIPTION_LONG};
 
 	for (size_t sz = 0; sz < attr_readonly_size; sz++) {
 		if ((attr_string = calloc(strlen(attr_readonly[sz]) + (size_t) 1,
@@ -222,6 +222,20 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	}
 
 	printf("Expects: sick; Gets: %s\n", outstr);
+
+	if ((attribute_list = qattr_list_resize(attribute_list, -1)) == NULL) {
+		abort();
+	}
+
+	printf("Expects: 4; Gets: %zu\n", qattr_list_count_get(attribute_list));
+	printf("Expects: 4; Gets: %zu\n", qattr_list_index_ok_get(attribute_list));
+
+	if ((attribute_list = qattr_list_resize(attribute_list, 1)) == NULL) {
+		abort();
+	}
+
+	printf("Expects: 5; Gets: %zu\n", qattr_list_count_get(attribute_list));
+	printf("Expects: 4; Gets: %zu\n", qattr_list_index_ok_get(attribute_list));
 
 	if (qattr_list_destroy(attribute_list) == Q_ERROR) {
 		abort();
