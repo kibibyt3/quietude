@@ -234,9 +234,9 @@ typedef struct Qattr_t {
  * (e.g. for tying to an object).
  */
 typedef struct QattrList_t {
-	size_t   count;    /**< The number of #Qattr_t in the list */
-	/*@only@*/Qattr_t *attrp;    /**< The actual collection of #Qattr_t structs */
-	size_t   index_ok; /**< The earliest index of attrp that isn't yet in use */
+	size_t   count; /**< The number of #Qattr_t in the list. */
+	/*@only@*/Qattr_t *attrp; /**< The actual collection of #Qattr_t structs. */
+	size_t   index_ok; /**< The earliest index of attrp that isn't yet in use. */
 } QattrList_t;
 
 
@@ -252,6 +252,11 @@ extern QattrList_t *qattr_list_clone(const QattrList_t *);
 
 /** Free a given #QattrList_t from memory.                               */
 extern int qattr_list_destroy(/*@only@*/QattrList_t *);
+
+/** Resize a #QattrList_t.                                               */
+/*@only@*//*@null@*/
+extern QattrList_t *qattr_list_resize(/*@only@*/QattrList_t *qattr_list,
+		int dilation_addend)/*@modifies qattr_list@*/;
 
 /** Write a #QattrList_t to storage.                                     */
 extern int qattr_list_write(const QattrList_t *);
@@ -288,7 +293,9 @@ extern int qattr_list_attr_delete(QattrList_t *attr_list, QattrKey_t key)
 	/*@modifies attr_list@*/;
 
 /** Modify the value of an existing #QattrKey_t.                          */
-/*@unused@*/extern int qattr_list_attr_modify(QattrList_t *, QattrKey_t, /*@only@*/Qdatameta_t *);
+/*@unused@*/extern int qattr_list_attr_modify(QattrList_t *attr_list,
+		QattrKey_t attr_key, /*@only@*/Qdatameta_t *datameta)
+	/*@modifies attr_list@*/;
 
 /** Convert a @ref Qattr_t.valuep to an `char *`.                         */
 /*@observer@*//*@unused@*/extern char *qattr_value_to_string(const QattrList_t *, QattrKey_t)/*@*/;

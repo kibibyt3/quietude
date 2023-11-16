@@ -123,6 +123,88 @@ qattr_list_destroy(QattrList_t *qattr_list) {
 
 
 /**
+ * Resize a #QattrList_t.
+ * @param[out] qattr_list: #QattrList_t to resize.
+ * @param[in] dilation_addend: amount to add to the original size (can be
+ * negative).
+ * @return resized @p qattr_list or `NULL` on error.
+ */
+QattrList_t *
+qattr_list_resize(QattrList_t *qattr_list, int dilation_addend) {
+	size_t count_orig;
+	size_t count_new;
+
+	QattrKey_t key_old;
+	Qdatameta_t *datameta_old;
+
+	if ((count_orig = qattr_list_count_get(qattr_list))
+			== (size_t) Q_ERRORCODE_SIZE) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		if (qattr_list_destroy(qattr_list) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+		}
+		return NULL;
+	}
+
+	/* check for a size_t overflow */
+	if ((int) count_orig + (int) dilation_addend < 1) {
+		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+		if (qattr_list_destroy(qattr_list) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+		}
+		return NULL;
+	}
+
+	count_new = (size_t) ((int) count_orig + dilation_addend);
+
+	/*@only@*/
+	QattrList_t *list_new;
+
+	if ((list_new = qattr_list_create(count_new)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		if (qattr_list_destroy(qattr_list) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+		}
+		return NULL;
+	}
+
+	size_t sz;
+
+	/* copy over all that we're allowed to given the new size */
+	for (sz = 0; (sz < count_orig) && (sz < count_new); sz++) {
+		if ((key_old = qattr_list_attr_key_get(qattr_list, (int) sz)) ==
+				(QattrKey_t) Q_ERRORCODE_ENUM) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			abort();
+		}
+		
+		if ((datameta_old = qattr_list_value_get(qattr_list, key_old)) == NULL) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			abort();
+		}
+
+		if (qattr_list_attr_set(list_new, key_old, datameta_old) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			abort();
+		}
+	/*@i1@*/}
+
+	/* clean up leftover attributes in the original */
+	while (sz < count_orig) {
+		/*@i2@*/if (qdatameta_destroy(qattr_list->attrp[sz].valuep) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			abort();
+		}
+		sz++;
+	}
+	/*@i2@*/free(qattr_list->attrp);
+	/*@i1@*/free(qattr_list);
+
+	return list_new;
+}
+
+
+/**
  * Write a #QattrList_t to storage.
  * @param[in] attr_list: #QattrList_t to write; must be completely filled out.
  * @return #Q_OK or #Q_ERROR.
