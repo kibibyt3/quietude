@@ -183,7 +183,7 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	printf("Expects: 3; Gets: %i\n", qattr_list_key_to_index(
 				attribute_list, QATTR_KEY_DESCRIPTION_BRIEF));
 
-	qattr_list_attrs_swap(attribute_list, 1, (size_t) 3);
+	qattr_list_attrs_swap(attribute_list, (size_t) 1, (size_t) 3);
 
 	Qdatameta_t *attr_datameta_observer;
 	QattrKey_t attribute_key;
