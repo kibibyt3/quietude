@@ -426,6 +426,10 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 			return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
 		}
+		if (curs_set(1) == ERR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
+		}
 	}
 
 

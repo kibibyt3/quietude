@@ -121,24 +121,44 @@ devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
 			}
 			return Q_OK;
 		}
-		
+
 		/* handle the attr delete command */
 		if (cmd == DEVEL_WALK_CMD_ATTR_DELETE) {
 			QattrList_t *attr_list;
 			QattrKey_t key;
+			
 			if ((attr_list = devel_walkl_loc_attr_list_get(walk_area, curs_loc)) == NULL) {
 				Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 				return Q_ERROR;
 			}
+
 			if ((key = qattr_list_attr_key_get(attr_list, devel_walkio_userint_get()))
 					== (QattrKey_t) Q_ERRORCODE_ENUM) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
 				return Q_ERROR;
 			}
-			/*@i1@*/if (qattr_list_attr_delete(&attr_list, key) == Q_ERROR) {
+
+			/*@only@*/QattrList_t *attr_list_clone;
+
+			if ((attr_list_clone = qattr_list_clone(attr_list)) == NULL) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
 				return Q_ERROR;
 			}
+
+			if (qattr_list_attr_delete(&attr_list_clone, key) == Q_ERROR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				abort();
+			}
+			/* 
+			 * the clone is used because this function already frees the associated
+			 * memory.
+			 */
+			if (devel_walkl_loc_attr_list_set(walk_area, curs_loc, attr_list_clone)
+					== Q_ERROR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				abort();
+			}
+
 			return Q_OK;
 		}
 		
