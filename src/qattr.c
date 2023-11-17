@@ -444,41 +444,46 @@ qattr_list_attrs_swap(QattrList_t *attr_list,
 /** 
  * Delete a #QattrKey_t/#Qdatameta_t pair in the given #QattrList_t.
  * If the selected #Qattr_t is not the final one in @p attr_list, replace the
- * deleted element's spot with the final element.
- * @param[out] attr_list: #QattrList_t to remove a #Qattr_t from.
+ * deleted element's spot with the final element. Also, reallocate the memory to
+ * fit the new size.
+ * @param[out] attr_list: pointer to the #QattrList_t to remove a #Qattr_t from.
  * @param[in] key: key in @p attr_list whose parent #Qattr_t should be removed.
  * @return #Q_OK or #Q_ERROR.
  */
 int
-qattr_list_attr_delete(QattrList_t *attr_list, QattrKey_t key) {
+qattr_list_attr_delete(OnlyQattrListp_t *attr_listp, QattrKey_t key) {
 
 	int index;
-	int returnval = Q_OK;
 
-	if ((index = qattr_list_key_to_index(attr_list, key)) == Q_ERRORCODE_INT) {
+	if ((index = qattr_list_key_to_index(*attr_listp, key)) == Q_ERRORCODE_INT) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return Q_ERROR;
 	}
 
-	if (attr_list->attrp[index].key != QATTR_KEY_EMPTY) {
-		if (qdatameta_destroy(attr_list->attrp[index].valuep) == Q_ERROR) {
+	if ((*attr_listp)->attrp[index].key != QATTR_KEY_EMPTY) {
+		if (qdatameta_destroy((*attr_listp)->attrp[index].valuep) == Q_ERROR) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
-			returnval = Q_ERROR;
+			abort();
 		}
 	}
 
-	attr_list->attrp[index].key = QATTR_KEY_EMPTY;
+	(*attr_listp)->attrp[index].key = QATTR_KEY_EMPTY;
 
 	/* 
 	 * if it's not the final attribute index-wise, trade its place with the final
 	 * attribute.
 	 */
-	(attr_list->index_ok)--;
-	if ((size_t) index != attr_list->index_ok) {
-		qattr_list_attrs_swap(attr_list, (size_t) index, attr_list->index_ok);
+	(*attr_listp)->index_ok--;
+	if ((size_t) index != (*attr_listp)->index_ok) {
+		qattr_list_attrs_swap(*attr_listp, (size_t) index, (*attr_listp)->index_ok);
 	}
 
-	return returnval;
+	if (((*attr_listp) = qattr_list_resize((*attr_listp), -1)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+	return Q_OK;
 }
 
 

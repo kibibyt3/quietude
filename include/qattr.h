@@ -228,7 +228,6 @@ typedef struct Qattr_t {
 	/*@only@*/Qdatameta_t  *valuep; /**< Value to hold the proper data for the attribute */
 } Qattr_t;
 
-
 /**
  * Type for holding a collection of attributes.
  * (e.g. for tying to an object).
@@ -238,6 +237,9 @@ typedef struct QattrList_t {
 	/*@only@*/Qattr_t *attrp; /**< The actual collection of #Qattr_t structs. */
 	size_t   index_ok; /**< The earliest index of attrp that isn't yet in use. */
 } QattrList_t;
+
+/** Splint type for a #QattrList_t with the `/\*@only*\/` annotation. */
+typedef /*@only@*/QattrList_t *OnlyQattrListp_t;
 
 
 
@@ -289,8 +291,8 @@ extern void qattr_list_attrs_swap(QattrList_t *attr_list,
 extern int qattr_list_attr_set(QattrList_t *, QattrKey_t, /*@only@*/Qdatameta_t *);
 
 /** Delete a #Qattr_t in the given #QattrList_t.                          */
-extern int qattr_list_attr_delete(QattrList_t *attr_list, QattrKey_t key)
-	/*@modifies attr_list@*/;
+extern int qattr_list_attr_delete(OnlyQattrListp_t *attr_listp,
+		QattrKey_t key)/*@modifies attr_listp@*/;
 
 /** Modify the value of an existing #QattrKey_t.                          */
 /*@unused@*/extern int qattr_list_attr_modify(QattrList_t *attr_list,
