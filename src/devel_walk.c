@@ -284,9 +284,9 @@ devel_attr_list_default_create(QwalkLayerType_t layer_type) {
 		case 1:
 			key = QATTR_KEY_NAME;
 			if (layer_type == QWALK_LAYER_TYPE_EARTH) {
-				strcpy(salias, QATTR_KEY_NAME_DEFAULT_QWALK_DEFAULT_EARTH);
+				strcpy(salias, QATTR_KEY_NAME_QWALK_DEFAULT_EARTH);
 			} else {
-				strcpy(salias, QATTR_KEY_NAME_DEFAULT_QWALK_DEFAULT_FLOATER);
+				strcpy(salias, QATTR_KEY_NAME_QWALK_DEFAULT_FLOATER);
 			}
 			break;
 		case 2:
