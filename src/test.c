@@ -209,7 +209,7 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 		abort();
 	}
 
-	if (qattr_list_attr_delete(attribute_list, attribute_key) == Q_ERROR) {
+	if (qattr_list_attr_delete(&attribute_list, attribute_key) == Q_ERROR) {
 		abort();
 	}
 	printf("delete foo\n");
@@ -229,18 +229,18 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 		abort();
 	}
 
-	/*@i1@*/printf("Expects: 2; Gets: %zu\n", qattr_list_count_get(attribute_list));
-	/*@i1@*/printf("Expects: 2; Gets: %zu\n", qattr_list_index_ok_get(attribute_list));
+	/*@i1@*/printf("Expects: 1; Gets: %zu\n", qattr_list_count_get(attribute_list));
+	/*@i1@*/printf("Expects: 1; Gets: %zu\n", qattr_list_index_ok_get(attribute_list));
 
 	if ((attribute_list = qattr_list_resize(attribute_list, 1)) == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		abort();
 	}
 
-	/*@i1@*/printf("Expects: 3; Gets: %zu\n", qattr_list_count_get(attribute_list));
-	/*@i1@*/printf("Expects: 2; Gets: %zu\n", qattr_list_index_ok_get(attribute_list));
+	/*@i1@*/printf("Expects: 2; Gets: %zu\n", qattr_list_count_get(attribute_list));
+	/*@i1@*/printf("Expects: 1; Gets: %zu\n", qattr_list_index_ok_get(attribute_list));
 	
-	if ((attribute_key = qattr_list_attr_key_get(attribute_list, 1)) == (QattrKey_t) Q_ERRORCODE_ENUM) {
+	if ((attribute_key = qattr_list_attr_key_get(attribute_list, 0)) == (QattrKey_t) Q_ERRORCODE_ENUM) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		abort();
 	}
