@@ -135,7 +135,7 @@ devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
 				return Q_ERROR;
 			}
-			/*@i1@*/if (qattr_list_attr_delete(attr_list, key) == Q_ERROR) {
+			/*@i1@*/if (qattr_list_attr_delete(&attr_list, key) == Q_ERROR) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
 				return Q_ERROR;
 			}
