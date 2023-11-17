@@ -150,16 +150,15 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	Qdatameta_t *attr_datameta;
 	char *attr_string;
 
-	size_t attr_readonly_size = (size_t) 5;
-	attribute_list = qattr_list_create((size_t) 5);
+	size_t attr_readonly_size = (size_t) 3;
+	attribute_list = qattr_list_create((size_t) 3);
 	if (attribute_list == NULL) {
 		abort();
 	}
 	
 	/*@observer@*/
-	const char *attr_readonly[] = {"poopy", "baka", "words", "elephant", "sick"};
-	const QattrKey_t key_readonly[] = {QATTR_KEY_NAME, QATTR_KEY_NAME,
-				QATTR_KEY_NAME, QATTR_KEY_DESCRIPTION_BRIEF, QATTR_KEY_DESCRIPTION_LONG};
+	const char *attr_readonly[] = {"foo", "bar", "baz"};
+	const QattrKey_t key_readonly[] = {QATTR_KEY_NAME, QATTR_KEY_DESCRIPTION_BRIEF, QATTR_KEY_DESCRIPTION_LONG};
 
 	for (size_t sz = 0; sz < attr_readonly_size; sz++) {
 		if ((attr_string = calloc(strlen(attr_readonly[sz]) + (size_t) 1,
@@ -180,64 +179,74 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 		}
 	}
 
-	printf("Expects: 3; Gets: %i\n", qattr_list_key_to_index(
-				attribute_list, QATTR_KEY_DESCRIPTION_BRIEF));
+	int index = qattr_list_key_to_index(attribute_list, QATTR_KEY_DESCRIPTION_LONG);
+	printf("Expected: 2; Gets: %i\n", index);
 
-	qattr_list_attrs_swap(attribute_list, (size_t) 1, (size_t) 3);
-
-	Qdatameta_t *attr_datameta_observer;
 	QattrKey_t attribute_key;
 
-	if ((attribute_key = qattr_list_attr_key_get(attribute_list, 3)) == (QattrKey_t) Q_ERRORCODE_ENUM) {
+	printf("{\n");
+	for (int i = 0; (size_t) i < qattr_list_index_ok_get(attribute_list); i++) {
+		if ((attribute_key = qattr_list_attr_key_get(attribute_list, i)) == (QattrKey_t) Q_ERRORCODE_ENUM) {
+			abort();
+		}
+		printf("%i : %s\n", i, qattr_value_to_string(attribute_list, attribute_key));
+	}
+	printf("}\n\n");
+
+	qattr_list_attrs_swap(attribute_list, (size_t) 1, (size_t) 2);
+	printf("swap bar and baz\n");
+
+	printf("{\n");
+	for (int i = 0; (size_t) i < qattr_list_index_ok_get(attribute_list); i++) {
+		if ((attribute_key = qattr_list_attr_key_get(attribute_list, i)) == (QattrKey_t) Q_ERRORCODE_ENUM) {
+			abort();
+		}
+		printf("%i : %s\n", i, qattr_value_to_string(attribute_list, attribute_key));
+	}
+	printf("}\n\n");
+
+	if ((attribute_key = qattr_list_attr_key_get(attribute_list, 0)) == (QattrKey_t) Q_ERRORCODE_ENUM) {
 		abort();
 	}
-	if ((attr_datameta_observer = qattr_list_value_get(attribute_list, attribute_key)) == NULL) {
-		abort();
-	}
-
-	char *outstr = (char *) qdatameta_datap_get(attr_datameta_observer);
-
-	if (outstr == NULL) {
-		abort();
-	}
-
-	printf("Expects: baka; Gets: %s\n", outstr);
 
 	if (qattr_list_attr_delete(attribute_list, attribute_key) == Q_ERROR) {
 		abort();
 	}
+	printf("delete foo\n");
 
-	if ((attribute_key = qattr_list_attr_key_get(attribute_list, 3)) == (QattrKey_t) Q_ERRORCODE_ENUM) {
-		abort();
+	printf("{\n");
+	for (int i = 0; (size_t) i < qattr_list_index_ok_get(attribute_list); i++) {
+		if ((attribute_key = qattr_list_attr_key_get(attribute_list, i)) == (QattrKey_t) Q_ERRORCODE_ENUM) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			abort();
+		}
+		printf("%i : %s\n", i, qattr_value_to_string(attribute_list, attribute_key));
 	}
-
-	if ((attr_datameta_observer = qattr_list_value_get(attribute_list, attribute_key)) == NULL) {
-		abort();
-	}
-
-	outstr = (char *) qdatameta_datap_get(attr_datameta_observer);
-
-	if (outstr == NULL) {
-		abort();
-	}
-
-	printf("Expects: sick; Gets: %s\n", outstr);
+	printf("}\n\n");
 
 	if ((attribute_list = qattr_list_resize(attribute_list, -1)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
 		abort();
 	}
 
-	printf("Expects: 4; Gets: %zu\n", qattr_list_count_get(attribute_list));
-	printf("Expects: 4; Gets: %zu\n", qattr_list_index_ok_get(attribute_list));
+	/*@i1@*/printf("Expects: 2; Gets: %zu\n", qattr_list_count_get(attribute_list));
+	/*@i1@*/printf("Expects: 2; Gets: %zu\n", qattr_list_index_ok_get(attribute_list));
 
 	if ((attribute_list = qattr_list_resize(attribute_list, 1)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
 		abort();
 	}
 
-	printf("Expects: 5; Gets: %zu\n", qattr_list_count_get(attribute_list));
-	printf("Expects: 4; Gets: %zu\n", qattr_list_index_ok_get(attribute_list));
+	/*@i1@*/printf("Expects: 3; Gets: %zu\n", qattr_list_count_get(attribute_list));
+	/*@i1@*/printf("Expects: 2; Gets: %zu\n", qattr_list_index_ok_get(attribute_list));
+	
+	if ((attribute_key = qattr_list_attr_key_get(attribute_list, 1)) == (QattrKey_t) Q_ERRORCODE_ENUM) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
 
 	if (qattr_list_destroy(attribute_list) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
 		abort();
 	}
 
