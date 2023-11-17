@@ -227,6 +227,10 @@ extern int               qwalk_layer_object_coord_x_get(/*@null@*/const QwalkLay
 /** Get the #QattrList_t of a #QwalkObj_t.                */
 extern /*@null@*//*@observer@*/QattrList_t *qwalk_layer_object_attr_list_get(/*@null@*/const QwalkLayer_t *, int)/*@*/;
 
+/** Set a #QattrKey_t with a default #Qdatameta_t oriented around qwalk.  */
+extern int qwalk_attr_list_attr_set_default(QattrList_t *attr_list,
+		QattrKey_t attr_key, QwalkLayerType_t layer_type);
+
 
 
 extern int    qwalk_coords_to_index(int, int)/*@*/;
