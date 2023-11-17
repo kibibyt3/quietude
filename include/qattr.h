@@ -11,6 +11,12 @@
  * DEFAULT QWALK QattrKey_t VALUES                 
  ***************************************************/
 
+/**
+ * @defgroup DefaultKeyValues Default QattrKey_t Values.
+ * Default values for a #QattrKey_t.
+ * @{
+ */
+
 /* DEFAULT QattrKey_t VALUES FOR THE EARTH LAYER   */
 
 /** Default value for #QATTR_KEY_QOBJECT_TYPE in #QWALK_LAYER_TYPE_EARTH. */
@@ -18,7 +24,7 @@
 QOBJ_TYPE_GRASS
 
 /** Default value for #QATTR_KEY_NAME in #QWALK_LAYER_TYPE_EARTH. */
-#define QATTR_KEY_NAME_DEFAULT_QWALK_DEFAULT_EARTH \
+#define QATTR_KEY_NAME_QWALK_DEFAULT_EARTH \
 "grass"
 
 /** Default value for #QATTR_KEY_DESCRIPTION_BRIEF in #QWALK_LAYER_TYPE_EARTH. */
@@ -43,7 +49,7 @@ false;
 QOBJ_TYPE_VOID
 
 /** Default value for #QATTR_KEY_NAME in #QWALK_LAYER_TYPE_FLOATER. */
-#define QATTR_KEY_NAME_DEFAULT_QWALK_DEFAULT_FLOATER \
+#define QATTR_KEY_NAME_QWALK_DEFAULT_FLOATER \
 "void"
 
 /** Default value for #QATTR_KEY_DESCRIPTION_LONG in #QWALK_LAYER_TYPE_FLOATER. */
@@ -59,8 +65,7 @@ QOBJ_TYPE_VOID
 #define QATTR_KEY_CANMOVE_QWALK_DEFAULT_FLOATER \
 true;
 
-
-/* DEFAULT QattrKey_t TYPE VALUES ON ERROR */
+/** @} */
 
 /** Default value for a string #QattrKey_t (used on error.) */
 #define QATTR_KEY_STRING_DEFAULT "DEFAULT"
