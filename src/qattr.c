@@ -383,10 +383,12 @@ qattr_list_index_ok_get(const QattrList_t *attr_list) {
  */ 
 QattrKey_t
 qattr_list_attr_key_get(const QattrList_t *attr_list, int index) {
+
 	if (attr_list == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return (QattrKey_t) Q_ERRORCODE_ENUM;
 	}
+
 	if (index >= (int) qattr_list_index_ok_get(attr_list)) {
 		Q_ERRORFOUND(QERROR_INDEX_OUTOFRANGE);
 		return (QattrKey_t) Q_ERRORCODE_ENUM;
