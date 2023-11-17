@@ -224,6 +224,9 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	}
 	printf("}\n\n");
 
+	/*@i1@*/printf("Expects: 2; Gets: %zu\n", qattr_list_count_get(attribute_list));
+	/*@i1@*/printf("Expects: 2; Gets: %zu\n", qattr_list_index_ok_get(attribute_list));
+	
 	if ((attribute_list = qattr_list_resize(attribute_list, -1)) == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		abort();
