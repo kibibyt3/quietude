@@ -104,6 +104,10 @@ io_choice_from_selection(int optc, const char **optv, const char *title) {
 		return Q_ERRORCODE_INT;
 	}
 
+	if (keypad(win, TRUE) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
 	int choice = 0;
 	int ch;
 
