@@ -14,10 +14,11 @@
 #include <cdk.h>
 
 #include "qdefs.h"
-#include "iodefs.h"
-#include "ioutils.h"
 #include "qerror.h"
 
+#include "splint_types.h"
+#include "iodefs.h"
+#include "ioutils.h"
 #include "mode.h"
 #include "qattr.h"
 #include "qwalk.h"
@@ -454,7 +455,7 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 		}
 	} else if (cmd == DEVEL_WALK_CMD_ATTR_INSERT) {
 		/* deal with the command to insert attributes */
-		const char *qattr_selectable_keys_strings[QATTR_SELECTABLE_KEYS_COUNT];
+		ObserverConstCharp_t qattr_selectable_keys_strings[QATTR_SELECTABLE_KEYS_COUNT];
 		int choice;
 		for (int i = 0; i < QATTR_SELECTABLE_KEYS_COUNT; i++) {
 			qattr_selectable_keys_strings[i] =
@@ -914,7 +915,7 @@ devel_walkio_string_input_choice(QattrKey_t key) {
 	if (wrefresh(area_win) == ERR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 	}
-	/*@i3@*/return returnval;
+	/*@i2@*/return returnval;
 }
 
 
@@ -1181,7 +1182,7 @@ devel_walkio_string_input_raw(const char *str_init) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		returnval = Q_ERROR;
 	}
-	/*@i3@*/return returnval;
+	/*@i1@*/return returnval;
 }
 
 
