@@ -122,7 +122,7 @@ devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
 			return Q_OK;
 		}
 
-		/* handle the attr delete command */
+		/* handle attribute insertion/deletion */
 		if (cmd == DEVEL_WALK_CMD_ATTR_DELETE) {
 			QattrList_t *attr_list;
 			QattrKey_t key;
@@ -153,6 +153,55 @@ devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
 			 * the clone is used because this function already frees the associated
 			 * memory.
 			 */
+			if (devel_walkl_loc_attr_list_set(walk_area, curs_loc, attr_list_clone)
+					== Q_ERROR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				abort();
+			}
+
+			return Q_OK;
+		}
+		if (cmd == DEVEL_WALK_CMD_ATTR_INSERT) {
+			QattrList_t *attr_list;
+			QattrKey_t key;
+			QwalkLayerType_t layer;
+
+			if (curs_loc[2] == 0) {
+				layer = QWALK_LAYER_TYPE_EARTH;
+			} else {
+				layer = QWALK_LAYER_TYPE_FLOATER;
+			}
+
+			if ((attr_list = devel_walkl_loc_attr_list_get(walk_area, curs_loc))
+					== NULL) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				return Q_ERROR;
+			}
+
+			if ((key = (QattrKey_t) devel_walkio_userint_get())
+					== (QattrKey_t) Q_ERRORCODE_INT) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				return Q_ERROR;
+			}
+
+			/*@only@*/QattrList_t *attr_list_clone;
+
+			if ((attr_list_clone = qattr_list_clone(attr_list)) == NULL) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				return Q_ERROR;
+			}
+
+			if ((attr_list_clone = qattr_list_resize(attr_list_clone, 1)) == NULL) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				abort();
+			}
+
+			if (qwalk_attr_list_attr_set_default(attr_list_clone, key, layer)
+					== Q_ERROR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				abort();
+			}
+
 			if (devel_walkl_loc_attr_list_set(walk_area, curs_loc, attr_list_clone)
 					== Q_ERROR) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
