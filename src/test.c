@@ -97,6 +97,30 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 
 	dialogue_tree_destroy(dialogue_tree);
 
+	if (initscr() == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+	/*@observer@*/
+	const char *choices[] =
+	{"foo", "bar", "bazzzzzzzzzz", "bizz", "pop", "bop", "whack"};
+
+	int chose;
+	chose = io_choice_from_selection(7, choices, "THIS IS A TITLE");
+
+	if (chose == Q_ERRORCODE_INT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+	if (endwin() == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+	printf("You selected choice number %i.\n", chose);
+	
 	int *intstr = calloc((size_t) 5, sizeof(*intstr));
 	assert(intstr != NULL);
 	
@@ -249,14 +273,6 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	}
 
 	if (qattr_list_destroy(attribute_list) == Q_ERROR) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-		abort();
-	}
-
-	int chose;
-	chose = io_choice_from_selection(3, attr_readonly, "THIS IS A TITLE");
-
-	if (chose == Q_ERRORCODE_INT) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		abort();
 	}
