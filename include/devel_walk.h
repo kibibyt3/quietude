@@ -214,8 +214,11 @@ extern int devel_walkio_userint_get(void)/*@globals internalState@*/;
 /** Initialize @c WINDOW types for devel_walk.                       */
 extern int devel_walk_wins_init(/*@out@*/WINDOW **, /*@out@*/WINDOW **, /*@out@*/WINDOW **, /*@out@*/WINDOW **);
 
+/** Type for an `/\*@only@*\/ WINDOW *`.                             */
+typedef /*@only@*/ WINDOW *OnlyWindowp_t;
+
 /** Close @c WINDOW types for devel_walk.                            */
-extern int devel_walk_wins_close(WINDOW **, WINDOW **, WINDOW **, WINDOW **);
+extern int devel_walk_wins_close(/*@reldef@*/WINDOW **, /*@reldef@*/WINDOW **, /*@reldef@*/WINDOW **, /*@reldef@*/WINDOW **);
 
 
 
