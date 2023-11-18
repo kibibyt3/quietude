@@ -82,9 +82,9 @@ devel_walk_wins_init(WINDOW **area_winp, WINDOW **area_border_winp,
  * @return #Q_OK or #Q_ERROR.
  */
 int
-devel_walk_wins_close(WINDOW **area_winp, WINDOW **area_border_winp,
-		WINDOW **info_winp, WINDOW **info_border_winp) {
-	
+devel_walk_wins_close(OnlyWindowp_t *area_winp, OnlyWindowp_t *area_border_winp,
+		OnlyWindowp_t *info_winp, OnlyWindowp_t *info_border_winp) {
+
 	int returnval = Q_OK;
 	if (delwin(*area_winp) == ERR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
