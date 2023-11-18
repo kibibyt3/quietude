@@ -29,7 +29,7 @@ typedef enum CursStyle_t {
  * @{
  */
 /** Prompt the user to make a choice from multiple options. */
-extern int io_choice_from_selection(int optc, const char **optv,
+extern int io_choice_from_selection(int optc, /*@partial@*/const char **optv,
 		const char *title);
 /** Height of the menu. */
 #define IO_CHOICE_MENU_HEIGHT 30
