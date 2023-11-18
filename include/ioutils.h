@@ -22,14 +22,39 @@ typedef enum CursStyle_t {
 } CursStyle_t;
 
 
+/**
+ * @defgroup IOChoiceFromSelection I/O Choice from Selection
+ * Group @ref io_choice_from_selection.
+ * Namely associated references and defines.
+ * @{
+ */
+/** Prompt the user to make a choice from multiple options. */
+extern int io_choice_from_selection(int optc, const char **optv,
+		const char *title);
+/** Height of the menu. */
+#define IO_CHOICE_MENU_HEIGHT 30
+/** Width of the menu. */
+#define IO_CHOICE_MENU_WIDTH  60
+/** Key to move up. */
+#define IO_CHOICE_MENU_ICH_MOVE_UP 'w'
+/** Alternate to #IO_CHOICE_MENU_ICH_MOVE_UP. */
+#define IO_CHOICE_MENU_ICH_MOVE_UP_ALT KEY_UP
+/** Key to move down. */
+#define IO_CHOICE_MENU_ICH_MOVE_DOWN 's'
+/** Alternate to #IO_CHOICE_MENU_ICH_MOVE_DOWN. */
+#define IO_CHOICE_MENU_ICH_MOVE_DOWN_ALT KEY_DOWN
+/** Key to confirm choice. */
+#define IO_CHOICE_MENU_ICH_CONFIRM_CHOICE '\n'
+/** @} */
 
-/** Find the coordinates at the center of two coordinates. */
+
+/** Find the coordinates at the center of two coordinates.  */
 /*@unused@*/
 extern void io_centerof(int, int, int, int, /*@out@*/int *, /*@out@*/int *);
 
-/** Change cursor style.                                   */
+/** Change cursor style.                                    */
 /*@unused@*/
 extern int curs_style_set(CursStyle_t);
 
-/** Trim redundant whitespace in a string.                 */
+/** Trim redundant whitespace in a string.                  */
 extern int io_whitespace_trim(/*@partial@*/char *);

@@ -5,6 +5,7 @@
 
 
 
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
@@ -39,6 +40,160 @@
 
 /** @} */
 
+
+
+/*@external@*/
+extern int /*@alt void@*/wborder(WINDOW *, chtype, chtype, chtype, chtype, chtype, chtype, chtype, chtype);
+
+
+
+/**
+ * Prompt the user to make a choice from multiple options.
+ * Create the menu thereof in the center of the screen.
+ * @param[in] optc: number of strings in @p optv.
+ * @param[in] optv: array of strings that comprise the options.
+ * @param[in] title: title to place on the menu.
+ * @return the selected option or #Q_ERRORCODE_INT.
+ */
+int
+io_choice_from_selection(int optc, const char **optv, const char *title) {
+	WINDOW *win, *border_win;
+	int border_starty;
+	int border_startx;
+
+	int border_height = IO_CHOICE_MENU_HEIGHT + 2;
+	int border_width = IO_CHOICE_MENU_WIDTH + 2;
+
+	size_t title_len = strlen(title);
+
+	if (optc > IO_CHOICE_MENU_HEIGHT) {
+		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+		return Q_ERRORCODE_INT;
+	}
+
+	if (title_len > (size_t) IO_CHOICE_MENU_WIDTH) {
+		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+		return Q_ERRORCODE_INT;
+	}
+
+	io_centerof(LINES, COLS, border_height, border_width,
+			&border_starty, &border_startx);
+
+	if ((border_win = newwin(border_height, border_width, border_starty,
+					border_startx)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERRORCODE_INT;
+	}
+
+	box(border_win, 0, 0);
+
+	/* print the title of the window on the border */
+	io_centerof(0, border_height, 0, (int) title_len,
+			&border_starty, &border_startx);
+	if (mvwprintw(border_win, border_starty, border_startx, "%s", title) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
+	if ((win = derwin(border_win, IO_CHOICE_MENU_HEIGHT, IO_CHOICE_MENU_WIDTH,
+					1, 1)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		if (delwin(border_win) == ERR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			abort(); /* this would lead to a memory leak */
+		}
+		return Q_ERRORCODE_INT;
+	}
+
+	int choice = 0;
+	int ch;
+
+	if (wrefresh(border_win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+	if (curs_set(0) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+	do {
+		for (int i = 0; i < optc; i++) {
+			if (strlen(optv[i]) > (size_t) IO_CHOICE_MENU_WIDTH) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+			
+				if (delwin(win) == ERR) {
+					Q_ERRORFOUND(QERROR_ERRORVAL);
+					abort();
+				}
+
+				if (delwin(border_win) == ERR) {
+					Q_ERRORFOUND(QERROR_ERRORVAL);
+					abort();
+				}
+
+				if (curs_set(1) == ERR) {
+					Q_ERRORFOUND(QERROR_ERRORVAL);
+				}
+
+				return Q_ERRORCODE_INT;
+			}
+
+			if (i == choice) {
+				if (wattr_on(win, WA_REVERSE, NULL) == ERR) {
+					Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+				}
+			}
+
+			if (mvwprintw(win, i, 0, "%s", optv[i]) == ERR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+			}
+
+			if (i == choice) {
+				if (wattr_off(win, WA_REVERSE, NULL) == ERR) {
+					Q_ERRORFOUND(QERROR_ERRORVAL);
+				}
+			}
+		}
+		if (wrefresh(win) == ERR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+		}
+		if ((ch = wgetch(win)) == ERR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+		}
+		if (wclear(win) == ERR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+		}
+		/* handle controls */
+		switch (ch) {
+		case IO_CHOICE_MENU_ICH_MOVE_UP:
+		/*@fallthrough@*/
+		case IO_CHOICE_MENU_ICH_MOVE_UP_ALT:
+			if (choice > 0) {
+				choice--;
+			}
+			break;
+		case IO_CHOICE_MENU_ICH_MOVE_DOWN:
+		/*@fallthrough@*/
+		case IO_CHOICE_MENU_ICH_MOVE_DOWN_ALT:
+			if (choice < (optc - 1)) {
+				choice++;
+			}
+			break;
+		case IO_CHOICE_MENU_ICH_CONFIRM_CHOICE:
+			break;
+		default:
+			break;
+		}
+
+	} while (ch != (int) IO_CHOICE_MENU_ICH_CONFIRM_CHOICE);
+
+	if (delwin(win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+	if (delwin(border_win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+	return choice;
+}
 
 
 
