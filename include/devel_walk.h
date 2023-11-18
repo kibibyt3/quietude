@@ -51,7 +51,7 @@
 
 
 /**
- * @addtogroup DevelWalkioStringInputRawKeys Raw String Input Keys
+ * @defgroup DevelWalkioStringInputRawKeys Raw String Input Keys
  * Keys used to control @ref devel_walkio_string_input_raw().
  * @{
  */
@@ -102,6 +102,10 @@
 
 /** @} */
 
+
+
+/** Title for menu when choosing a new attribute to insert. */
+#define DEVEL_WALKIO_CHOICE_MENU_TITLE "CHOOSE KEY TO ADD"
 
 
 /**

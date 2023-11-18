@@ -173,6 +173,24 @@ static int devel_walkio_userint = Q_ERROR;
  */
 #define QOBJ_SELECTABLE_STRING_TYPE_COUNT 4
 
+
+/**
+ * Array of all possible values for a user-facing #QattrKey_t.
+ */
+/*@observer@*/static const QattrKey_t qattr_selectable_keys[] = {
+	QATTR_KEY_QOBJECT_TYPE,
+	QATTR_KEY_NAME,
+	QATTR_KEY_DESCRIPTION_BRIEF,
+	QATTR_KEY_DESCRIPTION_LONG,
+	QATTR_KEY_CANMOVE
+};
+
+/**
+ * Number of elements in #qattr_selectable_keys.
+ */
+#define QATTR_SELECTABLE_KEYS_COUNT 5
+
+
 /**
  * Array of all possible values for a @c bool.
  */
@@ -367,7 +385,6 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 
 	/* deal with #DEVEL_WALK_CMD_EDIT */
 	if (cmd == DEVEL_WALK_CMD_EDIT) {
-		
 
 		if (curs_set(0) == ERR) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
@@ -420,7 +437,7 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 		}
 
 	} else if (cmd == DEVEL_WALK_CMD_ATTR_DELETE) {
-		/* deal with #DEVEL_WALK_CMD_ATTR_DELETE */
+		/* deal with DEVEL_WALK_CMD_ATTR_DELETE */
 		
 		if (curs_set(0) == ERR) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
@@ -435,8 +452,22 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 			return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
 		}
+	} else if (cmd == DEVEL_WALK_CMD_ATTR_INSERT) {
+		/* deal with the command to insert attributes */
+		const char *qattr_selectable_keys_strings[QATTR_SELECTABLE_KEYS_COUNT];
+		int choice;
+		for (int i = 0; i < QATTR_SELECTABLE_KEYS_COUNT; i++) {
+			qattr_selectable_keys_strings[i] =
+				qattr_key_to_string(qattr_selectable_keys[i]);
+		}
+		choice = io_choice_from_selection(QATTR_SELECTABLE_KEYS_COUNT,
+				qattr_selectable_keys_strings, DEVEL_WALKIO_CHOICE_MENU_TITLE);
+		if (choice == Q_ERRORCODE_INT) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
+		}
+		devel_walkio_userint = choice;
 	}
-
 
 	return cmd;
 }
