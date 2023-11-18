@@ -466,7 +466,7 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 			return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
 		}
-		devel_walkio_userint = choice;
+		devel_walkio_userint = (int) qattr_selectable_keys[choice];
 	}
 
 	return cmd;
