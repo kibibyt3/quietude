@@ -116,6 +116,11 @@
 #define DEVEL_WALK_ICH_ATTR_DELETE            'r'
 
 /**
+ * Input character for #DEVEL_WALK_CMD_ATTR_INSERT.
+ */
+#define DEVEL_WALK_ICH_ATTR_INSERT            'i'
+
+/**
  * Input character for #DEVEL_WALK_CMD_EDIT.
  */
 #define DEVEL_WALK_ICH_EDIT                   'e'
@@ -1239,6 +1244,9 @@ devel_walkio_input_to_command(int ch) {
 
 	case DEVEL_WALK_ICH_ATTR_DELETE:
 		return DEVEL_WALK_CMD_ATTR_DELETE;
+
+	case DEVEL_WALK_ICH_ATTR_INSERT:
+		return DEVEL_WALK_CMD_ATTR_INSERT;
 
 	case DEVEL_WALK_ICH_EDIT:
 		return DEVEL_WALK_CMD_EDIT;

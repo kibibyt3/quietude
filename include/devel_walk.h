@@ -155,6 +155,11 @@ typedef enum DevelWalkCmd_t {
 	 */
 	DEVEL_WALK_CMD_ATTR_DELETE,
 
+	/**
+	 * Insert a new attribute for an object.
+	 */
+	DEVEL_WALK_CMD_ATTR_INSERT,
+
 	/** Edit the #QattrList_t of the #QwalkObj_t the cursor is pointing at. */
 	DEVEL_WALK_CMD_EDIT,
 
