@@ -253,6 +253,14 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 		abort();
 	}
 
+	int chose;
+	chose = io_choice_from_selection(3, attr_readonly, "THIS IS A TITLE");
+
+	if (chose == Q_ERRORCODE_INT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
 	QattrList_t *attr_list;
 	attr_list = qattr_list_create((size_t) 1);
 	assert(attr_list != NULL);
