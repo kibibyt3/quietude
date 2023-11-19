@@ -33,6 +33,8 @@ Development tool to create playable areas in the qwalk module of quietude.
   - `c`: Copy current object
   - `v`: Paste copied object
   - `e`: Switch to edit mode
+  - `i`: Insert an attribute
+  - `r`: Remove an attribute
   - `x`: Save
   - `q`: Exit
 
@@ -49,7 +51,4 @@ Development tool to create playable areas in the qwalk module of quietude.
     - F1: leave without saving changes.
   - In choice selection submode:
     - Enter: Submit string.
-    - Page Up or CTRL-`b`: Scroll up one page.
-    - Page Down or CTRL-`f`: Scroll down one page.
-    - Tab: attempt to autocomplete word in entry field.
-    - ESC: leave without saving changes.
+    - F1: leave without saving changes.
