@@ -132,7 +132,8 @@ devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
 				return Q_ERROR;
 			}
 
-			if ((key = qattr_list_attr_key_get(attr_list, devel_walkio_userint_get()))
+			if ((key = qattr_list_attr_key_get(attr_list,
+							devel_walkio_userint_alt_get()))
 					== (QattrKey_t) Q_ERRORCODE_ENUM) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
 				return Q_ERROR;
@@ -178,7 +179,7 @@ devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
 				return Q_ERROR;
 			}
 
-			if ((key = (QattrKey_t) devel_walkio_userint_get())
+			if ((key = (QattrKey_t) devel_walkio_userint_alt_get())
 					== (QattrKey_t) Q_ERRORCODE_INT) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
 				return Q_ERROR;
