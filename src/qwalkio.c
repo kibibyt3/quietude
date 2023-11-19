@@ -259,7 +259,7 @@ qwalk_obj_type_to_chtype(QobjType_t obj_type) {
 		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 		return (chtype) ERR; 
 	}
-	
+
 	/* conversion switch-case proper */
 	switch (obj_type) {
 	case QOBJ_TYPE_PLAYER:
@@ -275,5 +275,3 @@ qwalk_obj_type_to_chtype(QobjType_t obj_type) {
 		return (chtype) ERR;
 	}
 }
-
-
