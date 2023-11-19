@@ -8,10 +8,10 @@
 
 #include <stdlib.h>
 #include <stddef.h>
+#include <string.h>
 #include <locale.h>
 #include <ncurses.h>
 #include <form.h>
-#include <cdk.h>
 
 #include "qdefs.h"
 #include "qerror.h"
@@ -156,14 +156,19 @@ static char devel_walkio_userstring[DEVEL_WALKIO_USERSTRING_LENGTH_MAX] =
 /*@i1@*/DEVEL_WALKIO_USERSTRING_DEFAULT;
 
 /**
- * Stores int from user.
+ * Stores `int` from user.
  */
 static int devel_walkio_userint = Q_ERROR;
 
 /**
+ * Stores second `int` from user.
+ */
+static int devel_walkio_userint_alt = Q_ERROR;
+
+/**
  * Array of all possible values in @ref ObjTypeStrings.
  */
-/*@observer@*/static char *qobj_selectable_string_types[] = {
+/*@observer@*/static const char *qobj_selectable_string_types[] = {
 	QOBJ_STRING_TYPE_PLAYER,
 	QOBJ_STRING_TYPE_GRASS,
 	QOBJ_STRING_TYPE_TREE,
@@ -195,7 +200,7 @@ static int devel_walkio_userint = Q_ERROR;
 /**
  * Array of all possible values for a @c bool.
  */
-/*@observer@*/static char *selectable_bool_types[] = {
+/*@observer@*/static const char *selectable_bool_types[] = {
 	BOOL_STRING_FALSE,
 	BOOL_STRING_TRUE};
 
@@ -400,7 +405,7 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 			return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
 		}
-		key = qattr_list_attr_key_get(attr_list, devel_walkio_userint);
+		key = qattr_list_attr_key_get(attr_list, devel_walkio_userint_alt);
 		
 		/* handle keys with specific possible input values */
 		if ((key == QATTR_KEY_QOBJECT_TYPE) || (key == QATTR_KEY_CANMOVE)) {
@@ -786,7 +791,7 @@ devel_walkio_info_out(const QwalkArea_t *walk_area, const int *curs_loc, DevelWa
 				}
 				break;
 			case '\n':
-				devel_walkio_userint = choice_highlight;
+				devel_walkio_userint_alt = choice_highlight;
 				isinputloop = false;
 				break;
 			case ERR:
@@ -824,8 +829,20 @@ devel_walkio_userint_get()
 
  
 /**
+ * Get @ref devel_walkio_userint_alt.
+ * @return @ref devel_walkio_userint_alt.
+ */
+int
+devel_walkio_userint_alt_get()
+/*@globals devel_walkio_userint_alt@*/
+{
+	return devel_walkio_userint_alt;
+}
+
+ 
+/**
  * Get one of a number of specific possible values for a key.
- * Set #devel_walkio_string_input_choice to the value chosen.
+ * Set #devel_walkio_userint to the value chosen.
  * @param[in] key: key whose values are to be searched.
  * @return #Q_ERROR if @p key isn't a valid key for an input choice selection
  * or #Q_ERROR_NOCHANGE if the user exited without saving.
@@ -834,16 +851,13 @@ int
 devel_walkio_string_input_choice(QattrKey_t key) {
 	
 	/* vars */
-	WINDOW *win;
-	CDKSCREEN *screen;
-	CDKALPHALIST *alphalist;
-	char *choice;
+	int choice;
 	int returnval = Q_OK;	
-	/*@observer@*/char **options;
+	/*@observer@*/const char **options;
 	int optionc;
 
 	if ((info_win == NULL) || (area_win == NULL)) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		Q_ERRORFOUND(QERROR_MODULE_UNINITIALIZED);
 		return Q_ERROR;
 	}
 
@@ -861,52 +875,29 @@ devel_walkio_string_input_choice(QattrKey_t key) {
 		return Q_ERROR;
 	}
 
-	/* initializations */
-	win = newwin(DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_HEIGHT,
-			DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_WIDTH,
-			(LINES - DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_HEIGHT) / 2,
-			(COLS - DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_WIDTH) / 2);
-	if (win == NULL) {
+	if ((choice = io_choice_from_selection(optionc, options,
+					"SELECT")) == Q_ERRORCODE_INT) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return Q_ERROR;
 	}
-	screen = initCDKScreen(win);
-
-	alphalist = newCDKAlphalist(screen,
-			0, 0, 0, 0, /* initialize alphalist such that it fills the entirety of win */
-			DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_HEADER,
-			DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_PROMPT,
-			options, optionc,
-			(chtype) ' ', 	/* filler character */
-			(chtype) 0,   	/* highlight        */
-			(boolean) true,	/* box?             */
-			false);       	/* shadow?          */
-	
-	
-	if (alphalist == NULL) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-		strcpy(devel_walkio_userstring, Q_ERRORCODE_CHARSTRING);
-		returnval = Q_ERROR;
-		
+	if (choice == Q_ERROR_NOCHANGE) {
+		/* check if the user exited via ESC */
+		returnval = Q_ERROR_NOCHANGE;
 	} else {
 
-		/* check if the user exited via ESC */
-		if ((choice = activateCDKAlphalist(alphalist, NULL)) == NULL) {
-			returnval = Q_ERROR_NOCHANGE;
-			strcpy(devel_walkio_userstring, Q_ERRORCODE_CHARSTRING);
-		} else {
-			strcpy(devel_walkio_userstring, choice);
+		switch (key) {
+		case QATTR_KEY_QOBJECT_TYPE:
+			devel_walkio_userint =
+				(int) qobj_string_to_type(qobj_selectable_string_types[choice]);
+			break;
+		case QATTR_KEY_CANMOVE:
+			devel_walkio_userint = 
+				(int) charstring_to_bool(selectable_bool_types[choice]);
+			break;
+		default:
+			Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+			break;
 		}
-		
-		/* free memory */
-		destroyCDKAlphalist(alphalist);
-	}
-	/* free memory */
-	destroyCDKScreen(screen);
-	
-	if (delwin(win) == ERR) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-		returnval = Q_ERROR;	
 	}
 
 	if (wrefresh(info_win) == ERR) {
@@ -915,7 +906,7 @@ devel_walkio_string_input_choice(QattrKey_t key) {
 	if (wrefresh(area_win) == ERR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 	}
-	/*@i2@*/return returnval;
+	return returnval;
 }
 
 

@@ -210,7 +210,7 @@ devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
 
 			return Q_OK;
 		}
-		
+
 		/* handle the edit command */
 		if (cmd == DEVEL_WALK_CMD_EDIT) {
 			QattrList_t *attr_list;
@@ -226,27 +226,18 @@ devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
 				return Q_ERROR;
 			}
 
-			/* devel_walkio sets userint to the index of the changed attribute */
-			if ((key = qattr_list_attr_key_get(attr_list, devel_walkio_userint_get()))
+			/* devel_walkio sets userint_alt to the index of the changed attribute */
+			if ((key =
+						qattr_list_attr_key_get(attr_list, devel_walkio_userint_alt_get()))
 					== (QattrKey_t) Q_ERRORCODE_ENUM) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
 				return Q_ERROR;
 			}
-			
+
 			switch (key) {
 			case QATTR_KEY_QOBJECT_TYPE:
-				/* 
-				 * devel_walkio sets userstring to the string version of the new value
-				 */
-				/*@i1@*/if ((obj_type = qobj_string_to_type(devel_walkio_userstring_get()))
-						== (QobjType_t) Q_ERRORCODE_ENUM) {
-					if (devel_walkio_message_print(DEVEL_WALKIO_MESSAGE_MODIFY_ERROR) == Q_ERROR) {
-						Q_ERRORFOUND(QERROR_ERRORVAL);
-						return Q_ERROR;
-					}
-					return Q_OK;
-				}
-
+				/* devel_walkio sets userint to the int version of the new value */
+				obj_type = (QobjType_t) devel_walkio_userint_get();
 				if ((obj_typep = calloc((size_t) 1, sizeof(QobjType_t))) == NULL) {
 					Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 					return Q_ERROR;
@@ -258,7 +249,7 @@ devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
 					Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 					abort();
 				}
-				
+
 				break;
 
 
@@ -269,11 +260,8 @@ devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
 					Q_ERRORFOUND(QERROR_SYSTEM_MEMORY);
 					return Q_ERROR;
 				}
-				
-				/*
-				 * devel_walkio sets userstring to the string version of the new value
-				 */
-				*boolptr = charstring_to_bool(devel_walkio_userstring_get());
+
+				*boolptr = (bool) devel_walkio_userint_get();
 
 				if ((datameta = qdatameta_create((Qdata_t *) boolptr, 
 							QDATA_TYPE_BOOL, (size_t) 1)) == NULL) {
