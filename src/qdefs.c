@@ -254,7 +254,7 @@ qobj_type_to_string(QobjType_t type) {
  * @return #QobjType_t version of @p s.
  */
 QobjType_t
-qobj_string_to_type(char *s) {
+qobj_string_to_type(const char *s) {
 	
 	if (strcmp(s, QOBJ_STRING_TYPE_PLAYER) == 0) {
 		return QOBJ_TYPE_PLAYER;
@@ -294,7 +294,7 @@ bool_to_string(bool b) {
  * will be returned anyway.
  */
 bool
-charstring_to_bool(char *s) {
+charstring_to_bool(const char *s) {
 	if (strcmp(s, BOOL_STRING_TRUE) == 0) {
 		return true;
 	} else {

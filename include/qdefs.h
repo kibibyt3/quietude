@@ -212,10 +212,10 @@ extern size_t qdata_type_size_get(QdataType_t)/*@*/;
 /*@unused@*/extern /*@observer@*/char *qobj_type_to_string(QobjType_t)/*@*/;
 
 /** Convert a string to a #QobjType_t.        */
-/*@unused@*/extern QobjType_t qobj_string_to_type(char *)/*@*/;
+/*@unused@*/extern QobjType_t qobj_string_to_type(const char *)/*@*/;
 
 /** Convert a @c bool to a string.            */
 /*@unused@*/extern /*@observer@*/char *bool_to_string(bool)/*@*/;
 
 /** Convert a string to a @c bool.            */
-/*@unused@*/extern bool charstring_to_bool(/*@partial@*/char *)/*@*/;
+/*@unused@*/extern bool charstring_to_bool(/*@partial@*/const char *)/*@*/;
