@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include <ncurses.h>
 
 #include "qdefs.h"
@@ -19,6 +20,8 @@
 
 /** Splint type for `/\*@only@*\/` #Qwindow_t. */
 typedef /*@only@*/Qwindow_t *OnlyQwindowp_t;
+/** Splint type for `/\*@only@*\/` #Qwindow_t. */
+typedef /*@null@*/Qwindow_t *NullQwindowp_t;
 
 
 
@@ -30,8 +33,8 @@ typedef /*@only@*/Qwindow_t *OnlyQwindowp_t;
  * @return #Q_OK or #Q_ERROR.
  */
 int
-qwins_walk_wins_init(OnlyQwindowp_t *walk_win, OnlyQwindowp_t *dialogue_win,
-		OnlyQwindowp_t *environment_log_win) {
+qwins_walk_wins_init(NullQwindowp_t *walk_win, NullQwindowp_t *dialogue_win,
+		NullQwindowp_t *environment_log_win) {
 	if ((*walk_win = qwindow_create(
 					QWIN_WALK_WIN_TITLE,
 					QWIN_WALK_WIN_SIZE_Y,
@@ -39,7 +42,7 @@ qwins_walk_wins_init(OnlyQwindowp_t *walk_win, OnlyQwindowp_t *dialogue_win,
 					0, 0))
 			== NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		return NULL;
+		return Q_ERROR;
 	}
 
 	if ((*dialogue_win = qwindow_create(
@@ -50,8 +53,8 @@ qwins_walk_wins_init(OnlyQwindowp_t *walk_win, OnlyQwindowp_t *dialogue_win,
 					QWIN_WALK_WIN_SIZE_X))
 			== NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		qwindow_destroy(walk_win);
-		return NULL;
+		qwindow_destroy(*walk_win);
+		return Q_ERROR;
 	}
 
 	if ((*environment_log_win = qwindow_create(
@@ -62,8 +65,9 @@ qwins_walk_wins_init(OnlyQwindowp_t *walk_win, OnlyQwindowp_t *dialogue_win,
 					0))
 			== NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		qwindow_destroy(walk_win);
-		return NULL;
+		qwindow_destroy(*walk_win);
+		qwindow_destroy(*dialogue_win);
+		return Q_ERROR;
 	}
 
 	return Q_OK;
@@ -85,10 +89,11 @@ qwindow_create(char *title, int size_y, int size_x,
 	Qwindow_t *qwin;
 	int title_len;
 
-	if ((title_len = strlen(title)) > size_y) {
+	if (strlen(title) > (size_t) size_y) {
 		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
 		return NULL;
 	}
+	title_len = (int) strlen(title);
 
 	if ((size_y < 0) || (size_x < 0)) {
 		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
@@ -107,10 +112,6 @@ qwindow_create(char *title, int size_y, int size_x,
 			abort();
 		}
 		return NULL;
-	}
-
-	if (mvwprintw(border_win, "%s", title) == ERR) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
 	}
 
 	if ((qwin = calloc((size_t) 1, sizeof(*qwin))) == NULL) {
@@ -171,16 +172,16 @@ qwindow_destroy(Qwindow_t *qwin) {
  * @return #Q_OK or #Q_ERROR.
  */
 int
-qwin_border_title_display(Qwindow *qwin) {
+qwin_border_title_display(Qwindow_t *qwin) {
 	
 	int starty, startx;
 	int returnval = Q_OK;
 
-	io_centerof(0, qwin->size_x, 0, strlen(qwin->title), &starty, &startx);
+	io_centerof(0, qwin->size_x, 0, (int) strlen(qwin->title), &starty, &startx);
 
 	box(qwin->border_win, 0, 0);
 
-	if ((mvwprintw(qwin->border_win, "%s", qwin->title)) == ERR) {
+	if ((mvwprintw(qwin->border_win, starty, startx, "%s", qwin->title)) == ERR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		returnval = Q_ERROR;
 	}

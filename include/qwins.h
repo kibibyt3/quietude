@@ -41,12 +41,17 @@ typedef struct Qwindow_t {
 
 
 
-int qwins_walk_wins_init(Qwindow_t **walk_win, Qwindow_t **dialogue_win,
-		Qwindow_t **environment_log_win);
+extern int qwins_walk_wins_init(
+		/*@partial@*/Qwindow_t **walk_win,
+		/*@partial@*/Qwindow_t **dialogue_win,
+		/*@partial@*/Qwindow_t **environment_log_win);
 
-/*@only@*/Qwindow_t *qwindow_create(char *title, int size_y, int size_x,
-		int start_y, int start_x);
+/*@unused@*/
+/*@only@*//*@null@*/
+extern Qwindow_t *qwindow_create(char *title,
+		int size_y, int size_x, int start_y, int start_x);
 
-void qwindow_destroy(/*@only@*/Qwindow_t *qwin);
+/*@unused@*/
+extern void qwindow_destroy(/*@only@*/Qwindow_t *qwin);
 
-int qwin_border_title_display(Qwindow_t *qwin);
+extern int qwin_border_title_display(Qwindow_t *qwin);
