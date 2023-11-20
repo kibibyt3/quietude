@@ -632,6 +632,10 @@ qwalk_attr_list_attr_set_default(QattrList_t *attr_list, QattrKey_t attr_key,
 			s_buffer = QATTR_KEY_DESCRIPTION_LONG_QWALK_DEFAULT_FLOATER;
 		}
 		break;
+
+	case QATTR_KEY_QDL_FILE:
+		s_buffer = QATTR_KEY_QDL_FILE_DEFAULT;
+		break;
 	default:
 		break;
 	}
@@ -663,6 +667,8 @@ qwalk_attr_list_attr_set_default(QattrList_t *attr_list, QattrKey_t attr_key,
 	case QATTR_KEY_DESCRIPTION_BRIEF:
 	/*@fallthrough@*/
 	case QATTR_KEY_DESCRIPTION_LONG:
+	/*@fallthrough@*/
+	case QATTR_KEY_QDL_FILE:
 		data_type = QDATA_TYPE_CHAR_STRING;
 		count = strlen(s_buffer) + (size_t) 1;
 	

@@ -561,10 +561,12 @@ qattr_value_to_string(const QattrList_t *attr_list, QattrKey_t key) {
 		case QATTR_KEY_QOBJECT_TYPE:
 			return qobj_type_to_string(*((QobjType_t *) data));
 		case QATTR_KEY_NAME:
-			return (char *) data;
+		/*@fallthrough@*/
 		case QATTR_KEY_DESCRIPTION_BRIEF:
-			return (char *) data;
+		/*@fallthrough@*/
 		case QATTR_KEY_DESCRIPTION_LONG:
+		/*@fallthrough@*/
+		case QATTR_KEY_QDL_FILE:
 			return (char *) data;
 		case QATTR_KEY_CANMOVE:
 			return bool_to_string(*((bool *) data));
@@ -597,6 +599,8 @@ qattr_key_to_string(QattrKey_t key) {
 			return QATTR_STRING_KEY_DESCRIPTION_LONG;
 		case QATTR_KEY_CANMOVE:
 			return QATTR_STRING_KEY_CANMOVE;
+		case QATTR_KEY_QDL_FILE:
+			return QATTR_STRING_KEY_QDL_FILE;
 		case QATTR_KEY_EMPTY:
 			return QATTR_STRING_KEY_EMPTY;
 		case QATTR_KEY_DEBUG:
@@ -625,6 +629,8 @@ qattr_string_to_key(const char *s) {
 		return QATTR_KEY_DESCRIPTION_LONG;
 	} else if (strcmp(s, QATTR_STRING_KEY_CANMOVE) == 0) {
 		return QATTR_KEY_CANMOVE;
+	} else if (strcmp(s, QATTR_STRING_KEY_QDL_FILE) == 0) {
+		return QATTR_KEY_QDL_FILE;
 	} else if (strcmp(s, QATTR_STRING_KEY_EMPTY) == 0) {
 		return QATTR_KEY_EMPTY;
 	} else if (strcmp(s, QATTR_STRING_KEY_DEBUG) == 0) {

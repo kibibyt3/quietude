@@ -65,6 +65,14 @@ QOBJ_TYPE_VOID
 #define QATTR_KEY_CANMOVE_QWALK_DEFAULT_FLOATER \
 true;
 
+
+
+/* DEFAULT QattrKey_t VALUES THAT DON'T DEPEND ON LAYER */
+
+/** Default value for #QATTR_KEY_QDL_FILE. */
+#define QATTR_KEY_QDL_FILE_DEFAULT \
+	"dialogue.qdl"
+
 /** @} */
 
 /** Default value for a string #QattrKey_t (used on error.) */
@@ -123,6 +131,12 @@ typedef enum QattrKey_t {
 	 * Whether object can move.
 	 */
 	QATTR_KEY_CANMOVE,
+
+	/**
+	 * @ingroup QwalkKeys
+	 * QDL file for the object.
+	 */
+	QATTR_KEY_QDL_FILE,
 
 
 
@@ -208,6 +222,11 @@ typedef enum QattrKey_t {
  * String for #QATTR_KEY_CANMOVE.
  */
 #define QATTR_STRING_KEY_CANMOVE           "can move"
+/**
+ * @ingroup AttrKeyStrings
+ * String for #QATTR_KEY_QDL_FILE
+ */
+#define QATTR_STRING_KEY_QDL_FILE          "QDL file"
 /**
  * @ingroup AttrKeyStrings
  * String for #QATTR_KEY_EMPTY.

@@ -188,13 +188,14 @@ static int devel_walkio_userint_alt = Q_ERROR;
 	QATTR_KEY_NAME,
 	QATTR_KEY_DESCRIPTION_BRIEF,
 	QATTR_KEY_DESCRIPTION_LONG,
-	QATTR_KEY_CANMOVE
+	QATTR_KEY_CANMOVE,
+	QATTR_KEY_QDL_FILE
 };
 
 /**
  * Number of elements in #qattr_selectable_keys.
  */
-#define QATTR_SELECTABLE_KEYS_COUNT 5
+#define QATTR_SELECTABLE_KEYS_COUNT 6
 
 
 /**
@@ -421,7 +422,7 @@ devel_walkio_in(const QwalkArea_t *walk_area, const int *curs_loc) {
 				return (DevelWalkCmd_t) Q_ERRORCODE_ENUM;
 			}
 		} else if ((key == QATTR_KEY_NAME) || (key == QATTR_KEY_DESCRIPTION_BRIEF)
-				|| (key == QATTR_KEY_DESCRIPTION_LONG)) {
+				|| (key == QATTR_KEY_DESCRIPTION_LONG) || (key == QATTR_KEY_QDL_FILE)) {
 			/* handle keys that take arbitrary string input */
 			
 			if (curs_set(1) == ERR) {
@@ -793,6 +794,7 @@ devel_walkio_info_out(const QwalkArea_t *walk_area, const int *curs_loc, DevelWa
 			case '\n':
 				devel_walkio_userint_alt = choice_highlight;
 				isinputloop = false;
+				fprintf(stderr, "%i\n", choice_highlight);
 				break;
 			case ERR:
 				Q_ERRORFOUND(QERROR_ERRORVAL);
