@@ -13,8 +13,9 @@ This directory holds the header files for Q.
 ├── qerror.h
 ├── qfile.h
 ├── qwalk.h
+├── qwins.h
 ├── README.md
 └── splint_types.h
 
-1 directory, 12 files
+1 directory, 13 files
 ```

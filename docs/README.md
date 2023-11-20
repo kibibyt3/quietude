@@ -22,6 +22,7 @@
 │   ├── qerror.h
 │   ├── qfile.h
 │   ├── qwalk.h
+│   ├── qwins.h
 │   ├── README.md
 │   └── splint_types.h
 ├── Makefile
@@ -45,9 +46,10 @@
 │   ├── qwalkio.c
 │   ├── qwalkl.c
 │   ├── qwalkw.c
+│   ├── qwins.c
 │   ├── README.md
 │   └── test.c
 └── TODO.md
 
-10 directories, 39 files
+10 directories, 41 files
 ```

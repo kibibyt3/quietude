@@ -20,8 +20,9 @@ This directory holds the source files for Q.
 ├── qwalkio.c
 ├── qwalkl.c
 ├── qwalkw.c
+├── qwins.c
 ├── README.md
 └── test.c
 
-1 directory, 19 files
+1 directory, 20 files
 ```
