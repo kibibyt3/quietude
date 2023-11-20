@@ -46,7 +46,7 @@
   subfunctions all of which take a substring of whatever they need to work on.
   e.g. `DialogueObject_t dialogue_file_string_to_object(char *file_substring)`.
 - [x] Add destructor functions to dialogue.
-- [ ] Add ability to add/remove object attributes in devel\_walk.
+- [x] Add ability to add/remove object attributes in devel\_walk.
 - [ ] Add the ability to show the tree title in the dialogue I/O.
 - [ ] In `devel_attr_list_default_create()` replace defaulting functionality w/
   `qwalk_attr_list_attr_set_default()` wherever possible.
