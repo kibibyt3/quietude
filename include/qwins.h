@@ -46,10 +46,16 @@ extern int qwins_walk_wins_init(
 		/*@partial@*/Qwindow_t **dialogue_win,
 		/*@partial@*/Qwindow_t **environment_log_win);
 
+extern void qwins_walk_wins_end(
+		/*@only@*/Qwindow_t *walk_win,
+		/*@only@*/Qwindow_t *dialogue_win,
+		/*@only@*/Qwindow_t *environment_log_win);
+
 /*@unused@*/
 /*@only@*//*@null@*/
 extern Qwindow_t *qwindow_create(char *title,
 		int size_y, int size_x, int start_y, int start_x);
+
 
 /*@unused@*/
 extern void qwindow_destroy(/*@only@*/Qwindow_t *qwin);

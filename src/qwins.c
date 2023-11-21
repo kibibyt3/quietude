@@ -75,6 +75,23 @@ qwins_walk_wins_init(NullQwindowp_t *walk_win, NullQwindowp_t *dialogue_win,
 
 
 /**
+ * Terminate the qwalk component of qwins.
+ * Namely, free all associated memory.
+ * @param[out] walk_win: #Qwindow_t for the overworld proper.
+ * @param[out] dialogue_win: #Qwindow_t for dialogue.
+ * @param[out] environment_log_win: #Qwindow_t environment info.
+ */
+void
+qwins_walk_wins_end(Qwindow_t *walk_win, Qwindow_t *dialogue_win,
+		Qwindow_t *environment_log_win) {
+	qwindow_destroy(walk_win);
+	qwindow_destroy(dialogue_win);
+	qwindow_destroy(environment_log_win);
+	return;
+}
+
+
+/**
  * Create and initialize associated memory for a #Qwindow_t.
  * @param[in] title: title of the #Qwindow_t.
  * @param[in] size_y: y-dimension of the #Qwindow_t.
