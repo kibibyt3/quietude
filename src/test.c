@@ -452,7 +452,7 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
  */
 void
 test_qwins() {
-	Qwindow_t *walk_win, *dialogue_win, *environment_log_win;
+	Qwindow_t *walk_win = NULL, *dialogue_win = NULL, *environment_log_win = NULL;
 	if (qwins_walk_wins_init(&walk_win, &dialogue_win, &environment_log_win)
 			== Q_ERROR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
@@ -461,6 +461,12 @@ test_qwins() {
 
 	if (initscr() == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+	if ((walk_win == NULL) || (dialogue_win == NULL)
+			|| (environment_log_win == NULL)) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		abort();
 	}
 
