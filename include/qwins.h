@@ -60,4 +60,7 @@ extern Qwindow_t *qwindow_create(char *title,
 /*@unused@*/
 extern void qwindow_destroy(/*@only@*/Qwindow_t *qwin);
 
+extern int qwindow_noutrefresh(Qwindow_t *qwin);
+extern int qwindow_noutrefresh_noborder(Qwindow_t *qwin);
+
 extern int qwin_border_title_display(Qwindow_t *qwin);

@@ -184,6 +184,49 @@ qwindow_destroy(Qwindow_t *qwin) {
 
 
 /**
+ * Update the border window and window proper of @p qwin.
+ * This should be called arbitrarily many times and followed by a single call
+ * to `doupdate()`.
+ * @param[out] qwin: #Qwindow_t to update.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+qwindow_noutrefresh(Qwindow_t *qwin) {
+
+	int returnval = Q_OK;
+	if (wnoutrefresh(qwin->border_win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+	if (wnoutrefresh(qwin->win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+
+	return returnval;
+}
+
+
+/**
+ * Update only the window proper of @p qwin.
+ * This should be called arbitrarily many times and followed by a single call
+ * to `doupdate()`.
+ * @param[out] qwin: #Qwindow_t to update.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+qwindow_noutrefresh_noborder(Qwindow_t *qwin) {
+
+	if (wnoutrefresh(qwin->win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+
+	return Q_OK;
+}
+
+
+/**
  * Print the border and title for the #Qwindow_t.
  * @param[in] win: relevant #Qwindow_t.
  * @return #Q_OK or #Q_ERROR.
