@@ -19,6 +19,7 @@
 #include "mode.h"
 #include "qwalk.h"
 #include "dialogue.h"
+#include "qwins.h"
 
 
 /*
@@ -29,6 +30,12 @@
 #define FILENAME "saves/test.sav"
 #define FILENAME2 "data/walk-world/test2.dat"
 #define DIALOGUE_FILENAME "data/dialogue/dialogue_test.qdl"
+
+
+
+static void test_qwins(void);
+
+
 
 int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 
@@ -433,5 +440,56 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	datameta = NULL;
 	r = endwin();
 	assert(r != Q_ERROR);
+
+	test_qwins();
+
 	/*@i1@*/return 0;
+}
+
+
+/**
+ * Test the qwins module.
+ */
+void
+test_qwins() {
+	Qwindow_t *walk_win, *dialogue_win, *environment_log_win;
+	if (qwins_walk_wins_init(&walk_win, &dialogue_win, &environment_log_win)
+			== Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+	if (initscr() == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+	if (qwin_border_title_display(walk_win) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+	if (qwin_border_title_display(dialogue_win) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+	if (qwin_border_title_display(environment_log_win) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+	if (getch() == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+	qwins_walk_wins_end(walk_win, dialogue_win, environment_log_win);
+	
+	if (endwin() == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+	return;
 }
