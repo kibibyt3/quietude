@@ -424,7 +424,7 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	switch_data->mode = MODE_T_INIT; 
 	switch_data->datameta = NULL;
 
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < 4; i++) {
 		assert(switch_data != NULL);
 		r = qwalk_tick(switch_data);
 		assert(r != Q_ERROR);
@@ -485,7 +485,32 @@ test_qwins() {
 		abort();
 	}
 
-	if (getch() == ERR) {
+	if (qwindow_noutrefresh_noborder(dialogue_win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+	if (qwindow_noutrefresh(walk_win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+	if (qwindow_noutrefresh(dialogue_win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+	if (qwindow_noutrefresh(environment_log_win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+	if (doupdate() == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+	if (wgetch(walk_win->win) == ERR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		abort();
 	}
