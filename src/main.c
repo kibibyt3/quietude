@@ -11,6 +11,7 @@
  * Main function of Q.
  * @param[in] argc: argument count
  * @param[in] argv: argument vector
+ * @return 0 on success and 1 on error.
  */
 int main(int argc, char** argv) {
 	
