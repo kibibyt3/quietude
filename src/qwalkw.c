@@ -41,9 +41,6 @@ qwalk_init(Qdatameta_t *datameta) {
 	
 	if (isinit) {
 		Q_ERRORFOUND(QERROR_MODULE_INITIALIZED);
-		if (qdatameta_destroy(datameta) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);	
-		}
 		return Q_ERROR;
 	}
 
@@ -51,28 +48,19 @@ qwalk_init(Qdatameta_t *datameta) {
 	
 	if (datameta == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		if (qdatameta_destroy(datameta) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);	
-		}
 		return Q_ERROR;
 	}
-	
+
 	if (datameta->type != QDATA_TYPE_QWALK_AREA) {
 		Q_ERRORFOUND(QERROR_QDATAMETA_TYPE_INCOMPATIBLE);
-		if (qdatameta_destroy(datameta) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);	
-		}
 		return Q_ERROR;
 	}
-	
+
 	if (walk_area_curr != NULL) {
 		Q_ERRORFOUND(QERROR_NONNULL_POINTER_UNEXPECTED);
-		if (qdatameta_destroy(datameta) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);	
-		}
 		return Q_ERROR;
 	}
-	
+
 	walk_area_curr = (QwalkArea_t *) datameta->datap;
 	datameta->datap = NULL;
 	free(datameta); /* intentionally leave datap intact in walk_area_curr */
