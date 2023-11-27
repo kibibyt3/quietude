@@ -41,22 +41,22 @@ typedef struct ModeSwitchData_t {
 
 
 
-/** Initialize mode module.         */
-extern int mode_init(void)/*@modifies InternalState@*/;
-/** Exit mode module.               */
-extern int mode_exit(void)/*@modifies InternalState@*/;
-/** Pass a tick in the current mode */
-extern int mode_tick(void)/*@globals InternalState@*/;
-/** Switch to a different mode      */
-extern int mode_switch(void)/*@modifies InternalState@*/;
+extern int mode_init(void)/*@modifies internalState@*/;
+extern int mode_exit(void)/*@modifies internalState@*/;
+extern int mode_tick(void)/*@globals internalState@*/;
+extern int mode_switch(void)/*@modifies internalState@*/;
 
 extern int mode_buffer_switch(Mode_t mode,
 		/*@only@*//*@returned@*/Qdatameta_t *datameta)
-/*@modifies InternalState@*//*@globals InternalState@*/;
+/*@modifies internalState@*//*@globals internalState@*/;
+
+extern Mode_t mode_curr_get(void)/*@globals internalState@*/;
+
 
 extern int mode_switch_data_datameta_set(
 		ModeSwitchData_t *switch_data,
-		/*@only@*//*@returned@*/Qdatameta_t *datameta)/*@modifies switch_data@*/;
+		/*@only@*//*@returned@*//*@null@*/Qdatameta_t *datameta)
+	/*@modifies switch_data@*/;
 
 extern int mode_switch_data_mode_set(
 		ModeSwitchData_t *switch_data, Mode_t mode)/*@modifies switch_data@*/;
