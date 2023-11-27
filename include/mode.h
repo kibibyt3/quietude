@@ -65,5 +65,4 @@ extern int mode_switch_data_mode_set(
 extern Qdatameta_t *mode_switch_data_datameta_get(
 		ModeSwitchData_t *switch_data)/*@*/;
 
-/*@observer@*/
 extern Mode_t mode_switch_data_mode_get(ModeSwitchData_t *switch_data)/*@*/;

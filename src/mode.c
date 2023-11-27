@@ -19,10 +19,12 @@
 
 
 /** Current mode for Q. */
-/*@null@*//*@partial@*/static ModeSwitchData_t *switch_data_curr = NULL;
+/*@null@*//*@partial@*//*@only@*/
+static ModeSwitchData_t *switch_data_curr = NULL;
 
 /** Future mode for Q to be switched to at the earliest opportunity. */
-/*@null@*//*@partial@*/static ModeSwitchData_t *switch_data_next = NULL;
+/*@null@*//*@partial@*//*@only@*/
+static ModeSwitchData_t *switch_data_next = NULL;
 
 /**
  * Whether a mode change has been buffered.
@@ -45,7 +47,7 @@ mode_init()/*@modifies switch_data_curr, switch_data_next@*/
 		return Q_ERROR;
 	}
 
-	if ((switch_data_curr = calloc((size_t) 1, sizeof(*switch_data_curr)))
+	/*@i1@*/if ((switch_data_curr = calloc((size_t) 1, sizeof(*switch_data_curr)))
 			== NULL) {
 		Q_ERROR_SYSTEM("calloc()");
 		return Q_ERROR;
@@ -53,10 +55,9 @@ mode_init()/*@modifies switch_data_curr, switch_data_next@*/
 	switch_data_curr->mode = MODE_T_INIT;
 	switch_data_curr->datameta = NULL;
 
-	if ((switch_data_next = calloc((size_t) 1, sizeof(*switch_data_curr)))
+	/*@i1@*/if ((switch_data_next = calloc((size_t) 1, sizeof(*switch_data_curr)))
 			== NULL) {
 		Q_ERROR_SYSTEM("calloc()");
-		free(switch_data_curr);
 		return Q_ERROR;
 	}
 	switch_data_next->mode = MODE_T_INIT;
@@ -83,17 +84,20 @@ mode_exit()/*@modifies switch_data_curr, switch_data_next@*/
 	}
 
 	/* Free the datameta memory of both switch data containers. */
-	if (mode_switch_data_datameta_set(switch_data_curr, NULL) == Q_ERROR) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-		returnval = Q_ERROR;
-	}
-	if (mode_switch_data_datameta_set(switch_data_next, NULL) == Q_ERROR) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-		returnval = Q_ERROR;
+	if (switch_data_curr->datameta != NULL) {
+		if (qdatameta_destroy(switch_data_curr->datameta) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+		}
 	}
 
-	free(switch_data_curr);
-	free(switch_data_next);
+	if (switch_data_next->datameta != NULL) {
+		if (qdatameta_destroy(switch_data_next->datameta) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+		}
+	}
+
+	/*@i1@*/free(switch_data_curr);
+	/*@i1@*/free(switch_data_next);
 	switch_data_curr = NULL;
 	switch_data_next = NULL;
 
@@ -124,10 +128,13 @@ mode_tick()
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 			return Q_ERROR;
 		}
+		break;
 	default:
 		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 		return Q_ERROR;
 	}
+
+	return Q_OK;
 }
 
 
@@ -145,23 +152,18 @@ mode_buffer_switch(Mode_t mode, Qdatameta_t *datameta)
 
 	if ((switch_data_curr == NULL) || (switch_data_next == NULL)) {
 		Q_ERRORFOUND(QERROR_MODULE_UNINITIALIZED);
+		if (qdatameta_destroy(datameta) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+		}
 		return Q_ERROR;
 	}
 
 	if (mode_switch_data_datameta_set(switch_data_next, datameta) == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		if (qdatameta_destroy(datameta) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-			return Q_ERROR;
-		}
 	}
 
 	if (mode_switch_data_mode_set(switch_data_next, mode) == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		if (qdatameta_destroy(datameta) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-			return Q_ERROR;
-		}
 	}
 
 	mode_switch_is_buffered = true;
