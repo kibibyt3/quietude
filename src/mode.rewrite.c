@@ -20,66 +20,300 @@
 /** Current mode for Q. */
 /*@null@*//*@partial@*/static ModeSwitchData_t *switch_data_curr = NULL;
 
+/** Future mode for Q to be switched to at the earliest opportunity. */
+/*@null@*//*@partial@*/static ModeSwitchData_t *switch_data_next = NULL;
+
+/**
+ * Whether a mode change has been buffered.
+ * Whether @ref mode_buffer_switch() has been called since the last call to
+ * @ref mode_switch().
+ */
+static bool mode_switch_is_buffered = false;
+
 
 
 /**
- * TODO: implement a switch-at-next-opportunity function. keep a var to store
- * the switch-at-next and then make a function to do the switch proper; this
- * should be called by main after every tick to check if the module needs to be
- * put away.
+ * Initialize the mode module.
  */
-
-
-
 int
-mode_init()/*@modifies switch_data_curr@*/
+mode_init()/*@modifies switch_data_curr, switch_data_next@*/
 {
+	
+	if ((switch_data_curr != NULL) || (switch_data_next != NULL)) {
+		Q_ERRORFOUND(QERROR_MODULE_INITIALIZED);
+		return Q_ERROR;
+	}
 
 	if ((switch_data_curr = calloc((size_t) 1, sizeof(*switch_data_curr)))
 			== NULL) {
 		Q_ERROR_SYSTEM("calloc()");
 		return Q_ERROR;
 	}
+	switch_data_curr->mode = MODE_T_INIT;
+	switch_data_curr->datameta = NULL;
 
-	if (mode_switch_data_curr_mode_set(MODE_T_INIT) == Q_ERROR) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-		abort();
+	if ((switch_data_next = calloc((size_t) 1, sizeof(*switch_data_curr)))
+			== NULL) {
+		Q_ERROR_SYSTEM("calloc()");
+		free(switch_data_curr);
+		return Q_ERROR;
 	}
+	switch_data_next->mode = MODE_T_INIT;
+	switch_data_next->datameta = NULL;
 
-	if (mode_switch_data_curr_datameta_set(NULL) == Q_ERROR) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-		abort();
-	}
 
 	return Q_OK;
 
 }
 
 
+/**
+ * Exit the mode module.
+ */
 int
-mode_switch(ModeSwitchData_t *mode_data_next) {
+mode_exit()/*@modifies switch_data_curr, switch_data_next@*/
+{
 
-	Mode_t mode_curr;
+	int returnval = Q_OK;
 
-	if ((mode_curr = mode_switch_data_curr_mode_get()) == (Mode_t) Q_ERRORCODE_ENUM) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
+	if ((switch_data_curr == NULL) || (switch_data_next == NULL)) {
+		Q_ERRORFOUND(QERROR_MODULE_UNINITIALIZED);
 		return Q_ERROR;
 	}
 
-	if (mode_curr != MODE_T_INIT) {
+	/* Free the datameta memory of both switch data containers. */
+	if (mode_switch_data_datameta_set(switch_data_curr, NULL) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+	if (mode_switch_data_datameta_set(switch_data_next, NULL) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
 
-		/* Put away the previous mode unless we just initialized the game. */
-		switch (mode_curr) {
-		case MODE_T_WALK:
-			if (qwalk_end() == Q_ERROR) {
-				Q_ERRORFOUND(QERROR_ERRORVAL);
-				abort(); /* because this leads to a memory leak */
-			}
-			break;
+	free(switch_data_curr);
+	free(switch_data_next);
+	switch_data_curr = NULL;
+	switch_data_next = NULL;
+
+	return returnval;
+}
+
+
+/**
+ * Pass a tick in the current mode.
+ */
+int
+mode_tick()
+/*@globals switch_data_curr, switch_data_next@*/
+{
+
+	if ((switch_data_curr == NULL) || (switch_data_next == NULL)) {
+		Q_ERRORFOUND(QERROR_MODULE_UNINITIALIZED);
+		return Q_ERROR;
+	}
+
+	Mode_t mode;
+
+	mode = mode_switch_data_mode_get(switch_data_curr);
+
+	switch (mode) {
+	case MODE_T_WALK:
+		if (qwalk_tick() == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
+		}
+	default:
+		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+		return Q_ERROR;
+	}
+}
+
+
+/**
+ * Buffer a mode switch in the mode module.
+ * @param[in] mode: #Mode_t to switch to at next opportunity.
+ * @param[in] datameta: #Qdatameta_t to give to @p mode at the switch.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+mode_buffer_switch(Mode_t mode, Qdatameta_t *datameta)
+/*@modifies switch_data_next, mode_switch_is_buffered@*/
+/*@globals switch_data_curr@*/
+{
+
+	if ((switch_data_curr == NULL) || (switch_data_next == NULL)) {
+		Q_ERRORFOUND(QERROR_MODULE_UNINITIALIZED);
+		return Q_ERROR;
+	}
+
+	if (mode_switch_data_datameta_set(switch_data_next, datameta) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		if (qdatameta_destroy(datameta) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
 		}
 	}
 
-	if (mode_switch_data_curr_mode_get() != MODE_T_EXIT) {
-		switch (mode_switch_data_curr_mode_get()
+	if (mode_switch_data_mode_set(switch_data_next, mode) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		if (qdatameta_destroy(datameta) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
+		}
 	}
+
+	mode_switch_is_buffered = true;
+	return Q_OK;
+}
+
+
+/**
+ * Attempt to switch the mode.
+ * Namely if a switch has been requested via @ref mode_buffer_switch().
+ */ 
+int
+mode_switch()
+/*@modifies switch_data_next, switch_data_curr, mode_switch_is_buffered@*/
+{
+
+	Mode_t mode_curr, mode_next;
+	Qdatameta_t *datameta_next;
+
+	if ((switch_data_curr == NULL) || (switch_data_next == NULL)) {
+		Q_ERRORFOUND(QERROR_MODULE_UNINITIALIZED);
+		return Q_ERROR;
+	}
+
+
+	/* Exit if a mode switch hasn't been buffered. */
+	if (mode_switch_is_buffered == false) {
+		return Q_ERROR_NOCHANGE;
+	}
+
+	if ((datameta_next = mode_switch_data_datameta_get(switch_data_next)) == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+
+
+
+	/* Terminate the previous mode. */
+	mode_curr = mode_switch_data_mode_get(switch_data_curr);
+
+	switch (mode_curr) {
+	case MODE_T_INIT:
+		break;
+	case MODE_T_WALK:
+		if (qwalk_end() == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
+		}
+		break;
+	default:
+		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+		return Q_ERROR;
+	}
+
+
+	/* Initialize the next mode. */
+	mode_next = mode_switch_data_mode_get(switch_data_next);
+
+	switch(mode_next) {
+	case MODE_T_EXIT:
+		break;
+	case MODE_T_WALK:
+		if (qwalk_init(datameta_next) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
+		}
+		break;
+	default:
+		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+		return Q_ERROR;
+	}
+
+
+	if (mode_switch_data_datameta_set(switch_data_next, NULL) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+	if (mode_switch_data_mode_set(switch_data_curr, mode_next) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+	if (mode_switch_data_datameta_set(switch_data_curr, datameta_next)
+			== Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort(); /* Leads to a memory leak. */
+	}
+
+	mode_switch_is_buffered = false;
+
+	return Q_OK;
+}
+
+
+/**
+ * Set @ref ModeSwitchData_t.datameta.
+ * @param[out] switch_data: relevant #ModeSwitchData_t.
+ * @param[in] datameta: #Qdatameta_t to give to @p switch_data.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+mode_switch_data_datameta_set(
+		ModeSwitchData_t *switch_data, Qdatameta_t *datameta) {
+	
+	int returnval = Q_OK;
+	if (switch_data->datameta != NULL) {
+		if (qdatameta_destroy(switch_data->datameta) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			returnval = Q_ERROR;
+		}
+	}
+
+	switch_data->datameta = datameta;
+
+	return returnval;
+}
+
+
+/**
+ * Set @ref ModeSwitchData_t.mode.
+ * @param[out] switch_data: relevant #ModeSwitchData_t.
+ * @param[in] mode: #Mode_t to give to @p switch_data.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+mode_switch_data_mode_set(ModeSwitchData_t *switch_data, Mode_t mode) {
+
+	if ((mode < (Mode_t) Q_ENUM_VALUE_START) || (mode > MODE_T_COUNT)) {
+		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+		return Q_ERROR;
+	}
+
+	switch_data->mode = mode;
+
+	return Q_OK;
+}
+
+
+/**
+ * Get @ref ModeSwitchData_t.datameta.
+ * @param[in] switch_data: relevant #ModeSwitchData_t.
+ * @return requested #Qdatameta_t.
+ */
+Qdatameta_t *
+mode_switch_data_datameta_get(ModeSwitchData_t *switch_data) {
+	return switch_data->datameta;
+}
+
+
+/**
+ * Get @ref ModeSwitchData_t.mode.
+ * @param[in] switch_data: relevant #ModeSwitchData_t.
+ * @return requested #Mode_t.
+ */
+Mode_t
+mode_switch_data_mode_get(ModeSwitchData_t *switch_data) {
+	return switch_data->mode;
 }
