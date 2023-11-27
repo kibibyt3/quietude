@@ -52,3 +52,4 @@
   `qwalk_attr_list_attr_set_default()` wherever possible.
 - [ ] Isolate the else-ifs in `devel_walkio_in()` into their own individual
   functions.
+- [ ] Change all destructor functions such that they return `void`.
