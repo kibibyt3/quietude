@@ -6,7 +6,8 @@
 
 
 #include <stdlib.h>
-#include <bool.h>
+#include <stdbool.h>
+#include <ncurses.h>
 
 #include "qdefs.h"
 #include "qerror.h"
@@ -251,6 +252,24 @@ mode_switch()
 
 	return Q_OK;
 }
+
+
+/**
+ * Get the current active #Mode_T.
+ * @return requested #Mode_t or #Q_ERRORCODE_ENUM on error.
+ */
+Mode_t
+mode_curr_get()/*@globals switch_data_curr, switch_data_next@*/
+{
+
+	if ((switch_data_curr == NULL) || (switch_data_next == NULL)) {
+		Q_ERRORFOUND(QERROR_MODULE_UNINITIALIZED);
+		return (Mode_t) Q_ERRORCODE_ENUM;
+	}
+
+	return mode_switch_data_mode_get(switch_data_curr);
+}
+
 
 
 /**
