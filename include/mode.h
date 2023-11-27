@@ -2,13 +2,18 @@
  * @file mode.h
  * Interface for controlling modes.
  * Functions and typedefs for modes, which conceptually partition 
- * the five main facets of q from each other. Depends on qdefs.h and stdint.h.
+ * the main facets of q from each other. Depends on qdefs.h and stdint.h.
  */
 
-#define MODE_DEFAULT = MODE_T_WALK /**< The mode the game begins in */
+
+
+#define MODE_DEFAULT MODE_T_WALK /**< The mode the game begins in */
+
+
 
 /** Type for the various modes the game can play in. */
 typedef enum Mode_t {
+	
 	/** Initialization mode */	
 	MODE_T_INIT = Q_ENUM_VALUE_START,    
 	MODE_T_EXIT,        /**< Exit mode */
@@ -16,9 +21,11 @@ typedef enum Mode_t {
 	MODE_T_TALK,        /**< Talk mode */
 	MODE_T_CLI,         /**< CLI  mode */
 	MODE_T_SAIL,        /**< Sail mode */
+	
 	/**
 	 * Number of allowed values for #Mode_t. 
-	 * Must be set to equal the final enum constant */
+	 * Must be set to equal the final enum constant.
+	 */
 	MODE_T_COUNT = MODE_T_SAIL
 } Mode_t;
 
@@ -32,18 +39,31 @@ typedef struct ModeSwitchData_t {
 	Qdatameta_t *datameta; /**< datameta to pass to the next mode, if applicable */
 } ModeSwitchData_t;
 
+
+
 /** Initialize mode module.         */
-/*@external@*/
-extern           int               mode_init(void);
-
+extern int mode_init(void)/*@modifies InternalState@*/;
 /** Exit mode module.               */
-/*@external@*/
-extern           int               mode_exit(void);
-
-/** Switch to a different mode      */
-/*@external@*/
-extern           int               mode_switch(ModeSwitchData_t*, Mode_t);
-
+extern int mode_exit(void)/*@modifies InternalState@*/;
 /** Pass a tick in the current mode */
-/*@external@*/
-extern /*@null@*/ModeSwitchData_t *mode_tick(Mode_t);
+extern int mode_tick(void)/*@globals InternalState@*/;
+/** Switch to a different mode      */
+extern int mode_switch(void)/*@modifies InternalState@*/;
+
+extern int mode_buffer_switch(Mode_t mode,
+		/*@only@*//*@returned@*/Qdatameta_t *datameta)
+/*@modifies InternalState@*//*@globals InternalState@*/;
+
+extern int mode_switch_data_datameta_set(
+		ModeSwitchData_t *switch_data,
+		/*@only@*//*@returned@*/Qdatameta_t *datameta)/*@modifies switch_data@*/;
+
+extern int mode_switch_data_mode_set(
+		ModeSwitchData_t *switch_data, Mode_t mode)/*@modifies switch_data@*/;
+
+/*@observer@*/
+extern Qdatameta_t *mode_switch_data_datameta_get(
+		ModeSwitchData_t *switch_data)/*@*/;
+
+/*@observer@*/
+extern Mode_t mode_switch_data_mode_get(ModeSwitchData_t *switch_data)/*@*/;
