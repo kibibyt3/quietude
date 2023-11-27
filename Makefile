@@ -23,7 +23,7 @@ DEVEL_DIR = devel-utils
 
 all: q test devel_walk
 
-q: $(Q_OBJECTS) $(TEST_OBJECTS)
+q: $(GAME_OBJECTS) $(Q_OBJECTS)
 	$(CC) $(CFLAGS) -o $@ $^ $(Q_LDLIBS)
 
 test: $(GAME_OBJECTS) $(TEST_OBJECTS)
@@ -33,7 +33,7 @@ devel_walk: $(GAME_OBJECTS) $(DEVEL_OBJECTS)
 	$(CC) $(CFLAGS) -o $(DEVEL_DIR)/$@ $^ $(DEVEL_LDLIBS)
 
 clean:
-	$(RM) src/*.o test $(DEVEL_DIR)/devel_walk
+	$(RM) src/*.o test main $(DEVEL_DIR)/devel_walk
 
 .PHONY: docs
 docs:
@@ -42,7 +42,7 @@ docs:
 lint:
 	echo \
 		&& echo "---Q LINT---" \
-		&& $(LINT.c) $(LINTFLAGS) $(GAME_SOURCES) $(Q_SOURCES) \
+		&& $(LINT.c) $(LINTFLAGS) +partial $(GAME_SOURCES) $(Q_SOURCES) \
 		&& echo \
 		&& echo "---TEST LINT---" \
 		&& $(LINT.c) $(LINTFLAGS) $(GAME_SOURCES) $(TEST_SOURCES) \
