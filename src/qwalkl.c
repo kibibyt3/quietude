@@ -40,11 +40,10 @@ static           Qdirection_t qwalk_logic_command_move_to_direction(QwalkCommand
  * Pass a logical tick for qwalk.
  * @param[out] walk_area: #QwalkArea_t to pass the tick on.
  * @param[in]  walk_command: #QwalkCommand_t to execute on @p walk_area.
- * @param[out]  switch_data: #ModeSwitchData_t to pass to the next mode tick.
  * @return #Q_OK or #Q_ERROR.
  */ 
 int
-qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command, ModeSwitchData_t *switch_data) {
+qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command) {
 
 	/* Index of the player in walk_layer and obj_types */
 	int player_index;
@@ -124,9 +123,6 @@ qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command, ModeSwi
 			return Q_ERROR;
 		}
 	}
-	
-	/* in future, this secion will handle checking whether the mode must change */
-	switch_data->mode = MODE_T_WALK;
 
 	qwalk_logic_qobj_type_destroy(obj_types_layer_earth);
 	obj_types_layer_earth = NULL;

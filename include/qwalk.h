@@ -163,12 +163,12 @@ extern           int               qwalk_init(/*@only@*/Qdatameta_t *);
 extern           int               qwalk_end(void);
 
 /** Pass a tick in the qwalk module.*/
-extern int qwalk_tick(/*@partial@*/ModeSwitchData_t *);
+extern int qwalk_tick(void);
 
 
 
 /** Execute the subtick step of executing the game logic. */
-extern int qwalk_logic_subtick(QwalkArea_t *, QwalkCommand_t, ModeSwitchData_t *);
+extern int qwalk_logic_subtick(QwalkArea_t *, QwalkCommand_t);
 
 /** Initialize the I/O module.                            */
 extern           int               qwalk_io_init(WINDOW *);

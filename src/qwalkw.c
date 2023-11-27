@@ -134,12 +134,11 @@ qwalk_end() {
 /**
  * Pass a tick in qwalk.
  * Works in the order: output -> input -> logic
- * @param[out] switch_data: #ModeSwitchData_t to update for determining and
  * executing the mode for the next tick.
  * @return #Q_OK or #Q_ERROR
  */
 int
-qwalk_tick(ModeSwitchData_t *switch_data) {
+qwalk_tick() {
 	QwalkCommand_t    cmd;
 	int               r;
 	
@@ -164,7 +163,7 @@ qwalk_tick(ModeSwitchData_t *switch_data) {
 		return Q_ERROR;
 	}
 	
-	r = qwalk_logic_subtick(walk_area_curr, cmd, switch_data);
+	r = qwalk_logic_subtick(walk_area_curr, cmd);
 	if (r == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;

@@ -426,7 +426,7 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 
 	for (int i = 0; i < 4; i++) {
 		assert(switch_data != NULL);
-		r = qwalk_tick(switch_data);
+		r = qwalk_tick();
 		assert(r != Q_ERROR);
 	}
 
