@@ -267,7 +267,7 @@ mode_switch()
 
 
 /**
- * Get the current active #Mode_T.
+ * Get the current active #Mode_t.
  * @return requested #Mode_t or #Q_ERRORCODE_ENUM on error.
  */
 Mode_t

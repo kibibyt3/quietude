@@ -42,6 +42,7 @@
 
 
 
+/** For the benefit of splint. */
 /*@external@*/
 extern int /*@alt void@*/wborder(WINDOW *, chtype, chtype, chtype, chtype, chtype, chtype, chtype, chtype);
 

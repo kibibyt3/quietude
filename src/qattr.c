@@ -425,7 +425,6 @@ qattr_list_attr_set(QattrList_t *attr_list, QattrKey_t attr_key, Qdatameta_t *da
  * @param[out] attr_list: #QattrList_t to switch the members of.
  * @param[in] mover_index: index of the #Qattr_t to move.
  * @param[in] movend_index; index of the #Qattr_t to be displaced.
- * @return #Q_OK or #Q_ERROR.
  */
 void
 qattr_list_attrs_swap(QattrList_t *attr_list,
@@ -446,7 +445,7 @@ qattr_list_attrs_swap(QattrList_t *attr_list,
  * If the selected #Qattr_t is not the final one in @p attr_list, replace the
  * deleted element's spot with the final element. Also, reallocate the memory to
  * fit the new size.
- * @param[out] attr_list: pointer to the #QattrList_t to remove a #Qattr_t from.
+ * @param[out] attr_listp: pointer to the #QattrList_t to remove a #Qattr_t from.
  * @param[in] key: key in @p attr_list whose parent #Qattr_t should be removed.
  * @return #Q_OK or #Q_ERROR.
  */

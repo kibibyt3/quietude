@@ -27,8 +27,11 @@
 /** Whether the qwalk module is currently initialized  */
 static bool          isinit = false; 
 
+/** #Qwindow_t for the main gameplay in walk. */
 /*@only@*//*@null@*/static Qwindow_t *walk_win = NULL;
+/** #Qwindow_t for NPC dialogue. */
 /*@only@*//*@null@*/static Qwindow_t *walk_dialogue_win = NULL;
+/** #Qwindow_t for the environment log. */
 /*@only@*//*@null@*/static Qwindow_t *walk_environment_log_win = NULL;
 
 
@@ -37,9 +40,8 @@ static bool          isinit = false;
  * Initialize the qwalk module.
  * Upon a successful inititialization, set #isinit to @c true. #walk_area_curr
  * is updated.
- * @param[in] datameta: pointer to the #Qdatameta_t sent by the previous mode.
- * `free`'d in the event of a successful execution. Must contain a
- * #QwalkArea_t.
+ * @param[in] area_filename: filename of the file where the #QwalkArea_t is
+ * saved.
  * @return #Q_OK or #Q_ERROR
  */ 
 int

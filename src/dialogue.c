@@ -61,7 +61,7 @@ dialogue_tree_create(char *title,
  * Create a #DialogueBranch_t.
  * @param[in] header: @ref DialogueBranch_t.header.
  * @param[in] message: @ref DialogueBranch_t.message.
- * @param[in] branches: @ref DialogueBranch_t.objects.
+ * @param[in] objects: @ref DialogueBranch_t.objects.
  * @param[in] sz: @ref DialogueBranch_t.sz.
  * @return pointer to new #DialogueBranch_t.
  */

@@ -15,4 +15,5 @@ typedef /*@partial@*/PartialIntp_t *PartialPartialIntpp_t;
 
 /** Type to stand in for `/\*@only*\/ char *`. */
 typedef /*@only@*/char *OnlyCharp_t;
+/** Type to stand in for `/\*@observer*\/ const char *`. */
 typedef /*@observer@*/const char *ObserverConstCharp_t;

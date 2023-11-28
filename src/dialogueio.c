@@ -18,6 +18,7 @@
 
 
 /*@null@*//*@dependent@*/
+/** `WINDOW` for I/O. */
 static WINDOW *win = NULL;
 
 
@@ -29,7 +30,7 @@ static char dialogue_io_tick(DialogueBranch_t *branch, const char *title,
 
 /**
  * Initialize the dialogue I/O module.
- * @param[in] win: the `WINDOW *` to use for I/O functionality.
+ * @param[in] argwin: the `WINDOW *` to use for I/O functionality.
  */
 void
 dialogue_io_init(WINDOW *argwin)

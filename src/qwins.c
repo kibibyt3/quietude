@@ -96,6 +96,8 @@ qwins_walk_wins_end(Qwindow_t *walk_win, Qwindow_t *dialogue_win,
  * @param[in] title: title of the #Qwindow_t.
  * @param[in] size_y: y-dimension of the #Qwindow_t.
  * @param[in] size_x: x-dimension of the #Qwindow_t.
+ * @param[in] start_y: y-coord of the top-left corner of the #Qwindow_t.
+ * @param[in] start_x: x-coord of the top-left corner of the #Qwindow_t.
  * @return new #Qwindow_t or `NULL` on error.
  */
 Qwindow_t *
@@ -169,6 +171,10 @@ qwindow_create(char *title, int size_y, int size_x,
 }
 
 
+/**
+ * Destroy a specific #Qwindow_t.
+ * @param[out] qwin: #Qwindow_t to destroy.
+ */
 void
 qwindow_destroy(Qwindow_t *qwin) {
 	if (delwin(qwin->win) == ERR) {
@@ -232,7 +238,7 @@ qwindow_noutrefresh_noborder(Qwindow_t *qwin) {
 
 /**
  * Print the border and title for the #Qwindow_t.
- * @param[in] win: relevant #Qwindow_t.
+ * @param[in] qwin: relevant #Qwindow_t.
  * @return #Q_OK or #Q_ERROR.
  */
 int

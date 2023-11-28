@@ -12,16 +12,25 @@
  * @{
  */
 
+/** Y-dimension of walk `WINDOW`. */
 #define QWIN_WALK_WIN_SIZE_Y 40
+/** X-dimension of walk `WINDOW`. */
 #define QWIN_WALK_WIN_SIZE_X 120
+/** Title of walk `WINDOW`. */
 #define QWIN_WALK_WIN_TITLE  "OVERWORLD"
 
+/** Y-dimension of environment log `WINDOW`. */
 #define QWIN_WALK_ENVIRONMENT_LOG_WIN_SIZE_Y (LINES - QWIN_WALK_WIN_SIZE_Y)
+/** X-dimension of environment log `WINDOW`. */
 #define QWIN_WALK_ENVIRONMENT_LOG_WIN_SIZE_X COLS
+/** Title of environment log `WINDOW`. */
 #define QWIN_WALK_ENVIRONMENT_LOG_WIN_TITLE  "ENVIRONMENT LOG"
 
+/** Y-dimension of dialogue `WINDOW`. */
 #define QWIN_WALK_DIALOGUE_WIN_SIZE_Y QWIN_WALK_WIN_SIZE_Y
+/** X-dimension of dialogue `WINDOW`. */
 #define QWIN_WALK_DIALOGUE_WIN_SIZE_X (COLS - QWIN_WALK_WIN_SIZE_X)
+/** Title of dialogue `WINDOW`. */
 #define QWIN_WALK_DIALOGUE_WIN_TITLE  "DIALOGUE"
 
 /** @} */
@@ -41,11 +50,13 @@ typedef struct Qwindow_t {
 
 
 
+/** Initialize windows for qwalk. */
 extern int qwins_walk_wins_init(
 		/*@partial@*/Qwindow_t **walk_win,
 		/*@partial@*/Qwindow_t **dialogue_win,
 		/*@partial@*/Qwindow_t **environment_log_win);
 
+/** Terminate windows for qwalk. */
 extern void qwins_walk_wins_end(
 		/*@only@*/Qwindow_t *walk_win,
 		/*@only@*/Qwindow_t *dialogue_win,

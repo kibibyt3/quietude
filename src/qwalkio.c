@@ -73,7 +73,7 @@
 
 
 
-/* qwalk's IO window. */
+/** qwalk's IO window. */
 /*@null@*/static WINDOW *win = NULL;
 
 

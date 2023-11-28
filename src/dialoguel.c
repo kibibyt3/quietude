@@ -49,6 +49,7 @@ static char *dialogue_file_to_string(FILE *fp)/*@modifies fileSystem, fp@*/;
 
 static int dialogue_file_string_isvalid(const char *s)/*@*/;
 
+/** Find the amount of branches, objects, and commands in a QDL file string. */
 static int dialogue_sections_count(const char *s,
 		/*@out@*/int *branchesc, /*@partial@*/int **objectsc,
 		/*@partial@*/int ***commandsc)
@@ -206,6 +207,10 @@ dialogue_command_handler(DialogueTree_t *tree,
 }
 
 
+/**
+ * Get the external command.
+ * @return the external command.
+ */
 DialogueCommand_t
 dialogue_command_external_get() 
 /*@globals command_external@*/
@@ -214,6 +219,10 @@ dialogue_command_external_get()
 }
 
 
+/**
+ * Get the external argument.
+ * @return the external argument.
+ */
 char *
 dialogue_arg_external_get()
 /*@globals arg_external@*/
@@ -223,6 +232,11 @@ dialogue_arg_external_get()
 
 
 /*@ignore@*/
+/**
+ * Convert a string from a file to a #DialogueTree_t.
+ * @param[in] s: file string to convert.
+ * @return newly converted #DialogueTree_t.
+ */
 DialogueTree_t *
 dialogue_file_string_to_tree(const char *s) {
 
@@ -869,6 +883,16 @@ dialogue_sections_count(const char *s, int *branchesc, PartialIntp_t *objectsc,
 }
 
 
+/**
+ * Destroy the counters created by @ref dialogue_sections_count().
+ * @param[out] branchesc: address to store the number of #DialogueBranch_t
+ * instances.
+ * @param[out] objectsc: address to store a one-dimensional dynamic array of
+ * #DialogueObject_t instances, indexed against @p branchesc.
+ * @param[out] commandsc: address to store a two-dimensional dynamic array of
+ * #DialogueCommand_t instances, indexed from the inside-out against @p objectsc
+ * and @p branchesc, respectively.
+ */
 void
 dialogue_sections_counter_destroy(int branchesc, int *objectsc, /*@only@*/OnlyIntp_t *commandsc) {
 	int branches_index;
