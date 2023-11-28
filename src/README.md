@@ -13,6 +13,7 @@ This directory holds the source files for Q.
 ├── ioutils.c
 ├── main.c
 ├── mode.c
+├── mode.c.old
 ├── qattr.c
 ├── qdefs.c
 ├── qerror.c
@@ -24,5 +25,5 @@ This directory holds the source files for Q.
 ├── README.md
 └── test.c
 
-1 directory, 20 files
+1 directory, 21 files
 ```

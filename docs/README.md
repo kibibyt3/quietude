@@ -39,6 +39,7 @@
 │   ├── ioutils.c
 │   ├── main.c
 │   ├── mode.c
+│   ├── mode.c.old
 │   ├── qattr.c
 │   ├── qdefs.c
 │   ├── qerror.c
@@ -51,5 +52,5 @@
 │   └── test.c
 └── TODO.md
 
-10 directories, 41 files
+10 directories, 42 files
 ```
