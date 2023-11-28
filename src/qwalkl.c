@@ -64,6 +64,18 @@ qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command) {
 		return Q_ERROR;
 	}
 
+	/*
+	 * if the player is exiting, we don't need to worry about the rest of the
+	 * logic.
+	 */
+	if (walk_command == QWALK_COMMAND_EXIT) {
+		if (mode_buffer_switch(MODE_T_EXIT, NULL) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
+		}
+		return Q_OK;
+	}
+
 	obj_types_layer_earth = qwalk_logic_walk_layer_sanitize(qwalk_area_layer_earth_get(walk_area));
 	if (obj_types_layer_earth == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
