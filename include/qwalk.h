@@ -41,11 +41,14 @@ typedef enum QwalkCommand_t {
 	/** Pass a tick without taking an action. */
 	QWALK_COMMAND_WAIT,                            
 
+	/** Exit the game. */
+	QWALK_COMMAND_EXIT,
+
 	/**
 	 * Number of possible commands.
 	 * Must be equal to the final enum constant.
 	 */
-	QWALK_COMMAND_COUNT = QWALK_COMMAND_WAIT
+	QWALK_COMMAND_COUNT = QWALK_COMMAND_EXIT
 } QwalkCommand_t;
 
 
@@ -175,7 +178,11 @@ extern int qwalk_tick(void);
 extern int qwalk_logic_subtick(QwalkArea_t *, QwalkCommand_t);
 
 /** Initialize the I/O module.                            */
-extern           int               qwalk_io_init(WINDOW *);
+extern           int               qwalk_io_init(WINDOW *)
+	/*@modifies internalState@*/;
+
+extern           void              qwalk_io_end(void)
+	/*@modifies internalState@*/;
 
 /** Execute the subtick step of taking an input.          */
 extern           QwalkCommand_t    qwalk_input_subtick(void);

@@ -16,6 +16,7 @@
 #include "mode.h"
 #include "qattr.h"
 #include "qfile.h"
+#include "qwins.h"
 #include "qwalk.h"
 
 
@@ -25,6 +26,10 @@
 
 /** Whether the qwalk module is currently initialized  */
 static bool          isinit = false; 
+
+/*@only@*//*@null@*/static Qwindow_t *walk_win = NULL;
+/*@only@*//*@null@*/static Qwindow_t *walk_dialogue_win = NULL;
+/*@only@*//*@null@*/static Qwindow_t *walk_environment_log_win = NULL;
 
 
 
@@ -40,6 +45,8 @@ static bool          isinit = false;
 int
 qwalk_init(const char *area_filename)/*@modifies walk_area_curr, isinit@*/{
 
+	int returnval = Q_OK;
+
 	if (isinit) {
 		Q_ERRORFOUND(QERROR_MODULE_INITIALIZED);
 		return Q_ERROR;
@@ -52,6 +59,8 @@ qwalk_init(const char *area_filename)/*@modifies walk_area_curr, isinit@*/{
 		return Q_ERROR;
 	}
 
+
+	/* deal with logic initializations */
 	if (qfile_open(area_filename, QFILE_MODE_READ) == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return Q_ERROR;
@@ -67,7 +76,25 @@ qwalk_init(const char *area_filename)/*@modifies walk_area_curr, isinit@*/{
 		return Q_ERROR;
 	}
 
-	return Q_OK;
+
+	/* deal with I/O initializations */
+	if (qwins_walk_wins_init(
+			&walk_win, &walk_dialogue_win, &walk_environment_log_win) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+
+	if (walk_win == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		returnval = Q_ERROR;
+	} else {
+		if (qwalk_io_init(walk_win->win) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
+		}
+	}
+
+	return returnval;
 }
 
 
@@ -77,6 +104,7 @@ qwalk_init(const char *area_filename)/*@modifies walk_area_curr, isinit@*/{
  */ 
 int
 qwalk_end() {
+
 	int returncode = Q_OK;
 
 	/*
@@ -87,13 +115,19 @@ qwalk_end() {
 		Q_ERRORFOUND(QERROR_MODULE_UNINITIALIZED);
 	}
 
-	if (walk_area_curr != NULL) {
-		Q_ERRORFOUND(QERROR_NONNULL_POINTER_UNEXPECTED);
-	} else {
+	if (walk_area_curr == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+
+	if ((walk_win == NULL) || (walk_dialogue_win == NULL)
+			|| (walk_environment_log_win == NULL)) {
+		Q_ERRORFOUND(QERROR_MODULE_UNINITIALIZED);
 		return Q_ERROR;
 	}
 
 
+	/* logic cleanup */
 	if (walk_area_curr->layer_earth == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		returncode = Q_ERROR;
@@ -115,6 +149,17 @@ qwalk_end() {
 	}
 
 	free(walk_area_curr);
+
+
+	/* I/O cleanup */
+	qwins_walk_wins_end(walk_win, walk_dialogue_win, walk_environment_log_win);
+
+	walk_win = NULL;
+	walk_dialogue_win = NULL;
+	walk_environment_log_win = NULL;
+
+	qwalk_io_end();
+
 	walk_area_curr = NULL;
 	isinit = false;
 	return returncode;
@@ -132,17 +177,43 @@ qwalk_tick() {
 	QwalkCommand_t    cmd;
 	int               r;
 	
+	int returnval = Q_OK;
+
 	if (walk_area_curr == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
 	}
-		
+
+	if ((walk_win == NULL) || (walk_dialogue_win == NULL)
+			|| (walk_environment_log_win == NULL)) {
+		Q_ERRORFOUND(QERROR_MODULE_INITIALIZED);
+		return Q_ERROR;
+	}
+
+	if (qwindow_noutrefresh(walk_win) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+	if (qwindow_noutrefresh(walk_dialogue_win) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+	if (qwindow_noutrefresh(walk_environment_log_win) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+
+	if (doupdate() == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+
 	r = qwalk_output_subtick(walk_area_curr);
 	if (r == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
 	}
-	
+
 	cmd = qwalk_input_subtick();
 	if (cmd == (QwalkCommand_t) Q_ERRORCODE_ENUM) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
@@ -152,15 +223,15 @@ qwalk_tick() {
 		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 		return Q_ERROR;
 	}
-	
+
 	r = qwalk_logic_subtick(walk_area_curr, cmd);
 	if (r == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
 	}
-	
-	
-	return Q_OK;
+
+
+	return returnval;
 }
 
 
