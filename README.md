@@ -15,7 +15,8 @@ dev tools as well as the game proper.
 
 ### Controls
 
-- Arrow keys: Navigate
+- `wasd` or Arrow keys: Navigate
+- `q`: Quit
 
 # Development tools
 
