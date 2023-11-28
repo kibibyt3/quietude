@@ -194,6 +194,10 @@ int
 qwindow_noutrefresh(Qwindow_t *qwin) {
 
 	int returnval = Q_OK;
+	if (qwin_border_title_display(qwin) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
 	if (wnoutrefresh(qwin->border_win) == ERR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		returnval = Q_ERROR;
