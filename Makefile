@@ -33,7 +33,7 @@ devel_walk: $(GAME_OBJECTS) $(DEVEL_OBJECTS)
 	$(CC) $(CFLAGS) -o $(DEVEL_DIR)/$@ $^ $(DEVEL_LDLIBS)
 
 clean:
-	$(RM) src/*.o test main $(DEVEL_DIR)/devel_walk
+	$(RM) src/*.o test q $(DEVEL_DIR)/devel_walk
 
 .PHONY: docs
 docs:
