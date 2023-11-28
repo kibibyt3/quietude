@@ -16,6 +16,9 @@
 /** Total amount of #QwalkLayer_t per #QwalkArea_t. */
 #define QWALK_AREA_TOTAL_LAYER_COUNT 2
 
+/** Filename for the starting area in qwalk. */
+#define QWALK_AREA_FILENAME_DEFAULT "data/walk-world/test2.dat"
+
 
 
 /**
@@ -157,7 +160,8 @@ typedef struct QwalkArea_t {
 
 
 /** Initialize the qwalk module.    */
-extern           int               qwalk_init(/*@observer@*/Qdatameta_t *);
+extern           int               qwalk_init(
+		/*@observer@*/const char *area_filename)/*@modifies internalState@*/;
 
 /** Safely exit the qwalk module.   */
 extern           int               qwalk_end(void);

@@ -222,11 +222,21 @@ mode_switch()
 	/* Initialize the next mode. */
 	mode_next = mode_switch_data_mode_get(switch_data_next);
 
+	Qdata_t *datap;
+
 	switch(mode_next) {
 	case MODE_T_EXIT:
 		break;
 	case MODE_T_WALK:
-		if (qwalk_init(datameta_next) == Q_ERROR) {
+		if (qdatameta_type_get(datameta_next) != QDATA_TYPE_CHAR_STRING) {
+			Q_ERRORFOUND(QERROR_QDATAMETA_TYPE_INCOMPATIBLE);
+			return Q_ERROR;
+		}
+		if ((datap = qdatameta_datap_get(datameta_next)) == NULL) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
+		}
+		if (qwalk_init((char *) datap) == Q_ERROR) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 			return Q_ERROR;
 		}
@@ -244,7 +254,7 @@ mode_switch()
 	if (mode_switch_data_mode_set(switch_data_curr, mode_next) == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 	}
-	if (mode_switch_data_datameta_set(switch_data_curr, datameta_next)
+	/*@i2@*/if (mode_switch_data_datameta_set(switch_data_curr, datameta_next)
 			== Q_ERROR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		abort(); /* Leads to a memory leak. */

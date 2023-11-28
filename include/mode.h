@@ -35,8 +35,8 @@ typedef enum Mode_t {
  * changed and data exchanged between modes simultaneously.
  */
 typedef struct ModeSwitchData_t {
-  Mode_t       mode;     /**< mode to switch to */
-	Qdatameta_t *datameta; /**< datameta to pass to the next mode, if applicable */
+	Mode_t       mode;     /**< mode to switch to */
+	/*@null@*/Qdatameta_t *datameta; /**< datameta to pass to the next mode, if applicable */
 } ModeSwitchData_t;
 
 
@@ -61,7 +61,7 @@ extern int mode_switch_data_datameta_set(
 extern int mode_switch_data_mode_set(
 		ModeSwitchData_t *switch_data, Mode_t mode)/*@modifies switch_data@*/;
 
-/*@observer@*/
+/*@observer@*//*@null@*/
 extern Qdatameta_t *mode_switch_data_datameta_get(
 		ModeSwitchData_t *switch_data)/*@*/;
 

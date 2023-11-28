@@ -15,6 +15,7 @@
 
 #include "mode.h"
 #include "qattr.h"
+#include "qfile.h"
 #include "qwalk.h"
 
 
@@ -37,33 +38,34 @@ static bool          isinit = false;
  * @return #Q_OK or #Q_ERROR
  */ 
 int
-qwalk_init(Qdatameta_t *datameta) {
-	
+qwalk_init(const char *area_filename)/*@modifies walk_area_curr, isinit@*/{
+
 	if (isinit) {
 		Q_ERRORFOUND(QERROR_MODULE_INITIALIZED);
 		return Q_ERROR;
 	}
 
 	isinit = true;
-	
-	if (datameta == NULL) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return Q_ERROR;
-	}
-
-	if (datameta->type != QDATA_TYPE_QWALK_AREA) {
-		Q_ERRORFOUND(QERROR_QDATAMETA_TYPE_INCOMPATIBLE);
-		return Q_ERROR;
-	}
 
 	if (walk_area_curr != NULL) {
 		Q_ERRORFOUND(QERROR_NONNULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
 	}
 
-	walk_area_curr = (QwalkArea_t *) datameta->datap;
-	datameta->datap = NULL;
-	free(datameta); /* intentionally leave datap intact in walk_area_curr */
+	if (qfile_open(area_filename, QFILE_MODE_READ) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+
+	if ((walk_area_curr = qwalk_area_read()) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+
+	if (qfile_close() == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
 
 	return Q_OK;
 }

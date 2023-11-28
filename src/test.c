@@ -412,7 +412,7 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	assert(r != ERR);
 
 
-	r = qwalk_init(area_datameta);
+	r = qwalk_init(FILENAME2);
 	assert(r != Q_ERROR);
 	r = qwalk_io_init(stdscr);
 	
@@ -431,7 +431,7 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	}
 
 	/* TODO: implement a destructor function for ModeSwitchData_t */
-	/*@i1@*/free(switch_data);
+	free(switch_data);
 	
 	free(intstr2);
 
