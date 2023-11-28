@@ -116,6 +116,7 @@ qdatameta_destroy(Qdatameta_t *datameta) {
 	}
 
 	if ((datameta->type < (QdataType_t) Q_ENUM_VALUE_START) || (datameta->type > QDATA_TYPE_COUNT)) {
+		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 		free(datameta->datap);
 		free(datameta);
 		return Q_ERROR;
