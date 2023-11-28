@@ -27,7 +27,7 @@
  * @return 0 on success and 1 on error.
  */
 int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
-	
+
 	if (mode_init() == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		exit(EXIT_FAILURE);
@@ -53,6 +53,21 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		exit(EXIT_FAILURE);
 	}
+
+	/* ncurses initializations */
+	if (initscr() == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		exit(EXIT_FAILURE);
+	}
+	if (cbreak() == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		exit(EXIT_FAILURE);
+	}
+	if (noecho() == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		exit(EXIT_FAILURE);
+	}
+
 
 	if (mode_buffer_switch(MODE_T_WALK, switch_init_datameta) == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
@@ -80,6 +95,13 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 		if (mode_tick() == Q_ERROR) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 		}
+	}
+
+
+	/* ncurses cleanup */
+	if (endwin() == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		exit(EXIT_FAILURE);
 	}
 
 	exit(EXIT_SUCCESS);
