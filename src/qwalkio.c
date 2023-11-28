@@ -22,33 +22,23 @@
  * Characters meant to be input by the user.
  * As opposed to @ref OutputChars. Character space betwixt these two overlaps;
  * this is intentional and acceptable behaviour.
+ * @{
  */
 
-/** 
- * @ingroup InputChars
- * Input character for #QWALK_COMMAND_MOVE_NORTH.
- */
+/** Input character for #QWALK_COMMAND_MOVE_NORTH. */
 #define QWALK_ICH_MOVE_NORTH 'w'
-/** 
- * @ingroup InputChars
- * Input character for #QWALK_COMMAND_MOVE_EAST
- */
+/** Input character for #QWALK_COMMAND_MOVE_EAST. */
 #define QWALK_ICH_MOVE_EAST  'd'
-/** 
- * @ingroup InputChars
- * Input character for #QWALK_COMMAND_MOVE_SOUTH
- */
+/** Input character for #QWALK_COMMAND_MOVE_SOUTH. */
 #define QWALK_ICH_MOVE_SOUTH 's'
-/** 
- * @ingroup InputChars
- * Input character for #QWALK_COMMAND_MOVE_WEST
- */
+/** Input character for #QWALK_COMMAND_MOVE_WEST. */
 #define QWALK_ICH_MOVE_WEST  'a'
-/** 
- * @ingroup InputChars
- * Input character for #QWALK_COMMAND_WAIT
- */
+/** Input character for #QWALK_COMMAND_WAIT. */
 #define QWALK_ICH_WAIT       '.'
+/** Input character for #QWALK_COMMAND_EXIT. */
+#define QWALK_ICH_EXIT       'q'
+
+/** @} */
 
 
 
@@ -98,15 +88,29 @@ static QwalkCommand_t qwalk_input_to_command(int)/*@*/;
  * @return #Q_OK or #Q_ERROR.
  */
 int
-qwalk_io_init(WINDOW *argwin) {
+qwalk_io_init(WINDOW *argwin)/*@modifies win@*/{
+
+	int returnval = Q_OK;
 	if (argwin == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
 	}
 	win = argwin;
-	return Q_OK;
+	if (curs_set(0) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+	return returnval;
 }
 
+
+/**
+ * Terminate the I/O module of qwalk.
+ */
+void
+qwalk_io_end()/*@modifies win@*/{
+	win = NULL;
+}
 
 /**
  * Pass the subtick step of getting player input.
@@ -237,6 +241,8 @@ qwalk_input_to_command(int ch) {
 		return QWALK_COMMAND_MOVE_WEST;
 	case QWALK_ICH_WAIT:
 		return QWALK_COMMAND_WAIT;
+	case QWALK_ICH_EXIT:
+		return QWALK_COMMAND_EXIT;
 	default:
 		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
 		return (QwalkCommand_t) Q_ERRORCODE_ENUM;
