@@ -47,7 +47,7 @@ extern int mode_tick(void)/*@globals internalState@*/;
 extern int mode_switch(void)/*@modifies internalState@*/;
 
 extern int mode_buffer_switch(Mode_t mode,
-		/*@only@*//*@returned@*/Qdatameta_t *datameta)
+		/*@only@*//*@returned@*//*@null@*/Qdatameta_t *datameta)
 /*@modifies internalState@*//*@globals internalState@*/;
 
 extern Mode_t mode_curr_get(void)/*@globals internalState@*/;
