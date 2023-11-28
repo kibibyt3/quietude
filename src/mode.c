@@ -152,8 +152,10 @@ mode_buffer_switch(Mode_t mode, Qdatameta_t *datameta)
 
 	if ((switch_data_curr == NULL) || (switch_data_next == NULL)) {
 		Q_ERRORFOUND(QERROR_MODULE_UNINITIALIZED);
-		if (qdatameta_destroy(datameta) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
+		if (datameta != NULL) {
+			if (qdatameta_destroy(datameta) == Q_ERROR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+			}
 		}
 		return Q_ERROR;
 	}
@@ -194,10 +196,7 @@ mode_switch()
 		return Q_ERROR_NOCHANGE;
 	}
 
-	if ((datameta_next = mode_switch_data_datameta_get(switch_data_next)) == NULL) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return Q_ERROR;
-	}
+	datameta_next = mode_switch_data_datameta_get(switch_data_next);
 
 
 
@@ -228,6 +227,10 @@ mode_switch()
 	case MODE_T_EXIT:
 		break;
 	case MODE_T_WALK:
+		if (datameta_next == NULL) {
+			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+			return Q_ERROR;
+		}
 		if (qdatameta_type_get(datameta_next) != QDATA_TYPE_CHAR_STRING) {
 			Q_ERRORFOUND(QERROR_QDATAMETA_TYPE_INCOMPATIBLE);
 			return Q_ERROR;
@@ -247,10 +250,7 @@ mode_switch()
 	}
 
 
-	if (mode_switch_data_datameta_set(switch_data_next, NULL) == Q_ERROR) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-		return Q_ERROR;
-	}
+	switch_data_next->datameta = NULL;
 	if (mode_switch_data_mode_set(switch_data_curr, mode_next) == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 	}
