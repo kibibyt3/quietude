@@ -136,6 +136,11 @@ qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command) {
 		}
 	}
 
+	/* interact command */
+	if (walk_command == QWALK_COMMAND_INTERACT) {
+		
+	}
+
 	qwalk_logic_qobj_type_destroy(obj_types_layer_earth);
 	obj_types_layer_earth = NULL;
 	
@@ -470,9 +475,6 @@ qwalk_logic_command_move_to_direction(QwalkCommand_t cmd) {
 		return (Qdirection_t) Q_ERRORCODE_ENUM;
 	}
 }
-
-
-
 
 /**
  * Tell caller if coordinates are valid for qwalk.

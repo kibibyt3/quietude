@@ -11,6 +11,7 @@
 #include "qdefs.h"
 #include "qerror.h"
 
+#include "ioutils.h"
 #include "qattr.h"
 #include "mode.h"
 #include "qwalk.h"
@@ -26,17 +27,21 @@
  */
 
 /** Input character for #QWALK_COMMAND_MOVE_NORTH. */
-#define QWALK_ICH_MOVE_NORTH 'w'
+#define QWALK_ICH_MOVE_NORTH               'w'
 /** Input character for #QWALK_COMMAND_MOVE_EAST. */
-#define QWALK_ICH_MOVE_EAST  'd'
+#define QWALK_ICH_MOVE_EAST                'd'
 /** Input character for #QWALK_COMMAND_MOVE_SOUTH. */
-#define QWALK_ICH_MOVE_SOUTH 's'
+#define QWALK_ICH_MOVE_SOUTH               's'
 /** Input character for #QWALK_COMMAND_MOVE_WEST. */
-#define QWALK_ICH_MOVE_WEST  'a'
+#define QWALK_ICH_MOVE_WEST                'a'
+/** Input character for #QWALK_COMMAND_INTERACT. */
+#define QWALK_ICH_INTERACT                 'e'
+/** Input character for #QWALK_COMMAND_CONFIRM_OBJECT_SELECTION. */
+#define QWALK_ICH_CONFIRM_OBJECT_SELECTION '\n'
 /** Input character for #QWALK_COMMAND_WAIT. */
-#define QWALK_ICH_WAIT       '.'
+#define QWALK_ICH_WAIT                     '.'
 /** Input character for #QWALK_COMMAND_EXIT. */
-#define QWALK_ICH_EXIT       'q'
+#define QWALK_ICH_EXIT                     'q'
 
 /** @} */
 
@@ -76,6 +81,9 @@
 /** qwalk's IO window. */
 /*@null@*/static WINDOW *win = NULL;
 
+/** qwalk container for any `int` from an input function. */
+static int qwalk_io_buffer_int = 0;
+
 
 
 static QwalkCommand_t qwalk_input_to_command(int)/*@*/;
@@ -112,24 +120,42 @@ qwalk_io_end()/*@modifies win@*/{
 	win = NULL;
 }
 
+
 /**
  * Pass the subtick step of getting player input.
+ * @param[in] y: y-coord of the player.
+ * @param[in] x: x-coord of the player.
  * @return #QwalkCommand_t associated with player input.
  */
 QwalkCommand_t
-qwalk_input_subtick() {
+qwalk_input_subtick(int index) {
 	if (win == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return (QwalkCommand_t) Q_ERRORCODE_ENUM;
 	}
+	int player_index;
 	int ch;
 	QwalkCommand_t cmd;
 	ch = wgetch(win);
-	cmd = qwalk_input_to_command(ch);
-	if (cmd == (QwalkCommand_t) Q_ERRORCODE_ENUM) {
+	if ((cmd = qwalk_input_to_command(ch)) == (QwalkCommand_t) Q_ERRORCODE_ENUM) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return (QwalkCommand_t) Q_ERRORCODE_ENUM;
 	}
+
+	/* for commands that I/O handles part of */
+	switch (cmd) {
+	case QWALK_COMMAND_INTERACT:
+		if ((player_index = qwalk_input_player_object_select(win, index))
+				== Q_ERRORCODE_INT) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			break;
+		}
+		qwalk_io_buffer_int = player_index;
+		break;
+	default:
+		break;
+	}
+
 	return cmd;
 }
 
@@ -224,9 +250,89 @@ qwalk_output_subtick(const QwalkArea_t *walk_area) {
 
 
 /**
+ * Let the player select a specific object from the screen.
+ * @param[out] win: `WINDOW` to manipulate.
+ * @param[in] start_index: index on @p win to begin at.
+ * @return index of selected object or #Q_ERRORCODE_INT.
+ */
+int
+qwalk_input_player_object_select(WINDOW* select_win, int start_index) {
+
+	int *coords;
+	int ch;
+	QwalkCommand_t cmd;
+	int index;
+
+	coords = qwalk_index_to_coords(start_index);
+
+	if (curs_set(1) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+	if (curs_style_set(CURS_STYLE_BLINKING_UL) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
+	if (wmove(select_win, coords[0], coords[1]) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
+	while ((ch = wgetch(select_win))
+			!= (int) QWALK_ICH_CONFIRM_OBJECT_SELECTION) {
+
+		if (ch == ERR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			free(coords);
+			return Q_ERRORCODE_INT;
+		}
+
+		if ((cmd = qwalk_input_to_command(ch))
+				!= (QwalkCommand_t) Q_ERRORCODE_ENUM) {
+			switch (cmd) {
+			case QWALK_COMMAND_MOVE_NORTH:
+				coords[0]--;
+				break;
+			case QWALK_COMMAND_MOVE_EAST:
+				coords[1]++;
+				break;
+			case QWALK_COMMAND_MOVE_WEST:
+				coords[1]--;
+				break;
+			case QWALK_COMMAND_MOVE_SOUTH:
+				coords[0]++;
+				break;
+			default:
+				break;
+			}
+		}
+
+		if (wmove(select_win, coords[0], coords[1]) == ERR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+		}
+	}
+
+	if ((index = qwalk_coords_to_index(coords[0], coords[1]))
+			== Q_ERRORCODE_INT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
+	free(coords);
+
+	if (curs_set(0) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+	if (curs_style_set(CURS_STYLE_BLINKING_BLOCK) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
+	return index;
+}
+
+
+/**
  * Convert a raw player input to a #QwalkCommand_t.
  * @param[in] ch: raw input character from e.g. `getch()`.
- * @return #QwalkCommand_t associated with @p ch.
+ * @return #QwalkCommand_t associated with @p ch or #Q_ERRORCODE_ENUM if no such
+ * #QwalkCommand_t can be found.
  */
 QwalkCommand_t
 qwalk_input_to_command(int ch) {
@@ -239,6 +345,10 @@ qwalk_input_to_command(int ch) {
 		return QWALK_COMMAND_MOVE_SOUTH;
 	case QWALK_ICH_MOVE_WEST:
 		return QWALK_COMMAND_MOVE_WEST;
+	case QWALK_ICH_CONFIRM_OBJECT_SELECTION:
+		return QWALK_COMMAND_CONFIRM_OBJECT_SELECTION;
+	case QWALK_ICH_INTERACT:
+		return QWALK_COMMAND_INTERACT;
 	case QWALK_ICH_WAIT:
 		return QWALK_COMMAND_WAIT;
 	case QWALK_ICH_EXIT:
@@ -280,4 +390,15 @@ qwalk_obj_type_to_chtype(QobjType_t obj_type) {
 		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 		return (chtype) ERR;
 	}
+}
+
+
+/**
+ * Get the I/O buffer `int`.
+ * @return I/O buffer `int`.
+ */
+int
+qwalk_io_buffer_int_get()/*@globals qwalk_io_buffer_int@*/
+{
+	return qwalk_io_buffer_int;
 }

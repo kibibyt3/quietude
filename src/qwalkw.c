@@ -181,6 +181,8 @@ qwalk_tick() {
 	
 	int returnval = Q_OK;
 
+	int player_index;
+
 	if (walk_area_curr == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
@@ -216,7 +218,22 @@ qwalk_tick() {
 		return Q_ERROR;
 	}
 
-	cmd = qwalk_input_subtick();
+	QwalkLayer_t *layer_floater;
+	if ((layer_floater = qwalk_area_layer_floater_get(walk_area_curr)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+
+	if ((player_index = qwalk_layer_obj_index_get(
+					layer_floater, QOBJ_TYPE_PLAYER)) == Q_ERRORCODE_INT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	} else if (player_index == Q_ERRORCODE_INT_NOTFOUND) {
+		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+		return Q_ERROR;
+	}
+
+	cmd = qwalk_input_subtick(player_index);
 	if (cmd == (QwalkCommand_t) Q_ERRORCODE_ENUM) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return Q_ERROR;
@@ -781,10 +798,56 @@ qwalk_attr_list_attr_set_default(QattrList_t *attr_list, QattrKey_t attr_key,
 
 
 /**
+ * Find the index in a layer of a particular #QobjType_t.
+ * The requested #QobjType_t should occur only one or zero times; any more will
+ * cause unpredictable behaviour.
+ * @param[in] parse_layer: #QwalkLayer_t to parse within.
+ * @param[in] type_search: #QobjType_t to search for.
+ * @return index of requested #QobjType_t, #Q_ERRORCODE_INT_NOTFOUND if @p
+ * type_search had no match, or #Q_ERRORCODE_INT if an error occurred.
+ */
+int
+qwalk_layer_obj_index_get(
+		const QwalkLayer_t *parse_layer, const QobjType_t type_search) {
+
+	QattrList_t *attr_list;
+	Qdatameta_t *datameta;
+	QobjType_t  *obj_type;
+
+	for (int i = 0; i < QWALK_LAYER_SIZE; i++) {
+		if ((attr_list = parse_layer->objects[i].attr_list) == NULL) {
+			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+			return Q_ERRORCODE_INT;
+		}
+		if ((datameta = qattr_list_value_get(attr_list, QATTR_KEY_QOBJECT_TYPE))
+				== NULL) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERRORCODE_INT;
+		}
+		if (qdatameta_type_get(datameta) != QDATA_TYPE_QOBJECT_TYPE) {
+			Q_ERRORFOUND(QERROR_QDATAMETA_TYPE_COUNT_INCOMPATIBLE);
+			return Q_ERRORCODE_INT;
+		}
+
+		if ((obj_type = (QobjType_t *) qdatameta_datap_get(datameta)) == NULL) {
+			Q_ERRORFOUND(QERROR_QDATAMETA_TYPE_COUNT_INCOMPATIBLE);
+			return Q_ERRORCODE_INT;
+		}
+
+		if (*obj_type == type_search) {
+			return i;
+		}
+	}
+
+	return Q_ERRORCODE_INT_NOTFOUND;
+}
+
+
+/**
  * Convert coordinates in qwalk to an index.
  * @param[in] y: y coordinate.
  * @param[in] x: x coordinate.
- * @return index
+ * @return index or #Q_ERRORCODE_INT.
  */
 int
 qwalk_coords_to_index(int y, int x) {

@@ -37,7 +37,12 @@ typedef enum QwalkCommand_t {
 	QWALK_COMMAND_MOVE_WEST,  /**< Move west.  */
 	/** Maximum value for a move command. */
 	QWALK_COMMAND_MOVE_MAX = QWALK_COMMAND_MOVE_WEST,
-	
+
+	QWALK_COMMAND_INTERACT, /**< Interact with a #QwalkObj_t. */
+
+	/** Confirm selection of a #QwalkObj_t. */
+	QWALK_COMMAND_CONFIRM_OBJECT_SELECTION, 
+
 	/** Pass a tick without taking an action. */
 	QWALK_COMMAND_WAIT,                            
 
@@ -185,11 +190,13 @@ extern           void              qwalk_io_end(void)
 	/*@modifies internalState@*/;
 
 /** Execute the subtick step of taking an input.          */
-extern           QwalkCommand_t    qwalk_input_subtick(void);
+extern           QwalkCommand_t    qwalk_input_subtick(int index);
 
 /** Execute the subtick step of updating the screen.      */
 extern           int               qwalk_output_subtick(const QwalkArea_t *);
 
+extern int qwalk_input_player_object_select(WINDOW *select_win,
+		int start_index);
 
 
 /** Create a #QwalkArea_t.                                */
@@ -229,6 +236,9 @@ extern                        int          qwalk_layer_object_set(/*@null@*/Qwal
 
 
 
+extern int qwalk_layer_obj_index_get(
+		const QwalkLayer_t *parse_layer, const QobjType_t type_search)/*@*/;
+
 /** Get the y coordinate of a #QwalkObj_t.                */
 extern int               qwalk_layer_object_coord_y_get(/*@null@*/const QwalkLayer_t *, int)/*@*/;
 
@@ -251,3 +261,5 @@ extern int   *qwalk_index_to_coords(int)/*@*/;
 extern bool   qwalk_logic_coords_arevalid(int, int)/*@*/;
 
 extern chtype qwalk_obj_type_to_chtype(QobjType_t)/*@*/;
+
+extern int    qwalk_io_buffer_int_get(void)/*@globals internalState@*/;
