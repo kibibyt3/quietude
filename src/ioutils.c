@@ -265,6 +265,7 @@ io_whitespace_trim(char *s) {
 /**
  * Set the cursor style.
  * @param[in] curs_style: cursor style to use.
+ * @return #Q_OK or #Q_ERROR.
  */
 int
 curs_style_set(CursStyle_t curs_style) {
