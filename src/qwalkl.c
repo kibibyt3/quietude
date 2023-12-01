@@ -59,6 +59,9 @@ qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command) {
 	QobjType_t *obj_types_layer_earth;
 	QobjType_t *obj_types_layer_floater;
 
+	QwalkLayer_t *layer_earth;
+	QwalkLayer_t *layer_floater;
+
 	if (walk_area == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
@@ -75,14 +78,17 @@ qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command) {
 		}
 		return Q_OK;
 	}
+	
+	layer_earth   = qwalk_area_layer_earth_get(walk_area);
+	layer_floater = qwalk_area_layer_floater_get(walk_area);
 
-	obj_types_layer_earth = qwalk_logic_walk_layer_sanitize(qwalk_area_layer_earth_get(walk_area));
+	obj_types_layer_earth = qwalk_logic_walk_layer_sanitize(layer_earth);
 	if (obj_types_layer_earth == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
 	}
 	
-	obj_types_layer_floater = qwalk_logic_walk_layer_sanitize(qwalk_area_layer_floater_get(walk_area));
+	obj_types_layer_floater = qwalk_logic_walk_layer_sanitize(layer_floater);
 	if (obj_types_layer_floater == NULL) {
 		qwalk_logic_qobj_type_destroy(obj_types_layer_earth);
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
@@ -138,7 +144,11 @@ qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command) {
 
 	/* interact command */
 	if (walk_command == QWALK_COMMAND_INTERACT) {
-		
+		int object_index = qwalk_io_buffer_int_get();
+		if (qwalk_logic_interact(layer_earth, layer_floater, object_index) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
+		}
 	}
 
 	qwalk_logic_qobj_type_destroy(obj_types_layer_earth);
