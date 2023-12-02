@@ -123,8 +123,7 @@ qwalk_io_end()/*@modifies win@*/{
 
 /**
  * Pass the subtick step of getting player input.
- * @param[in] y: y-coord of the player.
- * @param[in] x: x-coord of the player.
+ * @param[in] index: index of the player.
  * @return #QwalkCommand_t associated with player input.
  */
 QwalkCommand_t
@@ -251,7 +250,7 @@ qwalk_output_subtick(const QwalkArea_t *walk_area) {
 
 /**
  * Let the player select a specific object from the screen.
- * @param[out] win: `WINDOW` to manipulate.
+ * @param[out] select_win: `WINDOW` to manipulate.
  * @param[in] start_index: index on @p win to begin at.
  * @return index of selected object or #Q_ERRORCODE_INT.
  */

@@ -869,7 +869,7 @@ qwalk_attr_list_attr_set_default(QattrList_t *attr_list, QattrKey_t attr_key,
 /**
  * Get the #QobjType_t of an object in a #QwalkLayer_t.
  * @param[in] layer: #QwalkLayer_t to search.
- * @param[in] int: index of object in @p layer.
+ * @param[in] index: index of object in @p layer.
  * @return requested #QobjType_t or #Q_ERRORCODE_ENUM.
  */
 QobjType_t
@@ -903,7 +903,7 @@ qwalk_layer_object_type_get(const QwalkLayer_t *layer, int index) {
  * @param[in] layer: #QwalkLayer_t of the #Qattr_t.
  * @param[in] index: index in @p layer of the parent object.
  * @param[in] key:   #QattrKey_t of the #Qattr_t.valuep.
- * @return requested #QattrKey_t.valuep or `NULL`.
+ * @return requested #Qattr_t.valuep or `NULL`.
  */
 Qdatameta_t *
 qwalk_layer_obj_attr_value_get(const QwalkLayer_t *layer, int index, 
