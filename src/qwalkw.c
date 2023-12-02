@@ -889,7 +889,7 @@ qwalk_layer_object_type_get(const QwalkLayer_t *layer, int index) {
 		return (QobjType_t) Q_ERRORCODE_ENUM;
 	}
 
-	if ((obj_type = qdatameta_datap_get(datameta)) == NULL) {
+	if ((obj_type = (QobjType_t *) qdatameta_datap_get(datameta)) == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return (QobjType_t) Q_ERRORCODE_ENUM;
 	}

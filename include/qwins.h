@@ -42,7 +42,7 @@
  */
 typedef struct Qwindow_t {
 	WINDOW *border_win; /**< `WINDOW *` that holds the border. */
-	WINDOW *win;        /**< `WINDOW *` that holds the window proper. */
+	/*@owned@*/WINDOW *win; /**< `WINDOW *` that holds the window proper. */
 	char *title;        /**< title to display on the window. */
 	int size_y;         /**< Y-dimension of window. */
 	int size_x;         /**< X-dimension of window. */

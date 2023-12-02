@@ -79,7 +79,7 @@ dialogue_logic_init(const char *qdl_filename) {
 	size_t qdl_path_len;
 	qdl_path_len = strlen(DIALOGUE_QDL_PATH) + strlen(qdl_filename) + (size_t) 2;
 
-	if (qdl_path_len > DIALOGUE_QDL_PATH_SIZE_MAX) {
+	if (qdl_path_len > (size_t) DIALOGUE_QDL_PATH_SIZE_MAX) {
 		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
 		return NULL;
 	}

@@ -149,6 +149,8 @@ qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command) {
 		int object_index = qwalk_io_buffer_int_get();
 		if (qwalk_logic_interact(layer_earth, layer_floater, object_index) == Q_ERROR) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
+			qwalk_logic_qobj_type_destroy(obj_types_layer_earth);
+			qwalk_logic_qobj_type_destroy(obj_types_layer_floater);
 			return Q_ERROR;
 		}
 	}
