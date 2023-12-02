@@ -1,5 +1,5 @@
 # Q
-## v0.2.0
+## v0.2.0-1
 
 This is a game TUI-based game being written by kibibyt3. This repo contains the
 dev tools as well as the game proper.
