@@ -87,11 +87,11 @@ int main(int argc, char **argv) {
 	assert(r != Q_ERROR);
 
 	while (cmd != DEVEL_WALK_CMD_EXIT) {
-		
+
 		assert(walk_area != NULL);
 		r = devel_walkio_out(walk_area, curs_loc);
 		assert(r != Q_ERROR);
-		
+
 		cmd = devel_walkio_in(walk_area, curs_loc);
 		assert((cmd >= (DevelWalkCmd_t) Q_ENUM_VALUE_START) && (cmd <= DEVEL_WALK_CMD_COUNT));
 
@@ -113,7 +113,7 @@ int main(int argc, char **argv) {
 			assert(r != Q_ERROR);
 		}
 	}
-	
+
 	r = devel_walk_wins_close(&area_win, &area_border_win, &info_win, &info_border_win);
 	assert(r != Q_ERROR);
 
@@ -157,14 +157,14 @@ devel_walk_area_load(const char *filepath) {
  */
 int
 devel_walk_area_write(const QwalkArea_t *walk_area, const char *filepath) {
-	
+
 	int returnval = Q_OK;
 
 	if (qfile_open(filepath, QFILE_MODE_WRITE) == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return Q_ERROR;
 	}
-	
+
 	if (qwalk_area_write(walk_area) == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		returnval = Q_ERROR;
@@ -331,22 +331,22 @@ devel_attr_list_default_create(QwalkLayerType_t layer_type) {
 			}
 			data = (Qdata_t *) obj_type;
 			break;
-		
+
 
 		/* default #QATTR_KEY_NAME init */
 		case 1:
-		
+
 		/*@fallthrough@*/
 		/* default #QATTR_KEY_DESCRIPTION_BRIEF init */
 		case 2:
-			
+
 		/*@fallthrough@*/
 		/* default #QATTR_KEY_DESCRIPTION_LONG init  */
 		case 3:
 			data_type = QDATA_TYPE_CHAR_STRING;
 			/* strlen() does not include the terminating character */
 			count     = strlen(salias) + (size_t) 1;
-			
+
 			s = calloc(count, sizeof(*s));
 			if (s == NULL) {
 				Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
@@ -356,7 +356,7 @@ devel_attr_list_default_create(QwalkLayerType_t layer_type) {
 			strcpy(s, salias);
 			data = (Qdata_t *) s;
 			break;
-		
+
 
 		/* default #QATTR_KEY_CANMOVE init */
 		case 4:

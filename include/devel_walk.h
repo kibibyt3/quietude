@@ -112,7 +112,7 @@
  * Type for commands sent in the I/O section of devel_walk.
  */
 typedef enum DevelWalkCmd_t {
-	
+
 	/**
 	 * Initialization command.
 	 * Only ever sent internally; the player definitionally cannot ever send this
@@ -136,7 +136,7 @@ typedef enum DevelWalkCmd_t {
 	DEVEL_WALK_CMD_CURSOR_MOVE_EAST,       /** Move the cursor east.         */
 	DEVEL_WALK_CMD_CURSOR_MOVE_WEST,       /** Move the cursor west.         */
 	DEVEL_WALK_CMD_CURSOR_TOGGLE_ALTITUDE, /** Toggle the cursor's altitude. */
-	
+
 	/** Maximum value for move commands. */
 	DEVEL_WALK_CMD_MOVE_MAX = DEVEL_WALK_CMD_CURSOR_TOGGLE_ALTITUDE,
 
@@ -147,7 +147,7 @@ typedef enum DevelWalkCmd_t {
 
 	/** Copy the #QattrList_t of the #QwalkObj_t the cursor is pointing at. */
 	DEVEL_WALK_CMD_COPY = DEVEL_WALK_CMD_MODIFY_MIN,
-	
+
 	/** 
 	 * Paste a #QattrList_t to the #QwalkObj_t the cursor is pointing at.  
 	 * Namely that of the last object that #DEVEL_WALK_CMD_COPY was used on.
@@ -169,7 +169,7 @@ typedef enum DevelWalkCmd_t {
 
 	/** Maximum value for modify commands. */
 	DEVEL_WALK_CMD_MODIFY_MAX = DEVEL_WALK_CMD_EDIT,
-	
+
 
 
 	/** Minimum value for control commands. */
@@ -177,13 +177,13 @@ typedef enum DevelWalkCmd_t {
 
 	/** Save the current #QwalkArea_t. */
 	DEVEL_WALK_CMD_SAVE = DEVEL_WALK_CMD_CONTROL_MIN,
-	
+
 	/** Exit the program. */
 	DEVEL_WALK_CMD_EXIT,
 
 	/** Maximum value for control commands. */
 	DEVEL_WALK_CMD_CONTROL_MAX = DEVEL_WALK_CMD_EXIT,
-	
+
 
 
 	/** Total number of possible values for a #DevelWalkCmd_t. */
