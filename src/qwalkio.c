@@ -52,29 +52,21 @@
  * Characters meant to be output to the user.
  * As opposed to @ref InputChars. Character space betwixt these two overlaps;
  * this is intentional and acceptable behaviour.
+ * @{
  */
 
-/**
- * @ingroup OutputChars
- * Output character for #QOBJ_TYPE_PLAYER.
- */
+/** Output character for #QOBJ_TYPE_PLAYER. */
 #define QWALK_OCH_PLAYER '@'
-/**
- * @ingroup OutputChars
- * Output character for #QOBJ_TYPE_GRASS.
- */
+/** Output character for #QOBJ_TYPE_GRASS. */
 #define QWALK_OCH_GRASS '.'
-/**
- * @ingroup OutputChars
- * Output character for #QOBJ_TYPE_TREE.
- */
+/** Output character for #QOBJ_TYPE_TREE. */
 #define QWALK_OCH_TREE 'T'
-/**
- * @ingroup OutputChars
- * Output character for #QOBJ_TYPE_VOID.
- */
+/** Output character for #QOBJ_TYPE_NPC_FRIENDLY. */
+#define QWALK_OCH_NPC_FRIENDLY 'Q'
+/** Output character for #QOBJ_TYPE_VOID. */
 #define QWALK_OCH_VOID ' '
 
+/** @} */
 
 
 
@@ -384,6 +376,8 @@ qwalk_obj_type_to_chtype(QobjType_t obj_type) {
 		return (chtype) QWALK_OCH_GRASS;
 	case QOBJ_TYPE_TREE: 
 		return (chtype) QWALK_OCH_TREE;
+	case QOBJ_TYPE_NPC_FRIENDLY:
+		return (chtype) QWALK_OCH_NPC_FRIENDLY;
 	case QOBJ_TYPE_VOID: 
 		return (chtype) QWALK_OCH_VOID;
 	default:

@@ -172,12 +172,13 @@ static int devel_walkio_userint_alt = Q_ERROR;
 	QOBJ_STRING_TYPE_PLAYER,
 	QOBJ_STRING_TYPE_GRASS,
 	QOBJ_STRING_TYPE_TREE,
+	QOBJ_STRING_TYPE_NPC_FRIENDLY,
 	QOBJ_STRING_TYPE_VOID};
 
 /**
  * Number of possible values in @ref ObjTypeStrings.
  */
-#define QOBJ_SELECTABLE_STRING_TYPE_COUNT 4
+#define QOBJ_SELECTABLE_STRING_TYPE_COUNT 5
 
 
 /**

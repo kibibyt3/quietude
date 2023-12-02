@@ -112,23 +112,23 @@ typedef enum QdataType_t {
 
 
 /**
- * Type ID for an object belonging to any Q module
+ * Type ID for an object belonging to any Q module.
  */
 typedef enum QobjType_t {
 
-	/** Player type */
+	/** Player type. */
 	QOBJ_TYPE_PLAYER = Q_ENUM_VALUE_START,
 
-	QOBJ_TYPE_GRASS, /**< A patch of grass */
-	QOBJ_TYPE_TREE,  /**< A tree           */
-	
-	QOBJ_TYPE_VOID,  /**< Type for entirely empty space */
+	QOBJ_TYPE_GRASS, /**< A patch of grass. */
+	QOBJ_TYPE_TREE,  /**< A tree.           */
 
 	QOBJ_TYPE_NPC_FRIENDLY, /**< Type for friendly (non-aggressive) NPCs. */
 
+	QOBJ_TYPE_VOID,  /**< Type for entirely empty space. */
+
 	/**
-	 * Number of available object types
-	 * Must be defined via the final proper enum constant
+	 * Number of available object types.
+	 * Must be defined via the final proper enum constant.
 	 */
 	QOBJ_TYPE_COUNT = QOBJ_TYPE_VOID
 

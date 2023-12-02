@@ -27,7 +27,7 @@
  * I/O submodule translates raw input into commands.
  */
 typedef enum QwalkCommand_t {
-	
+
 	/** Minimum value for a move command */
 	QWALK_COMMAND_MOVE_MIN = Q_ENUM_VALUE_START,
 	/** Move north. */
