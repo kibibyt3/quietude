@@ -56,4 +56,4 @@
 - [x] Change qwalk such that the argument provided in the init function refers
   to a specific area data file, rather than the area itself.
 - [ ] Add the alternative controls (as implemented in `devel_walk`) into `q`.
-- [ ] Implement player-object interaction.
+- [x] Implement player-object interaction.
