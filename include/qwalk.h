@@ -177,6 +177,10 @@ extern           int               qwalk_end(void);
 /** Pass a tick in the qwalk module.*/
 extern int qwalk_tick(void);
 
+/** Complete a full #DialogueTree_t in qwalk. */
+extern int qwalk_dialogue(QwalkLayer_t *layer, int index)
+	/*@modifies layer@*/;
+
 
 
 /** Execute the subtick step of executing the game logic. */
@@ -235,6 +239,10 @@ extern    /*@null@*//*@only@*/QwalkLayer_t *qwalk_layer_read(void);
 extern                        int          qwalk_layer_object_set(/*@null@*/QwalkLayer_t *, int, int, /*@null@*//*@only@*/QattrList_t *);
 
 
+
+/*@observer@*//*@null@*/
+extern Qdatameta_t *qwalk_layer_obj_attr_value_get(const QwalkLayer_t *layer,
+		int index, QattrKey_t key)/*@*/;
 
 extern int qwalk_layer_obj_index_get(
 		const QwalkLayer_t *parse_layer, const QobjType_t type_search)/*@*/;

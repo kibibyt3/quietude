@@ -162,6 +162,61 @@ qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command) {
 
 
 /**
+ * Have the player interact with a given layer object.
+ * @param[out] layer_earth: earth #QwalkLayer_t of the #QwalkArea_t.
+ * @param[out] layer_floater: floater #QwalkLayer_t of the #QwalkArea_t.
+ * @param[in] object_index: index of the object to interact with.
+ * @return #Q_ERROR or #Q_OK.
+ */
+int
+qwalk_logic_interact(QwalkLayer_t *layer_earth, QwalkLayer_t *layer_floater,
+		int object_index) {
+
+	QobjType_t earth_object_type, floater_object_type, active_object_type;
+
+	QwalkLayer_t *active_layer;
+
+	if ((earth_object_type = qwalk_layer_object_type_get(
+					layer_earth, object_index)) == (QobjType_t) Q_ERRORCODE_ENUM) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+
+	if ((floater_object_type = qwalk_layer_object_type_get(
+					layer_floater, object_index)) == (QobjType_t) Q_ERRORCODE_ENUM) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+
+	/* 
+	 * if the floater type is void, we operate on the earth layer. otherwise, we
+	 * operate on the floater layer.
+	 */
+	if (floater_object_type == QOBJ_TYPE_VOID) {
+		active_layer = earth_object_layer;
+		active_object_type = earth_object_type;
+	} else {
+		active_layer = floater_object_layer;
+		active_object_type = floater_object_type;
+	}
+
+	switch (active_object_type) {
+		case QOBJ_TYPE_NPC_FRIENDLY:
+			if (qwalk_dialogue(active_layer, object_index) == Q_ERROR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				return Q_ERROR;
+			}
+			break;
+		default:
+			Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+			return Q_ERROR;
+	}
+
+	return Q_OK;
+}
+
+
+/**
  * Try to move a #QwalkObj_t to a new location.
  * Moreover, move the new location's previous occupant to the moving object's
  * previous location (this must be done due to implemenation limitations).

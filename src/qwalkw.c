@@ -255,6 +255,62 @@ qwalk_tick() {
 
 
 /**
+ * Wrapper function for qwalk to interface with dialogue.
+ * @param[out] layer: #QwalkLayer_t with an NPC to speak to.
+ * @param[in] index: index in @p layer of the NPC to speak to.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+qwalk_dialogue(QwalkLayer_t *layer, int index) {
+
+	QattrList_t *attr_list;
+	Qdatameta_t *datameta;
+
+	char *dialogue_filename;
+
+	if ((datameta = qwalk_layer_obj_attr_value_get(layer, index, 
+					QATTR_KEY_QDL_FILE)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+
+	if ((dialogue_filename = (char *) qdatameta_datap_get(datameta)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+
+	DialogueTree_t *tree;
+	if (dialogue_logic_init(dialogue_filename) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+
+	dialogue_io_init(walk_dialogue_win->win);
+
+	char *header_active;
+	int choice;
+
+	/* logic & I/O loop for dialogue */
+	do {
+		if ((choice = dialogue_io_event(tree)) == Q_ERRORCODE_INT) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			dialogue_tree_destroy(dialogue_tree);
+			return Q_ERROR;
+		}
+		if (dialogue_logic_tick(tree, choice) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			dialogue_tree_destroy(dialogue_tree);
+			return Q_ERROR;
+		}
+		header_active = dialogue_tree_header_active_get(tree);
+	} while (strcmp(header_active, DIALOGUE_HEADER_ACTIVE_EXIT) != 0);
+
+
+	return Q_OK;
+}
+
+
+/**
  * Create a #QwalkArea_t.
  * @param[in] layer_earth:   @ref QwalkArea_t.layer_earth.
  * @param[in] layer_floater: @ref QwalkArea_t.layer_floater.
@@ -794,6 +850,50 @@ qwalk_attr_list_attr_set_default(QattrList_t *attr_list, QattrKey_t attr_key,
 	}
 
 	return Q_OK;
+}
+
+
+/**
+ * Wrapper function to access a particular #Qattr_t.valuep in a #QwalkLayer_t.
+ * @param[in] layer: #QwalkLayer_t of the #Qattr_t.
+ * @param[in] index: index in @p layer of the parent object.
+ * @param[in] key:   #QattrKey_t of the #Qattr_t.valuep.
+ * @return requested #QattrKey_t.valuep or `NULL`.
+ */
+Qdatameta_t *
+qwalk_layer_obj_attr_value_get(const QwalkLayer_t *layer, int index, 
+		QattrKey_t key) {
+
+	QattrList_t *attr_list;
+	Qdatameta_t *datameta;
+
+	if ((attr_list = qwalk_layer_object_attr_list_get(layer, index)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+
+	if ((datameta = qattr_list_value_get(attr_list, key)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+
+	return datameta;
+}
+
+
+/**
+ * Find the index in a layer of a particular #QobjType_t.
+ * The requested #QobjType_t should occur only one or zero times; any more will
+ * cause unpredictable behaviour.
+ * @param[in] parse_layer: #QwalkLayer_t to parse within.
+ * @param[in] type_search: #QobjType_t to search for.
+ * @return index of requested #QobjType_t, #Q_ERRORCODE_INT_NOTFOUND if @p
+ * type_search had no match, or #Q_ERRORCODE_INT if an error occurred.
+ */
+int
+qwalk_layer_obj_index_get(
+		const QwalkLayer_t *parse_layer, const QobjType_t type_search) {
+	}
 }
 
 
