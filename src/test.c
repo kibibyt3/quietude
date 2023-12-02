@@ -29,7 +29,7 @@
 #define COUNT 5
 #define FILENAME "saves/test.sav"
 #define FILENAME2 "data/walk-world/test2.dat"
-#define DIALOGUE_FILENAME "data/dialogue/dialogue_test.qdl"
+#define DIALOGUE_FILENAME "dialogue_test.qdl"
 
 
 
