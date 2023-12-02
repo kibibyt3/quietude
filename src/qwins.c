@@ -35,6 +35,8 @@ typedef /*@null@*/Qwindow_t *NullQwindowp_t;
 int
 qwins_walk_wins_init(NullQwindowp_t *walk_win, NullQwindowp_t *dialogue_win,
 		NullQwindowp_t *environment_log_win) {
+
+	int returnval = Q_OK;
 	if ((*walk_win = qwindow_create(
 					QWIN_WALK_WIN_TITLE,
 					QWIN_WALK_WIN_SIZE_Y,
@@ -43,6 +45,11 @@ qwins_walk_wins_init(NullQwindowp_t *walk_win, NullQwindowp_t *dialogue_win,
 			== NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return Q_ERROR;
+	}
+
+	if (keypad((*walk_win)->win, true) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
 	}
 
 	if ((*dialogue_win = qwindow_create(
@@ -55,6 +62,11 @@ qwins_walk_wins_init(NullQwindowp_t *walk_win, NullQwindowp_t *dialogue_win,
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		qwindow_destroy(*walk_win);
 		return Q_ERROR;
+	}
+	
+	if (keypad((*dialogue_win)->win, true) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
 	}
 
 	if ((*environment_log_win = qwindow_create(
@@ -70,7 +82,12 @@ qwins_walk_wins_init(NullQwindowp_t *walk_win, NullQwindowp_t *dialogue_win,
 		return Q_ERROR;
 	}
 
-	return Q_OK;
+	if (keypad((*environment_log_win)->win, true) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+
+	return returnval;
 }
 
 

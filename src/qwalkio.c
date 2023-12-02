@@ -34,6 +34,14 @@
 #define QWALK_ICH_MOVE_SOUTH               's'
 /** Input character for #QWALK_COMMAND_MOVE_WEST. */
 #define QWALK_ICH_MOVE_WEST                'a'
+/** Alternate input character for #QWALK_COMMAND_MOVE_NORTH. */
+#define QWALK_ICH_MOVE_NORTH_ALT           KEY_UP
+/** Alternate input character for #QWALK_COMMAND_MOVE_EAST. */
+#define QWALK_ICH_MOVE_EAST_ALT            KEY_RIGHT
+/** Alternate input character for #QWALK_COMMAND_MOVE_SOUTH. */
+#define QWALK_ICH_MOVE_SOUTH_ALT           KEY_DOWN
+/** Alternate input character for #QWALK_COMMAND_MOVE_WEST. */
+#define QWALK_ICH_MOVE_WEST_ALT            KEY_LEFT
 /** Input character for #QWALK_COMMAND_INTERACT. */
 #define QWALK_ICH_INTERACT                 'e'
 /** Input character for #QWALK_COMMAND_CONFIRM_OBJECT_SELECTION. */
@@ -328,15 +336,25 @@ qwalk_input_player_object_select(WINDOW* select_win, int start_index) {
  */
 QwalkCommand_t
 qwalk_input_to_command(int ch) {
+
 	switch (ch) {
+
+	case QWALK_ICH_MOVE_NORTH_ALT:
 	case QWALK_ICH_MOVE_NORTH:
 		return QWALK_COMMAND_MOVE_NORTH;
+
+	case QWALK_ICH_MOVE_EAST_ALT:
 	case QWALK_ICH_MOVE_EAST:
 		return QWALK_COMMAND_MOVE_EAST;
+
+	case QWALK_ICH_MOVE_SOUTH_ALT:
 	case QWALK_ICH_MOVE_SOUTH:
 		return QWALK_COMMAND_MOVE_SOUTH;
+
+	case QWALK_ICH_MOVE_WEST_ALT:
 	case QWALK_ICH_MOVE_WEST:
 		return QWALK_COMMAND_MOVE_WEST;
+
 	case QWALK_ICH_CONFIRM_OBJECT_SELECTION:
 		return QWALK_COMMAND_CONFIRM_OBJECT_SELECTION;
 	case QWALK_ICH_INTERACT:
