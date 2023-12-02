@@ -124,6 +124,8 @@ typedef enum QobjType_t {
 	
 	QOBJ_TYPE_VOID,  /**< Type for entirely empty space */
 
+	QOBJ_TYPE_NPC_FRIENDLY, /**< Type for friendly (non-aggressive) NPCs. */
+
 	/**
 	 * Number of available object types
 	 * Must be defined via the final proper enum constant
@@ -135,27 +137,21 @@ typedef enum QobjType_t {
 /**
  * @defgroup ObjTypeStrings QobjType_t Strings
  * String versions of #QobjType_t constants.
+ * @{
  */
-/**
- * @ingroup ObjTypeStrings
- * String version of #QOBJ_TYPE_PLAYER.
- */
+
+/** String version of #QOBJ_TYPE_PLAYER. */
 #define QOBJ_STRING_TYPE_PLAYER "player"
-/**
- * @ingroup ObjTypeStrings
- * String version of #QOBJ_TYPE_GRASS.
- */
+/** String version of #QOBJ_TYPE_GRASS. */
 #define QOBJ_STRING_TYPE_GRASS  "grass"
-/**
- * @ingroup ObjTypeStrings
- * String version of #QOBJ_TYPE_TREE.
- */
+/** String version of #QOBJ_TYPE_TREE. */
 #define QOBJ_STRING_TYPE_TREE   "tree"
-/**
- * @ingroup ObjTypeStrings
- * String version of #QOBJ_TYPE_VOID.
- */
+/** String version of #QOBJ_TYPE_VOID. */
 #define QOBJ_STRING_TYPE_VOID   "void"
+/** String version of #QOBJ_TYPE_NPC_FRIENDLY. */
+#define QOBJ_STRING_TYPE_NPC_FRIENDLY "person"
+
+/** @} */
 
 
 

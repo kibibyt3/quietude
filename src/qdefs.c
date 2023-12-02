@@ -242,6 +242,8 @@ qobj_type_to_string(QobjType_t type) {
 		return QOBJ_STRING_TYPE_TREE;
 	case QOBJ_TYPE_VOID:
 		return QOBJ_STRING_TYPE_VOID;
+	case QOBJ_TYPE_NPC_FRIENDLY:
+		return QOBJ_STRING_TYPE_PLAYER; 
 	default:
 		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 		return Q_ERRORCODE_CHARSTRING;
@@ -265,6 +267,8 @@ qobj_string_to_type(const char *s) {
 		return QOBJ_TYPE_TREE;
 	} else if (strcmp(s, QOBJ_STRING_TYPE_VOID) == 0) {
 		return QOBJ_TYPE_VOID;
+	} else if (strcmp(s, QOBJ_STRING_TYPE_NPC_FRIENDLY) == 0) {
+		return QOBJ_TYPE_NPC_FRIENDLY;
 	} else {
 		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
 		return (QobjType_t) Q_ERRORCODE_ENUM;

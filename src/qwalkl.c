@@ -195,10 +195,10 @@ qwalk_logic_interact(QwalkLayer_t *layer_earth, QwalkLayer_t *layer_floater,
 	 * operate on the floater layer.
 	 */
 	if (floater_object_type == QOBJ_TYPE_VOID) {
-		active_layer = earth_object_layer;
+		active_layer = layer_earth;
 		active_object_type = earth_object_type;
 	} else {
-		active_layer = floater_object_layer;
+		active_layer = layer_floater;
 		active_object_type = floater_object_type;
 	}
 
