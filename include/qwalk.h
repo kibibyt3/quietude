@@ -244,6 +244,9 @@ extern                        int          qwalk_layer_object_set(/*@null@*/Qwal
 extern Qdatameta_t *qwalk_layer_obj_attr_value_get(const QwalkLayer_t *layer,
 		int index, QattrKey_t key)/*@*/;
 
+extern QobjType_t qwalk_layer_object_type_get(
+		const QwalkLayer_t *layer, int index)/*@*/;
+
 extern int qwalk_layer_obj_index_get(
 		const QwalkLayer_t *parse_layer, const QobjType_t type_search)/*@*/;
 

@@ -21,6 +21,8 @@
 
 
 
+static int qwalk_logic_interact(QwalkLayer_t *layer_earth,
+		QwalkLayer_t *layer_floater, int object_index);
 static           int          qwalk_logic_obj_move(/*@null@*/QwalkLayer_t *, int, Qdirection_t);
 static           int          qwalk_logic_objs_locs_trade(/*@null@*/QwalkLayer_t *, int, int);
 static /*@null@*/QobjType_t  *qwalk_logic_walk_layer_sanitize(QwalkLayer_t *)/*@*/;

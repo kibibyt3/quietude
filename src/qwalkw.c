@@ -13,10 +13,12 @@
 #include "qdefs.h"
 #include "qerror.h"
 
+#include "splint_types.h"
 #include "mode.h"
 #include "qattr.h"
 #include "qfile.h"
 #include "qwins.h"
+#include "dialogue.h"
 #include "qwalk.h"
 
 
@@ -263,10 +265,15 @@ qwalk_tick() {
 int
 qwalk_dialogue(QwalkLayer_t *layer, int index) {
 
-	QattrList_t *attr_list;
 	Qdatameta_t *datameta;
 
 	char *dialogue_filename;
+
+	if ((walk_win == NULL) || (walk_dialogue_win == NULL)
+			|| (walk_environment_log_win == NULL)) {
+		Q_ERRORFOUND(QERROR_MODULE_INITIALIZED);
+		return Q_ERROR;
+	}
 
 	if ((datameta = qwalk_layer_obj_attr_value_get(layer, index, 
 					QATTR_KEY_QDL_FILE)) == NULL) {
@@ -280,7 +287,7 @@ qwalk_dialogue(QwalkLayer_t *layer, int index) {
 	}
 
 	DialogueTree_t *tree;
-	if (dialogue_logic_init(dialogue_filename) == NULL) {
+	if ((tree = dialogue_logic_init(dialogue_filename)) == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return Q_ERROR;
 	}
@@ -294,17 +301,18 @@ qwalk_dialogue(QwalkLayer_t *layer, int index) {
 	do {
 		if ((choice = dialogue_io_event(tree)) == Q_ERRORCODE_INT) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
-			dialogue_tree_destroy(dialogue_tree);
+			dialogue_tree_destroy(tree);
 			return Q_ERROR;
 		}
 		if (dialogue_logic_tick(tree, choice) == Q_ERROR) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
-			dialogue_tree_destroy(dialogue_tree);
+			dialogue_tree_destroy(tree);
 			return Q_ERROR;
 		}
 		header_active = dialogue_tree_header_active_get(tree);
 	} while (strcmp(header_active, DIALOGUE_HEADER_ACTIVE_EXIT) != 0);
 
+	dialogue_tree_destroy(tree);
 
 	return Q_OK;
 }
@@ -854,6 +862,38 @@ qwalk_attr_list_attr_set_default(QattrList_t *attr_list, QattrKey_t attr_key,
 
 
 /**
+ * Get the #QobjType_t of an object in a #QwalkLayer_t.
+ * @param[in] layer: #QwalkLayer_t to search.
+ * @param[in] int: index of object in @p layer.
+ * @return requested #QobjType_t or #Q_ERRORCODE_ENUM.
+ */
+QobjType_t
+qwalk_layer_object_type_get(const QwalkLayer_t *layer, int index) {
+
+	Qdatameta_t *datameta;
+	QobjType_t  *obj_type;
+
+	if ((datameta = qwalk_layer_obj_attr_value_get(
+					layer, index, QATTR_KEY_QOBJECT_TYPE)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return (QobjType_t) Q_ERRORCODE_ENUM;
+	}
+
+	if (qdatameta_type_get(datameta) == QDATA_TYPE_QOBJECT_TYPE) {
+		Q_ERRORFOUND(QERROR_QDATAMETA_TYPE_COUNT_INCOMPATIBLE);
+		return (QobjType_t) Q_ERRORCODE_ENUM;
+	}
+
+	if ((obj_type = qdatameta_datap_get(datameta)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return (QobjType_t) Q_ERRORCODE_ENUM;
+	}
+
+	return *obj_type;
+}
+
+
+/**
  * Wrapper function to access a particular #Qattr_t.valuep in a #QwalkLayer_t.
  * @param[in] layer: #QwalkLayer_t of the #Qattr_t.
  * @param[in] index: index in @p layer of the parent object.
@@ -878,22 +918,6 @@ qwalk_layer_obj_attr_value_get(const QwalkLayer_t *layer, int index,
 	}
 
 	return datameta;
-}
-
-
-/**
- * Find the index in a layer of a particular #QobjType_t.
- * The requested #QobjType_t should occur only one or zero times; any more will
- * cause unpredictable behaviour.
- * @param[in] parse_layer: #QwalkLayer_t to parse within.
- * @param[in] type_search: #QobjType_t to search for.
- * @return index of requested #QobjType_t, #Q_ERRORCODE_INT_NOTFOUND if @p
- * type_search had no match, or #Q_ERRORCODE_INT if an error occurred.
- */
-int
-qwalk_layer_obj_index_get(
-		const QwalkLayer_t *parse_layer, const QobjType_t type_search) {
-	}
 }
 
 
