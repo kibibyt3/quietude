@@ -21,6 +21,13 @@
 
 
 
+/** Path for QDL files. */
+#define DIALOGUE_QDL_PATH "data/dialogue/"
+
+/** Max path size for a QDL filepath. */
+#define DIALOGUE_QDL_PATH_SIZE_MAX 256
+
+
 /**
  * Divider betwixt the title and message.
  * i.e., divider betwixt DialogueTree_t.title and DialogueBranch_t.message.

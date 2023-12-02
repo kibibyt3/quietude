@@ -314,6 +314,11 @@ qwalk_dialogue(QwalkLayer_t *layer, int index) {
 
 	dialogue_tree_destroy(tree);
 
+	if (wclear(walk_dialogue_win->win) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+
 	return Q_OK;
 }
 
@@ -879,7 +884,7 @@ qwalk_layer_object_type_get(const QwalkLayer_t *layer, int index) {
 		return (QobjType_t) Q_ERRORCODE_ENUM;
 	}
 
-	if (qdatameta_type_get(datameta) == QDATA_TYPE_QOBJECT_TYPE) {
+	if (qdatameta_type_get(datameta) != QDATA_TYPE_QOBJECT_TYPE) {
 		Q_ERRORFOUND(QERROR_QDATAMETA_TYPE_COUNT_INCOMPATIBLE);
 		return (QobjType_t) Q_ERRORCODE_ENUM;
 	}

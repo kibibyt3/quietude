@@ -76,10 +76,29 @@ dialogue_logic_init(const char *qdl_filename) {
 	char *file_string_raw;
 	DialogueTree_t *tree;
 
-	if ((qdl_file = fopen(qdl_filename, "r")) == NULL) {
-		Q_ERROR_SYSTEM("fopen()");
+	size_t qdl_path_len;
+	qdl_path_len = strlen(DIALOGUE_QDL_PATH) + strlen(qdl_filename) + (size_t) 2;
+
+	if (qdl_path_len > DIALOGUE_QDL_PATH_SIZE_MAX) {
+		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
 		return NULL;
 	}
+
+	char *qdl_path;
+	if ((qdl_path = calloc(qdl_path_len, sizeof(*qdl_path))) == NULL) {
+		Q_ERROR_SYSTEM("calloc()");
+		return NULL;
+	}
+
+	strcpy(qdl_path, DIALOGUE_QDL_PATH);
+	strcat(qdl_path, qdl_filename);
+
+	if ((qdl_file = fopen(qdl_path, "r")) == NULL) {
+		Q_ERROR_SYSTEM("fopen()");
+		free(qdl_path);
+		return NULL;
+	}
+	free(qdl_path);
 
 	if ((file_string_raw = dialogue_file_to_string(qdl_file)) == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
