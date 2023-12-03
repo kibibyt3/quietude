@@ -9,6 +9,7 @@ This directory holds the header files for Q.
 ├── ioutils.h
 ├── mode.h
 ├── qattr.h
+├── qdefault.h
 ├── qdefs.h
 ├── qerror.h
 ├── qfile.h
@@ -17,5 +18,5 @@ This directory holds the header files for Q.
 ├── README.md
 └── splint_types.h
 
-1 directory, 13 files
+1 directory, 14 files
 ```
