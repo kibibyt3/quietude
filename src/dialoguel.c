@@ -213,6 +213,8 @@ dialogue_command_handler(DialogueTree_t *tree,
 	
 	/* handle commands meant exclusively for the module using dialogue */
 	default:
+
+		/* check that we aren't supplied the address to arg_external */
 		if (arg == arg_external) {
 			Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
 			return Q_ERROR;
@@ -228,7 +230,9 @@ dialogue_command_handler(DialogueTree_t *tree,
 
 /**
  * Get the external command.
- * @return the external command.
+ * Should be handled directly after @ref dialogue_logic_tick() is called.
+ * @return the external command. Set to #DIALOGUE_COMMAND_EMPTY if there was no
+ * external command on the last tick.
  */
 DialogueCommand_t
 dialogue_command_external_get() 
