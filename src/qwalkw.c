@@ -296,6 +296,8 @@ qwalk_dialogue(QwalkLayer_t *layer, int index) {
 
 	char *header_active;
 	int choice;
+	DialogueCommand_t dialogue_command_external;
+	char *dialogue_arg_external;
 
 	/* logic & I/O loop for dialogue */
 	do {
@@ -309,14 +311,55 @@ qwalk_dialogue(QwalkLayer_t *layer, int index) {
 			dialogue_tree_destroy(tree);
 			return Q_ERROR;
 		}
+
+		/* handle external command */
+		if ((dialogue_command_external = dialogue_command_external_get())
+				!= DIALOGUE_COMMAND_EMPTY) {
+			dialogue_arg_external = dialogue_arg_external_get();
+			if (qwalk_dialogue_command_handler(
+						layer, index,  dialogue_command_external, dialogue_arg_external)
+					== Q_ERROR) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+			}
+		}
 		header_active = dialogue_tree_header_active_get(tree);
 	} while (strcmp(header_active, DIALOGUE_HEADER_ACTIVE_EXIT) != 0);
+
 
 	dialogue_tree_destroy(tree);
 
 	if (wclear(walk_dialogue_win->win) == ERR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return Q_ERROR;
+	}
+
+	return Q_OK;
+}
+
+
+/**
+ * Handle an external command/argument pair sent from dialogue.
+ * @param[in] layer: #QwalkLayer_t to execute @p command on.
+ * @param[in] index: index in @p layer of the NPC speaker.
+ * @param[in] command: #DialogueCommand_t to execute in qwalk.
+ * @param[in] arg: argument for the execution of @p comkmand.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+qwalk_dialogue_command_handler(QwalkLayer_t *layer, int index, 
+		DialogueCommand_t command, const char *arg) {
+
+	switch (command) {
+	case DIALOGUE_COMMAND_BECOME:
+		if (qdefault_qwalk(layer, index, arg) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
+		}
+		break;
+	default:
+		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+		return Q_ERROR;
+		break;
 	}
 
 	return Q_OK;

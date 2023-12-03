@@ -181,6 +181,8 @@ extern int qwalk_tick(void);
 extern int qwalk_dialogue(QwalkLayer_t *layer, int index)
 	/*@modifies layer@*/;
 
+extern int qwalk_dialogue_command_handler(QwalkLayer_t *layer, int index, 
+		DialogueCommand_t command, const char *arg);
 
 
 /** Execute the subtick step of executing the game logic. */
