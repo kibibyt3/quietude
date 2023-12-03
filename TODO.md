@@ -58,3 +58,4 @@
 - [x] Add the alternative controls (as implemented in `devel_walk`) into `q`.
 - [x] Implement player-object interaction.
 - [ ] Implement dialogue `become` command.
+- [ ] Make the environment log work 
