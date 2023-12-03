@@ -17,5 +17,5 @@ typedef struct QdefaultQwalkObject_t {
 
 
 
-extern qdefault_qwalk(QwalkLayer_t *layer, int index, const char *default_type)
-	/*@modifies layer@*/;
+extern int qdefault_qwalk_layer_object(QwalkLayer_t *layer, int index, 
+		QobjType_t default_type)/*@modifies layer@*/;
