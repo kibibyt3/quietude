@@ -17,8 +17,8 @@
 #include "qfile.h"
 #include "qerror.h"
 #include "mode.h"
-#include "qwalk.h"
 #include "dialogue.h"
+#include "qwalk.h"
 #include "qwins.h"
 
 
