@@ -7,7 +7,7 @@ TEST_LDLIBS = -lncurses
 DEVEL_LDLIBS = -lform -lncurses
 LINTFLAGS = -Iinclude -I/usr/local/include -checks +partial +posixlib
 
-GAME_OBJECTS = ./src/mode.o ./src/qfile.o ./src/qattr.o ./src/qdefs.o ./src/ioutils.o ./src/qerror.o ./src/qwins.o ./src/qwalkw.o ./src/qwalkl.o ./src/qwalkio.o ./src/dialogue.o ./src/dialogueio.o ./src/dialoguel.o
+GAME_OBJECTS = ./src/mode.o ./src/qfile.o ./src/qattr.o ./src/qdefs.o ./src/ioutils.o ./src/qerror.o ./src/qwins.o ./src/qwalkw.o ./src/qwalkl.o ./src/qwalkio.o ./src/dialogue.o ./src/dialogueio.o ./src/dialoguel.o ./src/qdefault.o
 GAME_SOURCES = $(GAME_OBJECTS:.o=.c)
 
 Q_OBJECTS    = ./src/main.o
