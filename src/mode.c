@@ -12,6 +12,8 @@
 #include "qdefs.h"
 #include "qerror.h"
 
+#include "splint_types.h"
+#include "dialogue.h"
 #include "mode.h"
 #include "qattr.h"
 #include "qwalk.h"
