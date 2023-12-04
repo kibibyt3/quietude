@@ -61,3 +61,6 @@
 - [ ] Implement dialogue `become` command.
   - [ ] Finish qdefault.
 - [ ] Make the environment log work.
+- [ ] Make everything w/ defaulting behaviour use qdefault.
+- [ ] After `loc_attr_list_set` is rewritten in the broader conext of qwalk,
+  make devel\_walk use it, too.
