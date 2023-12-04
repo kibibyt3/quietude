@@ -19,6 +19,7 @@
 #include "qfile.h"
 #include "qwins.h"
 #include "dialogue.h"
+#include "qdefault.h"
 #include "qwalk.h"
 
 
@@ -351,7 +352,7 @@ qwalk_dialogue_command_handler(QwalkLayer_t *layer, int index,
 
 	switch (command) {
 	case DIALOGUE_COMMAND_BECOME:
-		if (qdefault_qwalk(layer, index, arg) == Q_ERROR) {
+		if (qdefault_qwalk_layer_object_replace(layer, index, arg) == Q_ERROR) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 			return Q_ERROR;
 		}
