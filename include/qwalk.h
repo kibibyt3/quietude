@@ -1,6 +1,7 @@
 /**
  * @file qwalk.h
- * qwalk module header file. Depends on qdefs.h, stdint.h, and ncurses.h.
+ * qwalk module header file.
+ * Depends on ncurses.h, @ref qdefs.h, @ref stdint.h, and @ref dialogue.h.
  */
 
 
