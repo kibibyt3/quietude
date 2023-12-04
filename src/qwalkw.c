@@ -19,8 +19,8 @@
 #include "qfile.h"
 #include "qwins.h"
 #include "dialogue.h"
-#include "qdefault.h"
 #include "qwalk.h"
+#include "qdefault.h"
 
 
 
@@ -350,13 +350,23 @@ int
 qwalk_dialogue_command_handler(QwalkLayer_t *layer, int index, 
 		DialogueCommand_t command, const char *arg) {
 
+	QobjType_t arg_obj_type;
+
 	switch (command) {
+	
 	case DIALOGUE_COMMAND_BECOME:
-		if (qdefault_qwalk_layer_object_replace(layer, index, arg) == Q_ERROR) {
+		if ((arg_obj_type = qobj_string_to_type(arg)) 
+				== (QobjType_t) Q_ERRORCODE_ENUM) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
+		}
+		if (qdefault_qwalk_layer_object_replace(layer, index, arg_obj_type)
+				== Q_ERROR) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 			return Q_ERROR;
 		}
 		break;
+
 	default:
 		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 		return Q_ERROR;
