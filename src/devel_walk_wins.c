@@ -6,6 +6,8 @@
 
 #include "mode.h"
 #include "qattr.h"
+#include "splint_types.h"
+#include "dialogue.h"
 #include "qwalk.h"
 #include "devel_walk.h"
 

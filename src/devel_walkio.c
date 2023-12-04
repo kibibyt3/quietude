@@ -17,6 +17,7 @@
 #include "qerror.h"
 
 #include "splint_types.h"
+#include "dialogue.h"
 #include "iodefs.h"
 #include "ioutils.h"
 #include "mode.h"
