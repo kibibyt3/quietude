@@ -2,12 +2,12 @@ CC = gcc
 LINT.c = splint
 
 CFLAGS = -I include -Og -g3 -Wall -Wstrict-prototypes -Wmissing-prototypes -Wshadow -Wconversion -pedantic
-Q_LDLIBS = -lncurses
-TEST_LDLIBS = -lncurses
-DEVEL_LDLIBS = -lform -lncurses
+Q_LDLIBS = -lncurses -lm
+TEST_LDLIBS = -lncurses -lm
+DEVEL_LDLIBS = -lform -lncurses -lm
 LINTFLAGS = -Iinclude -I/usr/local/include -checks +partial +posixlib
 
-GAME_OBJECTS = ./src/mode.o ./src/qfile.o ./src/qattr.o ./src/qdefs.o ./src/ioutils.o ./src/qerror.o ./src/qwins.o ./src/qwalkw.o ./src/qwalkl.o ./src/qwalkio.o ./src/dialogue.o ./src/dialogueio.o ./src/dialoguel.o ./src/qdefault.o
+GAME_OBJECTS = ./src/mode.o ./src/qfile.o ./src/qattr.o ./src/qdefs.o ./src/qutils.o ./src/ioutils.o ./src/qerror.o ./src/qwins.o ./src/qwalkw.o ./src/qwalkl.o ./src/qwalkio.o ./src/dialogue.o ./src/dialogueio.o ./src/dialoguel.o ./src/qdefault.o
 GAME_SOURCES = $(GAME_OBJECTS:.o=.c)
 
 Q_OBJECTS    = ./src/main.o
