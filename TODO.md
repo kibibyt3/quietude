@@ -58,9 +58,11 @@
   to a specific area data file, rather than the area itself.
 - [x] Add the alternative controls (as implemented in `devel_walk`) into `q`.
 - [x] Implement player-object interaction.
-- [ ] Implement dialogue `become` command.
-  - [ ] Finish qdefault.
+- [x] Implement dialogue `become` command.
+  - [x] Finish qdefault.
 - [ ] Make the environment log work.
 - [ ] Make everything w/ defaulting behaviour use qdefault.
 - [ ] After `loc_attr_list_set` is rewritten in the broader conext of qwalk,
   make devel\_walk use it, too.
+- [ ] Make qwalk's dialogue interface use the distance-finding function from
+  `qutils.h`.
