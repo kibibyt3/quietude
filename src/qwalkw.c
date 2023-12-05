@@ -277,7 +277,7 @@ qwalk_dialogue(QwalkLayer_t *layer, int player_index, int npc_index) {
 		return Q_ERROR;
 	}
 
-	if ((datameta = qwalk_layer_obj_attr_value_get(layer, npc_index, 
+	if ((datameta = qwalk_layer_obj_attr_value_get(layer, npc_index,
 					QATTR_KEY_QDL_FILE)) == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return Q_ERROR;
