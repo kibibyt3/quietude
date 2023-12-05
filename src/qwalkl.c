@@ -182,6 +182,17 @@ qwalk_logic_interact(QwalkLayer_t *layer_earth, QwalkLayer_t *layer_floater,
 
 	QwalkLayer_t *active_layer;
 
+	/* find the player's index */
+	int player_index;
+	if ((player_index = qwalk_layer_obj_index_get(
+					layer_floater, QOBJ_TYPE_PLAYER)) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	} else if (player_index == Q_ERRORCODE_INT) {
+		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+		return Q_ERROR;
+	}
+
 	if ((earth_object_type = qwalk_layer_object_type_get(
 					layer_earth, object_index)) == (QobjType_t) Q_ERRORCODE_ENUM) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
@@ -208,7 +219,7 @@ qwalk_logic_interact(QwalkLayer_t *layer_earth, QwalkLayer_t *layer_floater,
 
 	switch (active_object_type) {
 		case QOBJ_TYPE_NPC_FRIENDLY:
-			if (qwalk_dialogue(active_layer, object_index) == Q_ERROR) {
+			if (qwalk_dialogue(active_layer, player_index, object_index) == Q_ERROR) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
 				return Q_ERROR;
 			}
