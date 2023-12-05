@@ -260,11 +260,12 @@ qwalk_tick() {
 /**
  * Wrapper function for qwalk to interface with dialogue.
  * @param[out] layer: #QwalkLayer_t with an NPC to speak to.
- * @param[in] index: index in @p layer of the NPC to speak to.
+ * @param[in] player_index: index in @p layer of the player.
+ * @param[in] npc_index: index in @p layer of the NPC to speak to.
  * @return #Q_OK or #Q_ERROR.
  */
 int
-qwalk_dialogue(QwalkLayer_t *layer, int index) {
+qwalk_dialogue(QwalkLayer_t *layer, int player_index, int npc_index) {
 
 	Qdatameta_t *datameta;
 
@@ -276,7 +277,7 @@ qwalk_dialogue(QwalkLayer_t *layer, int index) {
 		return Q_ERROR;
 	}
 
-	if ((datameta = qwalk_layer_obj_attr_value_get(layer, index, 
+	if ((datameta = qwalk_layer_obj_attr_value_get(layer, npc_index, 
 					QATTR_KEY_QDL_FILE)) == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return Q_ERROR;
@@ -318,7 +319,7 @@ qwalk_dialogue(QwalkLayer_t *layer, int index) {
 				!= DIALOGUE_COMMAND_EMPTY) {
 			dialogue_arg_external = dialogue_arg_external_get();
 			if (qwalk_dialogue_command_handler(
-						layer, index,  dialogue_command_external, dialogue_arg_external)
+						layer, npc_index, dialogue_command_external, dialogue_arg_external)
 					== Q_ERROR) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
 			}

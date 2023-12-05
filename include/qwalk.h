@@ -179,7 +179,7 @@ extern           int               qwalk_end(void);
 extern int qwalk_tick(void);
 
 /** Complete a full #DialogueTree_t in qwalk. */
-extern int qwalk_dialogue(QwalkLayer_t *layer, int index)
+extern int qwalk_dialogue(QwalkLayer_t *layer, int player_index, int npc_index)
 	/*@modifies layer@*/;
 
 extern int qwalk_dialogue_command_handler(QwalkLayer_t *layer, int index, 
