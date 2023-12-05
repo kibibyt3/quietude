@@ -11,6 +11,7 @@
 #include "qdefs.h"
 #include "splint_types.h"
 
+#include "qutils.h"
 #include "ioutils.h"
 
 #include "qattr.h"
@@ -34,6 +35,7 @@
 
 
 static void test_qwins(void);
+static void test_qutils(void);
 
 
 
@@ -47,6 +49,8 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	Q_IFERROR(1 == 1 && 2 == 2, (Qerror_t) QERROR_MODULE_UNINITIALIZED);
 	Q_IFERROR(true, 0);
 	fprintf(stderr, "------END PHONY ERRORS------\n\n\n");
+
+	test_qutils();
 
 	int r;
 
@@ -521,6 +525,37 @@ test_qwins() {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		abort();
 	}
+
+	return;
+}
+
+
+/**
+ * Test @ref qutils.h.
+ * @return #Q_OK or #Q_ERROR.
+ */
+void
+test_qutils() {
+
+	int r;
+
+	r = qutils_distance_calculate(20, 3, 20, 10);
+	printf("Expects: 7; Gets: %i\n", r);
+
+	r = qutils_distance_calculate(20, 3, 40, 3);
+	printf("Expects: 20; Gets: %i\n", r);
+
+	r = qutils_distance_calculate(40, 3, 20, 3);
+	printf("Expects: 20; Gets: %i\n", r);
+
+	r = qutils_distance_calculate(20, 40, 23, 44);
+	printf("Expects: 5; Gets: %i\n", r);
+
+	r = qutils_distance_calculate(0, 0, 20, 99);
+	printf("Expects: 101; Gets: %i\n", r);
+
+	r = qutils_distance_calculate(0, 0, 30, 12);
+	printf("Expects: 32; Gets: %i\n", r);
 
 	return;
 }
