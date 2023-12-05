@@ -370,7 +370,6 @@ qwalk_dialogue_command_handler(QwalkLayer_t *layer, int index,
 	default:
 		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 		return Q_ERROR;
-		break;
 	}
 
 	return Q_OK;
