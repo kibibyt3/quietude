@@ -10,9 +10,9 @@
  */
 typedef struct QdefaultQwalkObject_t {
 	QobjType_t type;
-	char *name;
-	char *description_brief;
-	char *description_long;
+	/*@observer@*/char *name;
+	/*@observer@*/char *description_brief;
+	/*@observer@*/char *description_long;
 	bool canmove;
 } QdefaultQwalkObject_t;
 
@@ -21,13 +21,13 @@ typedef struct QdefaultQwalkObject_t {
 
 
 
-extern int qdefault_qwalk_layer_object_replace(QwalkLayer_t *layer, int index,
-		QobjType_t default_type)/*@modifies layer@*/;
+extern int qdefault_qwalk_layer_object_replace(/*@reldef@*/QwalkLayer_t
+		*layer, int index, QobjType_t default_type)/*@modifies layer@*/;
 
-extern int qdefault_qwalk_layer_object(QwalkLayer_t *layer, int index, 
-		QobjType_t default_type)/*@modifies layer@*//*@globals internalState@*/;
+extern int qdefault_qwalk_layer_object(/*@reldef@*/QwalkLayer_t *layer,
+		int index, QobjType_t default_type)
+	/*@modifies layer@*//*@globals internalState@*/;
 
 /*@null@*//*@only@*/
 extern Qdatameta_t *qdefault_qwalk_default_datameta_create(
 		QobjType_t type_search, QattrKey_t key)/*@globals internalState@*/;
-

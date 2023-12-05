@@ -23,11 +23,6 @@
 
 
 
-static int qdefault_qwalk_objects_index_search(QobjType_t type)
-	/*@globals default_qwalk_objects@*/;
-
-
-
 /**
  * QattrKey_t in-step with each member of #QdefaultQwalkObject_t.
  */
@@ -50,12 +45,17 @@ static const QdefaultQwalkObject_t default_qwalk_tree = {
 };
 
 /** Collection of all defaults for qwalk. */
-static const QdefaultQwalkObject_t *default_qwalk_objects = {
+static const QdefaultQwalkObject_t *default_qwalk_objects[] = {
 	&default_qwalk_tree
 };
 
 /** Number of elements in #default_qwalk_objects. */
 #define QDEFAULT_QWALK_OBJECTSC 1
+
+
+
+static int qdefault_qwalk_objects_index_search(QobjType_t type)
+	/*@globals default_qwalk_objects@*/;
 
 
 
@@ -74,12 +74,12 @@ qdefault_qwalk_layer_object_replace(QwalkLayer_t *layer, int index,
 
 	if (qattr_list_destroy(layer->objects[index].attr_list) == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		return Q_ERROR;
+		abort();
 	}
 
 	if (qdefault_qwalk_layer_object(layer, index, default_type) == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		return Q_ERROR;
+		abort();
 	}
 
 	return Q_OK;
@@ -96,7 +96,9 @@ qdefault_qwalk_layer_object_replace(QwalkLayer_t *layer, int index,
  */
 int
 qdefault_qwalk_layer_object(QwalkLayer_t *layer, int index,
-		QobjType_t default_type) {
+		QobjType_t default_type)
+/*@globals qdefault_qwalk_object_keys@*/
+{
 
 	QattrList_t *attr_list;
 
@@ -136,11 +138,16 @@ qdefault_qwalk_layer_object(QwalkLayer_t *layer, int index,
  * @return newly-created default #Qdatameta_t or `NULL` on error.
  */
 Qdatameta_t *
-qdefault_qwalk_default_datameta_create(QobjType_t type_search, QattrKey_t key) {
+qdefault_qwalk_default_datameta_create(QobjType_t type_search, QattrKey_t key)
+/*@globals default_qwalk_objects@*/
+{
 
-	QobjType_t typealias, *type;
-	char *salias, *s;
-	bool balias, *b;
+	QobjType_t typealias = (QobjType_t) Q_ERRORCODE_ENUM;
+	QobjType_t *type;
+	char *salias = NULL;
+	char *s;
+	bool balias;
+	bool *b = false;
 
 	int index;
 
@@ -159,19 +166,19 @@ qdefault_qwalk_default_datameta_create(QobjType_t type_search, QattrKey_t key) {
 
 	switch (key) {
 		case QATTR_KEY_QOBJECT_TYPE:
-			typealias = default_qwalk_objects[index].type;
+			typealias = default_qwalk_objects[index]->type;
 			break;
 		case QATTR_KEY_NAME:
-			salias = default_qwalk_objects[index].name;
+			salias = default_qwalk_objects[index]->name;
 			break;
 		case QATTR_KEY_DESCRIPTION_BRIEF:
-			salias = default_qwalk_objects[index].description_brief;
+			salias = default_qwalk_objects[index]->description_brief;
 			break;
 		case QATTR_KEY_DESCRIPTION_LONG:
-			salias = default_qwalk_objects[index].description_long;
+			salias = default_qwalk_objects[index]->description_long;
 			break;
 		case QATTR_KEY_CANMOVE:
-			balias = default_qwalk_objects[index].canmove;
+			balias = default_qwalk_objects[index]->canmove;
 			break;
 		default:
 			Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
@@ -225,7 +232,6 @@ qdefault_qwalk_default_datameta_create(QobjType_t type_search, QattrKey_t key) {
 
 	if ((datameta = qdatameta_create(data, data_type, count)) == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		free(data);
 		return NULL;
 	}
 
@@ -239,10 +245,12 @@ qdefault_qwalk_default_datameta_create(QobjType_t type_search, QattrKey_t key) {
  * @return index or #Q_ERRORCODE_INT_NOTFOUND if the value can't be found.
  */
 int
-qdefault_qwalk_objects_index_search(QobjType_t type) {
+qdefault_qwalk_objects_index_search(QobjType_t type)
+/*@globals default_qwalk_objects@*/
+{
 
 	for (int i = 0; i < QDEFAULT_QWALK_OBJECTSC; i++) {
-		if (default_qwalk_objects[i].type == type) {
+		if (default_qwalk_objects[i]->type == type) {
 			return i;
 		}
 	}
