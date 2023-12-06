@@ -22,6 +22,7 @@
 #include "qattr.h"
 #include "qfile.h"
 #include "qwalk.h"
+#include "qdefault.h"
 #include "devel_walk.h"
 
 
@@ -29,11 +30,16 @@
 /** Total number of possible #QattrKey_t devel_walk can handle. */
 #define DEVEL_WALK_ATTR_COUNT 5 
 
+/** Object that #QWALK_LAYER_TYPE_EARTH defaults to. */
+#define DEVEL_WALK_LAYER_EARTH_OBJ_TYPE_DEFAULT QOBJ_TYPE_GRASS
+
+/** Object that #QWALK_LAYER_TYPE_FLOATER defaults to. */
+#define DEVEL_WALK_LAYER_FLOATER_OBJ_TYPE_DEFAULT QOBJ_TYPE_VOID
+
+
 
 /*@null@*//*@only@*/
 static QwalkArea_t *devel_walk_area_default_create(void);
-/*@null@*//*@only@*/
-static QattrList_t *devel_attr_list_default_create(QwalkLayerType_t);
 /*@null@*//*@only@*/
 static QwalkArea_t *devel_walk_area_load(const char *);
 static int          devel_walk_area_write(const QwalkArea_t *, const char *);
@@ -192,8 +198,6 @@ devel_walk_area_default_create() {
 	QwalkLayer_t *walk_layer_earth;
 	QwalkLayer_t *walk_layer_floater;
 	QwalkArea_t  *walk_area;
-	int *coords;
-	int r;
 
 	walk_layer_earth = qwalk_layer_create();
 	walk_layer_floater = qwalk_layer_create();
@@ -202,29 +206,22 @@ devel_walk_area_default_create() {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		abort();
 	}
-	
+
 
 	for (int i = 0; i < QWALK_LAYER_SIZE; i++) {
-		
-		coords = qwalk_index_to_coords(i);
-		if (coords == NULL) {
-			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+
+		if ((qdefault_qwalk_layer_object_incomplete(walk_layer_earth, i,
+						DEVEL_WALK_LAYER_EARTH_OBJ_TYPE_DEFAULT)) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
 			abort();
 		}
-		
-		r = qwalk_layer_object_set(walk_layer_earth, coords[0], coords[1],
-				devel_attr_list_default_create(QWALK_LAYER_TYPE_EARTH));
-		if (r == Q_ERROR) {
+
+		if ((qdefault_qwalk_layer_object_incomplete(walk_layer_floater, i,
+						DEVEL_WALK_LAYER_FLOATER_OBJ_TYPE_DEFAULT)) == Q_ERROR) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
-		}
-		
-		r = qwalk_layer_object_set(walk_layer_floater, coords[0], coords[1],
-				devel_attr_list_default_create(QWALK_LAYER_TYPE_FLOATER));
-		if (r == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
+			abort();
 		}
 
-		free(coords);
 	}
 
 	walk_area = qwalk_area_create(walk_layer_earth, walk_layer_floater);
@@ -234,173 +231,6 @@ devel_walk_area_default_create() {
 	}
 
 	return walk_area;
-}
-
-
-/**
- * Generate a default #QattrList_t.
- * Used for initializing a default #QattrList_t; the specific values depend on
- * the QATTR_KEY_*_DEFAULT_* class of defines from @ref qfile.h.
- * @param[in] layer_type: #QwalkLayerType_t returned #QattrList_t is meant for. 
- * @return newly-generated #QwalkArea_t.
- */
-QattrList_t *
-devel_attr_list_default_create(QwalkLayerType_t layer_type) {
-	QobjType_t   *obj_type;
-	char         salias[DEVEL_WALKIO_USERSTRING_LENGTH_MAX];
-	char         *s;
-	bool         *canmove;
-	
-	size_t        count;
-	QdataType_t   data_type;
-	QattrKey_t    key;
-
-	Qdata_t      *data;
-	Qdatameta_t  *datameta;
-	QattrList_t  *attr_list;
-	int r;
-
-
-	if ((layer_type != QWALK_LAYER_TYPE_EARTH) && (layer_type != QWALK_LAYER_TYPE_FLOATER)) {
-		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
-		return NULL;
-	}
-
-	attr_list = qattr_list_create((size_t) DEVEL_WALK_ATTR_COUNT);
-	if (attr_list == NULL) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return NULL;
-	}
-
-
-	/* initialize each default attribute */
-	for (int i = 0; i < DEVEL_WALK_ATTR_COUNT; i++) {
-	
-		key = (QattrKey_t) Q_ERRORCODE_ENUM;	
-		strcpy(salias, QATTR_KEY_STRING_DEFAULT);
-
-		/* prep for keys that share a data type */
-		switch (i) {
-
-		/* char * prep */
-		case 1:
-			key = QATTR_KEY_NAME;
-			if (layer_type == QWALK_LAYER_TYPE_EARTH) {
-				strcpy(salias, QATTR_KEY_NAME_QWALK_DEFAULT_EARTH);
-			} else {
-				strcpy(salias, QATTR_KEY_NAME_QWALK_DEFAULT_FLOATER);
-			}
-			break;
-		case 2:
-			key = QATTR_KEY_DESCRIPTION_BRIEF;
-			if (layer_type == QWALK_LAYER_TYPE_EARTH) {
-				strcpy(salias, QATTR_KEY_DESCRIPTION_BRIEF_QWALK_DEFAULT_EARTH);
-			} else {
-				strcpy(salias, QATTR_KEY_DESCRIPTION_BRIEF_QWALK_DEFAULT_FLOATER);
-			}
-			break;
-		case 3:
-			key = QATTR_KEY_DESCRIPTION_LONG;
-			if (layer_type == QWALK_LAYER_TYPE_EARTH) {
-				strcpy(salias, QATTR_KEY_DESCRIPTION_LONG_QWALK_DEFAULT_EARTH);
-			} else {
-				strcpy(salias, QATTR_KEY_DESCRIPTION_LONG_QWALK_DEFAULT_FLOATER);
-			}
-			break;
-		}
-		
-
-
-		/* post-prep initializations */
-		switch (i) {
-		
-
-		/* default #QATTR_KEY_QOBJECT_TYPE init */
-		case 0:
-			key = QATTR_KEY_QOBJECT_TYPE;
-			data_type = QDATA_TYPE_QOBJECT_TYPE;
-			count     = (size_t) 1;
-
-			obj_type = calloc(count, sizeof(*obj_type));
-			if (obj_type == NULL) {
-				Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-				abort();
-			}
-			if (layer_type == QWALK_LAYER_TYPE_EARTH) {
-				*obj_type = (QobjType_t) QATTR_KEY_QOBJECT_TYPE_QWALK_DEFAULT_EARTH;
-			} else {
-				*obj_type = (QobjType_t) QATTR_KEY_QOBJECT_TYPE_QWALK_DEFAULT_FLOATER;
-			}
-			data = (Qdata_t *) obj_type;
-			break;
-
-
-		/* default #QATTR_KEY_NAME init */
-		case 1:
-
-		/*@fallthrough@*/
-		/* default #QATTR_KEY_DESCRIPTION_BRIEF init */
-		case 2:
-
-		/*@fallthrough@*/
-		/* default #QATTR_KEY_DESCRIPTION_LONG init  */
-		case 3:
-			data_type = QDATA_TYPE_CHAR_STRING;
-			/* strlen() does not include the terminating character */
-			count     = strlen(salias) + (size_t) 1;
-
-			s = calloc(count, sizeof(*s));
-			if (s == NULL) {
-				Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-				abort();
-			}
-
-			strcpy(s, salias);
-			data = (Qdata_t *) s;
-			break;
-
-
-		/* default #QATTR_KEY_CANMOVE init */
-		case 4:
-			key = QATTR_KEY_CANMOVE;
-			data_type = QDATA_TYPE_BOOL;
-			count     = (size_t) 1;
-
-			canmove = calloc(count, sizeof(*canmove));
-			if (canmove == NULL) {
-				Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-				abort();
-			}
-
-			if (layer_type == QWALK_LAYER_TYPE_EARTH) {
-				*canmove = QATTR_KEY_CANMOVE_QWALK_DEFAULT_EARTH;
-			} else {
-				*canmove = QATTR_KEY_CANMOVE_QWALK_DEFAULT_FLOATER;
-			}
-			data = (Qdata_t *) canmove;
-			break;
-
-
-		default:
-			Q_ERRORFOUND(QERROR_INDEX_OUTOFRANGE);
-			abort();
-		}
-
-		datameta = qdatameta_create((Qdata_t *) data, data_type, count);
-		if (datameta == NULL) {
-			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-			abort();
-		}
-
-		r = qattr_list_attr_set(attr_list, key, datameta);
-		if (r == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-		}
-	}
-
-
-
-	return attr_list;
 }
 
 

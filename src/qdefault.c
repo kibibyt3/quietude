@@ -50,7 +50,7 @@ static const QdefaultQwalkObject_t default_qwalk_grass = {
 	"grass",         /* name */
 	"A patch of grass", /* brief description */
 	"Long limbs and threads of a varying greenbrown grasp longingly from the"
-	"earth. You wonder if they march toward you.", /* long description */
+	" earth. You wonder if they march toward you.", /* long description */
 	false /* can move */
 };
 
@@ -59,8 +59,8 @@ static const QdefaultQwalkObject_t default_qwalk_void = {
 	QOBJ_TYPE_VOID, /* type */
 	"void",         /* name */
 	"An empty space", /* brief description */
-	"The wind here whirls in a mundane miniature vortex. You know this. You can "
-	"smell it.", /* long description */
+	"The wind here whirls in a mundane miniature vortex. You know this. You can"
+	" smell it.", /* long description */
 	false /* can move */
 };
 
@@ -70,9 +70,17 @@ static const QdefaultQwalkObject_t *default_qwalk_objects[] = {
 };
 
 /** Number of elements in #default_qwalk_objects. */
-#define QDEFAULT_QWALK_OBJECTSC 1
+#define QDEFAULT_QWALK_OBJECTSC 3
 
 
+
+/*@null@*//*@only@*/
+static QattrList_t *qdefault_qwalk_default_attr_list_create(
+		QobjType_t type_search);
+
+/*@null@*//*@only@*/
+static Qdatameta_t *qdefault_qwalk_default_datameta_create(
+		QobjType_t type_search, QattrKey_t key)/*@globals default_qwalk_objects@*/;
 
 static int qdefault_qwalk_objects_index_search(QobjType_t type)
 	/*@globals default_qwalk_objects@*/;
@@ -107,6 +115,48 @@ qdefault_qwalk_layer_object_replace(QwalkLayer_t *layer, int index,
 
 
 /**
+ * Create an object in a #QwalkLayer_t as a default.
+ * Assumes that @p layer isn't fully defined and is in the process of being
+ * defined.
+ * @param[in] layer: #QwalkLayer_t to operate on.
+ * @param[in] index: index in @p layer of object to update.
+ * @param[in] default_type: the #QobjType_t to initialize to.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+qdefault_qwalk_layer_object_incomplete(QwalkLayer_t *layer, int index,
+		QobjType_t default_type) {
+
+	QattrList_t *attr_list;
+
+	if ((attr_list = qdefault_qwalk_default_attr_list_create(default_type))
+			== NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+
+	int *coords;
+
+	if ((coords = qwalk_index_to_coords(index)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		if (qattr_list_destroy(attr_list) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+		}
+		return Q_ERROR;
+	}
+
+	layer->objects[layer->index_ok].coord_y = coords[0];
+	layer->objects[layer->index_ok].coord_x = coords[1];
+	/*@i2@*/layer->objects[layer->index_ok].attr_list = attr_list;
+	layer->index_ok++;
+
+	free(coords);
+	
+	return Q_OK;
+}
+
+
+/**
  * Update an object in a #QwalkLayer_t to a default.
  * Assumes that the object was not previously defined.
  * @param[in] layer: #QwalkLayer_t to operate on.
@@ -117,22 +167,43 @@ qdefault_qwalk_layer_object_replace(QwalkLayer_t *layer, int index,
 int
 qdefault_qwalk_layer_object(QwalkLayer_t *layer, int index,
 		QobjType_t default_type)
-/*@globals qdefault_qwalk_object_keys@*/
 {
+
+	QattrList_t *attr_list;
+
+	if ((attr_list = qdefault_qwalk_default_attr_list_create(default_type))
+			== NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+
+	layer->objects[index].attr_list = attr_list;
+
+	return Q_OK;
+}
+
+
+/**
+ * Create a #QattrList_t associated with a default qwalk #QobjType_t.
+ * @param[in] type_search: #QobjType_t to associate.
+ * @return completed #QattrList_t or `NULL`.
+ */
+QattrList_t *
+qdefault_qwalk_default_attr_list_create(QobjType_t type_search) {
 
 	QattrList_t *attr_list;
 
 	if ((attr_list = qattr_list_create((size_t) QDEFAULT_QWALK_OBJECT_MEMBERC))
 			== NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		return Q_ERROR;
+		return NULL;
 	}
 
 
 	Qdatameta_t *datameta;
 	for (int i = 0; i < QDEFAULT_QWALK_OBJECT_MEMBERC; i++) {
 		if ((datameta = qdefault_qwalk_default_datameta_create(
-						default_type, qdefault_qwalk_object_keys[i])) == NULL) {
+						type_search, qdefault_qwalk_object_keys[i])) == NULL) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 			abort();
 		}
@@ -144,14 +215,13 @@ qdefault_qwalk_layer_object(QwalkLayer_t *layer, int index,
 		}
 	}
 
-	layer->objects[index].attr_list = attr_list;
+	return attr_list;
 
-	return Q_OK;
 }
 
 
 /**
- * Create a datameta associated with a default qwalk #Qattr_t.
+ * Create a #Qdatameta_t associated with a default qwalk #QattrKey_t.
  * @param[in] type_search: #QobjType_t dictionary to use.
  * @param[in] key: specific #QattrKey_t default value in the @p type_search 
  * dictionary to use.
@@ -180,6 +250,9 @@ qdefault_qwalk_default_datameta_create(QobjType_t type_search, QattrKey_t key)
 
 	if ((index = qdefault_qwalk_objects_index_search(type_search))
 			== Q_ERRORCODE_INT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	} else if (index == Q_ERRORCODE_INT_NOTFOUND) {
 		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
 		return NULL;
 	}

@@ -24,10 +24,10 @@ typedef struct QdefaultQwalkObject_t {
 extern int qdefault_qwalk_layer_object_replace(/*@reldef@*/QwalkLayer_t
 		*layer, int index, QobjType_t default_type)/*@modifies layer@*/;
 
+extern int qdefault_qwalk_layer_object_incomplete(
+		/*@reldef@*/QwalkLayer_t *layer, int index, QobjType_t
+		default_type)/*@modifies layer@*/;
+
 extern int qdefault_qwalk_layer_object(/*@reldef@*/QwalkLayer_t *layer,
 		int index, QobjType_t default_type)
-	/*@modifies layer@*//*@globals internalState@*/;
-
-/*@null@*//*@only@*/
-extern Qdatameta_t *qdefault_qwalk_default_datameta_create(
-		QobjType_t type_search, QattrKey_t key)/*@globals internalState@*/;
+	/*@modifies layer@*/;
