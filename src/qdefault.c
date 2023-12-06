@@ -144,7 +144,7 @@ qdefault_qwalk_default_datameta_create(QobjType_t type_search, QattrKey_t key)
 
 	QobjType_t typealias = (QobjType_t) Q_ERRORCODE_ENUM;
 	QobjType_t *type;
-	char *salias = NULL;
+	const char *salias = NULL;
 	char *s;
 	bool balias;
 	bool *b = false;

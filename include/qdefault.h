@@ -10,9 +10,9 @@
  */
 typedef struct QdefaultQwalkObject_t {
 	QobjType_t type;
-	/*@observer@*/char *name;
-	/*@observer@*/char *description_brief;
-	/*@observer@*/char *description_long;
+	/*@observer@*/const char *name;
+	/*@observer@*/const char *description_brief;
+	/*@observer@*/const char *description_long;
 	bool canmove;
 } QdefaultQwalkObject_t;
 
