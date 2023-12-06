@@ -20,6 +20,9 @@
 /** Filename for the starting area in qwalk. */
 #define QWALK_AREA_FILENAME_DEFAULT "data/walk-world/test2.dat"
 
+/** Maximum distance for the player to be able to execute dialogue from. */
+#define QWALK_DIALOGUE_DISTANCE_MAX 3
+
 
 
 /**

@@ -14,6 +14,7 @@
 #include "qerror.h"
 
 #include "splint_types.h"
+#include "qutils.h"
 #include "mode.h"
 #include "qattr.h"
 #include "qfile.h"
@@ -262,7 +263,8 @@ qwalk_tick() {
  * @param[out] layer: #QwalkLayer_t with an NPC to speak to.
  * @param[in] player_index: index in @p layer of the player.
  * @param[in] npc_index: index in @p layer of the NPC to speak to.
- * @return #Q_OK or #Q_ERROR.
+ * @return #Q_OK, #Q_ERROR, or #Q_ERROR_NOCHANGE if the distance between the
+ * player and NPC are too large.
  */
 int
 qwalk_dialogue(QwalkLayer_t *layer, int player_index, int npc_index) {
@@ -270,6 +272,33 @@ qwalk_dialogue(QwalkLayer_t *layer, int player_index, int npc_index) {
 	Qdatameta_t *datameta;
 
 	char *dialogue_filename;
+
+	/* find distance between player and NPC */
+	int *player_coords, *npc_coords;
+	int distance;
+	if ((player_coords = qwalk_index_to_coords(player_index)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+	if ((npc_coords = qwalk_index_to_coords(npc_index)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		free(player_coords);
+		return Q_ERROR;
+	}
+	if ((distance = qutils_distance_calculate(player_coords[0], player_coords[1],
+					npc_coords[0], npc_coords[1])) == Q_ERRORCODE_INT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		free(player_coords);
+		free(npc_coords);
+		return Q_ERROR;
+	}
+	free(player_coords);
+	free(npc_coords);
+	if (distance > QWALK_DIALOGUE_DISTANCE_MAX) {
+		return Q_ERROR_NOCHANGE;
+	}
+
+
 
 	if ((walk_win == NULL) || (walk_dialogue_win == NULL)
 			|| (walk_environment_log_win == NULL)) {
