@@ -38,15 +38,35 @@ static const QattrKey_t qdefault_qwalk_object_keys[] = {
 static const QdefaultQwalkObject_t default_qwalk_tree = {
 	QOBJ_TYPE_TREE, /* type */
 	"tree",         /* name */
-	"A tall, longing, whispering tree.", /* brief description */
+	"A tall, longing, whispering tree", /* brief description */
 	"A horribly tall tree with fingers curling and winding between opportune"
 		" gaps in the Glass and the air.", /* long description */
 	false /* can move */
 };
 
+/** Default for #QOBJ_TYPE_GRASS. */
+static const QdefaultQwalkObject_t default_qwalk_grass = {
+	QOBJ_TYPE_GRASS, /* type */
+	"grass",         /* name */
+	"A patch of grass", /* brief description */
+	"Long limbs and threads of a varying greenbrown grasp longingly from the"
+	"earth. You wonder if they march toward you.", /* long description */
+	false /* can move */
+};
+
+/** Default for #QOBJ_TYPE_VOID. */
+static const QdefaultQwalkObject_t default_qwalk_void = {
+	QOBJ_TYPE_VOID, /* type */
+	"void",         /* name */
+	"An empty space", /* brief description */
+	"The wind here whirls in a mundane miniature vortex. You know this. You can "
+	"smell it.", /* long description */
+	false /* can move */
+};
+
 /** Collection of all defaults for qwalk. */
 static const QdefaultQwalkObject_t *default_qwalk_objects[] = {
-	&default_qwalk_tree
+	&default_qwalk_tree, &default_qwalk_grass, &default_qwalk_void
 };
 
 /** Number of elements in #default_qwalk_objects. */
