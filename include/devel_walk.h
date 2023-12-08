@@ -49,6 +49,13 @@
 	"ERROR: save failed!"
 
 
+/** Object that #QWALK_LAYER_TYPE_EARTH defaults to. */
+#define DEVEL_WALK_LAYER_EARTH_OBJ_TYPE_DEFAULT QOBJ_TYPE_GRASS
+
+/** Object that #QWALK_LAYER_TYPE_FLOATER defaults to. */
+#define DEVEL_WALK_LAYER_FLOATER_OBJ_TYPE_DEFAULT QOBJ_TYPE_VOID
+
+
 
 /**
  * @defgroup DevelWalkioStringInputRawKeys Raw String Input Keys

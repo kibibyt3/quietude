@@ -34,6 +34,17 @@ static const QattrKey_t qdefault_qwalk_object_keys[] = {
 	QATTR_KEY_CANMOVE
 };
 
+
+/** Number of elements in #default_qwalk_overrides. */
+#define QDEFAULT_QWALK_OVERRIDESC 1
+
+/** Default overrides. */
+static const QdefaultOverride_t 
+default_qwalk_overrides[QDEFAULT_QWALK_OVERRIDESC] = {
+	{QATTR_KEY_QDL_FILE, "dialogue.qdl"}
+};
+
+
 /** Default for #QOBJ_TYPE_TREE. */
 static const QdefaultQwalkObject_t default_qwalk_tree = {
 	QOBJ_TYPE_TREE, /* type */
@@ -80,10 +91,14 @@ static QattrList_t *qdefault_qwalk_default_attr_list_create(
 
 /*@null@*//*@only@*/
 static Qdatameta_t *qdefault_qwalk_default_datameta_create(
-		QobjType_t type_search, QattrKey_t key)/*@globals default_qwalk_objects@*/;
+		QobjType_t type_search, QattrKey_t key)
+	/*@globals default_qwalk_objects, default_qwalk_overrides@*/;
 
 static int qdefault_qwalk_objects_index_search(QobjType_t type)
 	/*@globals default_qwalk_objects@*/;
+
+static int qdefault_qwalk_overrides_index_search(QattrKey_t key)
+	/*@globals default_qwalk_overrides@*/;
 
 
 
@@ -216,7 +231,46 @@ qdefault_qwalk_default_attr_list_create(QobjType_t type_search) {
 	}
 
 	return attr_list;
+}
 
+
+/**
+ * Add a default attribute to a #QwalkLayer_t object.
+ * @param[in] layer: relevant #QwalkLayer_t.
+ * @param[in] index: index in @p layer to operate on.
+ * @param[in] default_type: #QobjType_t to default in the context of.
+ * @param[in] key: #QattrKey_t to add the default #Qattr_t of.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+qdefault_qwalk_attr_list_attr_default(QwalkLayer_t *layer, int index,
+		QobjType_t default_type, QattrKey_t key)
+/*@globals default_qwalk_objects, default_qwalk_overrides@*/
+{
+
+	Qdatameta_t *datameta;
+	QattrList_t *attr_list;
+
+	if ((datameta = qdefault_qwalk_default_datameta_create(default_type, key))
+			== NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+
+	if ((attr_list = qwalk_layer_object_attr_list_get(layer, index)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		if (qdatameta_destroy(datameta) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+		}
+		return Q_ERROR;
+	}
+
+	if (qattr_list_attr_set(attr_list, key, datameta) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+
+	return Q_OK;
 }
 
 
@@ -228,16 +282,14 @@ qdefault_qwalk_default_attr_list_create(QobjType_t type_search) {
  * @return newly-created default #Qdatameta_t or `NULL` on error.
  */
 Qdatameta_t *
-qdefault_qwalk_default_datameta_create(QobjType_t type_search, QattrKey_t key)
-/*@globals default_qwalk_objects@*/
-{
+qdefault_qwalk_default_datameta_create(QobjType_t type_search, QattrKey_t key) {
 
 	QobjType_t typealias = (QobjType_t) Q_ERRORCODE_ENUM;
 	QobjType_t *type;
 	const char *salias = NULL;
 	char *s;
-	bool balias;
-	bool *b = false;
+	bool balias = false;
+	bool *b;
 
 	int index;
 
@@ -248,16 +300,22 @@ qdefault_qwalk_default_datameta_create(QobjType_t type_search, QattrKey_t key)
 
 	salias = NULL;
 
-	if ((index = qdefault_qwalk_objects_index_search(type_search))
-			== Q_ERRORCODE_INT) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-		return NULL;
-	} else if (index == Q_ERRORCODE_INT_NOTFOUND) {
+	bool isoverride = false;
+
+	if ((index = qdefault_qwalk_overrides_index_search(key))
+			!= Q_ERRORCODE_INT_NOTFOUND) {
+		isoverride = true;
+	} else if ((index = qdefault_qwalk_objects_index_search(type_search))
+			== Q_ERRORCODE_INT_NOTFOUND) {
 		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
 		return NULL;
 	}
 
-	switch (key) {
+	if (isoverride) {
+		salias = default_qwalk_overrides[index].value;
+	} else {
+
+		switch (key) {
 		case QATTR_KEY_QOBJECT_TYPE:
 			typealias = default_qwalk_objects[index]->type;
 			break;
@@ -276,9 +334,24 @@ qdefault_qwalk_default_datameta_create(QobjType_t type_search, QattrKey_t key)
 		default:
 			Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 			return NULL;
+		}
 	}
 
-	switch (key) {
+	if (isoverride) {
+		if (salias == NULL) {
+			Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+			abort();
+		}
+		data_type = QDATA_TYPE_CHAR_STRING;
+		count = strlen(salias) + (size_t) 1;
+		if ((s = calloc(count, sizeof(*s))) == NULL) {
+			Q_ERROR_SYSTEM("calloc()");
+			return NULL;
+		}
+		strcpy(s, salias);
+		data = (Qdata_t *) s;
+	} else {
+		switch (key) {
 		case QATTR_KEY_QOBJECT_TYPE:
 			data_type = QDATA_TYPE_QOBJECT_TYPE;
 			count = (size_t) 1;
@@ -321,6 +394,7 @@ qdefault_qwalk_default_datameta_create(QobjType_t type_search, QattrKey_t key)
 		default:
 			Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 			return NULL;
+		}
 	}
 
 	if ((datameta = qdatameta_create(data, data_type, count)) == NULL) {
@@ -329,6 +403,26 @@ qdefault_qwalk_default_datameta_create(QobjType_t type_search, QattrKey_t key)
 	}
 
 	return datameta;
+}
+
+
+/**
+ * Find the index in #default_qwalk_overrides of a specific #QobjType_t.
+ * @param[in] key: #QattrKey_t to search for.
+ * @return index or #Q_ERRORCODE_INT_NOTFOUND if the value can't be found.
+ */
+int
+qdefault_qwalk_overrides_index_search(QattrKey_t key)
+/*@globals default_qwalk_overrides@*/
+{
+
+	for (int i = 0; i < QDEFAULT_QWALK_OVERRIDESC; i++) {
+		if (default_qwalk_overrides[i].key == key) {
+			return i;
+		}
+	}
+
+	return Q_ERRORCODE_INT_NOTFOUND;
 }
 
 

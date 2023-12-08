@@ -30,12 +30,6 @@
 /** Total number of possible #QattrKey_t devel_walk can handle. */
 #define DEVEL_WALK_ATTR_COUNT 5 
 
-/** Object that #QWALK_LAYER_TYPE_EARTH defaults to. */
-#define DEVEL_WALK_LAYER_EARTH_OBJ_TYPE_DEFAULT QOBJ_TYPE_GRASS
-
-/** Object that #QWALK_LAYER_TYPE_FLOATER defaults to. */
-#define DEVEL_WALK_LAYER_FLOATER_OBJ_TYPE_DEFAULT QOBJ_TYPE_VOID
-
 
 
 /*@null@*//*@only@*/

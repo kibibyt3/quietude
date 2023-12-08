@@ -18,6 +18,7 @@
 #include "dialogue.h"
 #include "qwalk.h"
 #include "devel_walk.h"
+#include "qdefault.h"
 
 
 
@@ -167,12 +168,35 @@ devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
 		if (cmd == DEVEL_WALK_CMD_ATTR_INSERT) {
 			QattrList_t *attr_list;
 			QattrKey_t key;
-			QwalkLayerType_t layer;
+			QwalkLayerType_t layer_type;
+			QobjType_t obj_type_default;
+			int index;
+			QwalkLayer_t *layer;
 
 			if (curs_loc[2] == 0) {
-				layer = QWALK_LAYER_TYPE_EARTH;
+				layer_type = QWALK_LAYER_TYPE_EARTH;
+				if ((layer = qwalk_area_layer_earth_get(walk_area)) == NULL) {
+					Q_ERRORFOUND(QERROR_ERRORVAL);
+					return Q_ERROR;
+				}
 			} else {
-				layer = QWALK_LAYER_TYPE_FLOATER;
+				layer_type = QWALK_LAYER_TYPE_FLOATER;
+				if ((layer = qwalk_area_layer_floater_get(walk_area)) == NULL) {
+					Q_ERRORFOUND(QERROR_ERRORVAL);
+					return Q_ERROR;
+				}
+			}
+
+			if ((index = qwalk_coords_to_index(curs_loc[0], curs_loc[1])) 
+					== Q_ERRORCODE_INT) {
+				Q_ERRORFOUND(QERROR_ERRORVAL);
+				return Q_ERROR;
+			}
+
+			if (layer_type == QWALK_LAYER_TYPE_EARTH) {
+				obj_type_default = DEVEL_WALK_LAYER_EARTH_OBJ_TYPE_DEFAULT;
+			} else {
+				obj_type_default = DEVEL_WALK_LAYER_FLOATER_OBJ_TYPE_DEFAULT;
 			}
 
 			if ((attr_list = devel_walkl_loc_attr_list_get(walk_area, curs_loc))
@@ -199,14 +223,14 @@ devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
 				abort();
 			}
 
-			if (qwalk_attr_list_attr_set_default(attr_list_clone, key, layer)
+			if (devel_walkl_loc_attr_list_set(walk_area, curs_loc, attr_list_clone)
 					== Q_ERROR) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
 				abort();
 			}
 
-			if (devel_walkl_loc_attr_list_set(walk_area, curs_loc, attr_list_clone)
-					== Q_ERROR) {
+			if (qdefault_qwalk_attr_list_attr_default(
+						layer, index, obj_type_default, key) == Q_ERROR) {
 				Q_ERRORFOUND(QERROR_ERRORVAL);
 				abort();
 			}
