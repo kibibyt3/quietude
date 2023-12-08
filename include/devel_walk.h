@@ -29,9 +29,6 @@
 /** Message if the user uses an incorrect input.                             */
 #define DEVEL_WALKIO_MESSAGE_INPUT_INVALID \
 	"Invalid input..."
-/** Message if the user tries and fails to modify something.                 */
-#define DEVEL_WALKIO_MESSAGE_MODIFY_ERROR \
-	"An error occurred while trying to modify an object..."
 /** Message if the user successfully copies something.                       */
 #define DEVEL_WALKIO_MESSAGE_COPY_SUCCESS \
 	"Successfully copied object!"

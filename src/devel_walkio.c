@@ -47,16 +47,6 @@
 	"INPUT REQUESTED"
 
 
-/**
- * Header message of window created by @ref devel_walkio_string_input_choice(). 
- */
-#define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_HEADER \
-	"Select one of the following... (Arrow keys to navigate)"
-/**
- * Prompt message of window created by @ref devel_walkio_string_input_choice().
- */
-#define DEVEL_WALKIO_STRING_INPUT_CHOICE_WIN_PROMPT "Choice: "
-
 
 
 /**

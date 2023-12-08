@@ -27,11 +27,6 @@
 
 
 
-/** Total number of possible #QattrKey_t devel_walk can handle. */
-#define DEVEL_WALK_ATTR_COUNT 5 
-
-
-
 /*@null@*//*@only@*/
 static QwalkArea_t *devel_walk_area_default_create(void);
 /*@null@*//*@only@*/

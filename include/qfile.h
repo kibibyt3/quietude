@@ -8,18 +8,6 @@
 /** Maximum number of characters to be stored in a path variable. */
 #define QFILE_MAX_PATH_SIZE 255
 
-/** Directory in which to store saves. */
-#define QFILE_SAVES_DIR "saves/"
-/** Parent directory for developer utils. */
-#define QFILE_DEVEL_DIR "devel-utils/" 
-/** Directory for walk_area development projects. */
-#define QFILE_DEVEL_WALK_AREA_DIR "walk-areas/"
-
-#define QFILE_SAVE_WALK "qwalk.sav" /**< Filename for qwalk save data. */
-#define QFILE_SAVE_TALK "qtalk.sav" /**< Filename for qtalk save data. */
-#define QFILE_SAVE_CLI  "qcli.sav"  /**< Filename for qcli  save data. */
-#define QFILE_SAVE_SAIL "qsail.sav" /**< Filename for qsail save data. */
-
 /** Default filename for walk_area development projects. */
 #define QFILE_DEVEL_WALK_DEFAULT "walk_area.dat"
 

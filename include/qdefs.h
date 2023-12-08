@@ -53,9 +53,6 @@
 /** Returned by functions that return `char *` if an error occurs. */
 #define Q_ERRORCODE_CHARSTRING "ERROR"
 
-/** Returned by functions that return `int *` if an error occurs.  */
-#define Q_ERRORCODE_INTSTRING  "ERROR"
-
 
 /**
  * Returned by functions that return an internal enum if an error occurs.

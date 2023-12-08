@@ -24,13 +24,6 @@
 	qerror_internal((error), __FILE__, __func__, __LINE__)
 
 /**
- * Print the current file, function, and line number to @c stderr.
- */
-#define Q_ERROR_INFO \
-	fprintf(stderr, "File: %s; Function: %s; Line: %i\n", \
-		 	__FILE__, __func__, __LINE__)
-
-/**
  * Print a system error and its info to @c stderr.
  * @param[in] func_name: name of current function.
  */

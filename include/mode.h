@@ -7,10 +7,6 @@
 
 
 
-#define MODE_DEFAULT MODE_T_WALK /**< The mode the game begins in */
-
-
-
 /** Type for the various modes the game can play in. */
 typedef enum Mode_t {
 	
