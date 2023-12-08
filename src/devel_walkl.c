@@ -247,6 +247,7 @@ devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
 			QobjType_t *obj_typep;
 			char  *char_data; 
 			size_t userstring_len;
+			bool *boolptr;
 
 			if ((attr_list = devel_walkl_loc_attr_list_get(walk_area, curs_loc)) == NULL) {
 				Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
@@ -282,7 +283,6 @@ devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
 
 			case QATTR_KEY_CANMOVE:
 				
-				bool *boolptr;
 				if ((boolptr = calloc((size_t) 1, sizeof(*boolptr))) == NULL) {
 					Q_ERRORFOUND(QERROR_SYSTEM_MEMORY);
 					return Q_ERROR;
