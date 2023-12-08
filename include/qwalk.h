@@ -23,6 +23,9 @@
 /** Maximum distance for the player to be able to execute dialogue from. */
 #define QWALK_DIALOGUE_DISTANCE_MAX 3
 
+#define QWALK_EXCESSIVE_DISTANCE_LOG_MESSAGE \
+	"Object is too far away to interact with!"
+
 
 
 /**
@@ -193,7 +196,7 @@ extern int qwalk_dialogue_command_handler(QwalkLayer_t *layer, int index,
 extern int qwalk_logic_subtick(QwalkArea_t *, QwalkCommand_t);
 
 /** Initialize the I/O module.                            */
-extern           int               qwalk_io_init(WINDOW *)
+extern int qwalk_io_init(WINDOW *argwin, WINDOW *log_argwin)
 	/*@modifies internalState@*/;
 
 extern           void              qwalk_io_end(void)
@@ -204,6 +207,8 @@ extern           QwalkCommand_t    qwalk_input_subtick(int index);
 
 /** Execute the subtick step of updating the screen.      */
 extern           int               qwalk_output_subtick(const QwalkArea_t *);
+
+extern int qwalk_log_print(const char *s)/*@modifies internalState@*/;
 
 extern int qwalk_input_player_object_select(WINDOW *select_win,
 		int start_index);

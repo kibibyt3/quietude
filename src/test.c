@@ -418,7 +418,7 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 
 	r = qwalk_init(FILENAME2);
 	assert(r != Q_ERROR);
-	r = qwalk_io_init(stdscr);
+	r = qwalk_io_init(stdscr, stdscr);
 	
 	ModeSwitchData_t *switch_data;
 	switch_data = calloc((size_t) 1, sizeof(*switch_data));

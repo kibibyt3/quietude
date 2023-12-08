@@ -83,6 +83,9 @@
 /** qwalk's IO window. */
 /*@null@*/static WINDOW *win = NULL;
 
+/** qwalk's log window. */
+/*@null@*/static WINDOW *log_win = NULL;
+
 /** qwalk container for any `int` from an input function. */
 static int qwalk_io_buffer_int = 0;
 
@@ -98,14 +101,15 @@ static QwalkCommand_t qwalk_input_to_command(int)/*@*/;
  * @return #Q_OK or #Q_ERROR.
  */
 int
-qwalk_io_init(WINDOW *argwin)/*@modifies win@*/{
+qwalk_io_init(WINDOW *argwin, WINDOW *log_argwin)/*@modifies win, log_win@*/{
 
 	int returnval = Q_OK;
-	if (argwin == NULL) {
+	if ((argwin == NULL) || (log_argwin == NULL)) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
 	}
 	win = argwin;
+	log_win = log_argwin;
 	if (curs_set(0) == ERR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		returnval = Q_ERROR;
@@ -283,6 +287,7 @@ qwalk_input_player_object_select(WINDOW* select_win, int start_index) {
 		if (ch == ERR) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 			free(coords);
+
 			return Q_ERRORCODE_INT;
 		}
 
@@ -326,6 +331,27 @@ qwalk_input_player_object_select(WINDOW* select_win, int start_index) {
 	}
 
 	return index;
+}
+
+
+/**
+ * Print a string to the environment log.
+ * @param[in] s: string to print.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+qwalk_log_print(const char *s)
+/*@modifies log_win@*/
+{
+	if (log_win == NULL) {
+		Q_ERRORFOUND(QERROR_MODULE_UNINITIALIZED);
+		return Q_ERROR;
+	}
+	if (wprintw(log_win, "%s", s) == ERR) {
+		Q_ERROR_SYSTEM("wprintw()");
+		return Q_ERROR;
+	}
+	return Q_OK;
 }
 
 

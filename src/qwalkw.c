@@ -90,11 +90,12 @@ qwalk_init(const char *area_filename)/*@modifies walk_area_curr, isinit@*/{
 		return Q_ERROR;
 	}
 
-	if (walk_win == NULL) {
+	if ((walk_win == NULL) || (walk_environment_log_win == NULL)) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		returnval = Q_ERROR;
 	} else {
-		if (qwalk_io_init(walk_win->win) == Q_ERROR) {
+		if (qwalk_io_init(walk_win->win, walk_environment_log_win->win)
+				== Q_ERROR) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 			return Q_ERROR;
 		}
@@ -295,6 +296,14 @@ qwalk_dialogue(QwalkLayer_t *layer, int player_index, int npc_index) {
 	free(player_coords);
 	free(npc_coords);
 	if (distance > QWALK_DIALOGUE_DISTANCE_MAX) {
+		if (qwalk_log_print(QWALK_EXCESSIVE_DISTANCE_LOG_MESSAGE) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
+		}
+		if (qwalk_log_print("\n") == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
+		}
 		return Q_ERROR_NOCHANGE;
 	}
 
