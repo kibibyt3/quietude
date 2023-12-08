@@ -449,8 +449,7 @@ qwalk_logic_qobj_type_destroy(QobjType_t *obj_types) {
  * Check the value of a given object's #QATTR_KEY_CANMOVE attribute.
  * @param[in] layer: Pointer to the #QwalkLayer_t in question.
  * @param[in] index: Index in @p layer.
- * @return #QATTR_KEY_CANMOVE value or #QATTR_KEY_CANMOVE_QWALK_DEFAULT_FLOATER
- * on an error.
+ * @return #QATTR_KEY_CANMOVE value or `false` on an error.
  */
 bool
 qwalk_logic_layer_object_canmove(const QwalkLayer_t *layer, int index) {
@@ -460,11 +459,11 @@ qwalk_logic_layer_object_canmove(const QwalkLayer_t *layer, int index) {
 
 	if ((datameta = qwalk_logic_layer_object_attr_value_get(layer, index, QATTR_KEY_CANMOVE)) == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		return QATTR_KEY_CANMOVE_QWALK_DEFAULT_FLOATER;
+		return false;
 	}
 	if ((data = qdatameta_datap_get(datameta)) == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		return QATTR_KEY_CANMOVE_QWALK_DEFAULT_FLOATER;
+		return false;
 	}
 	return *((bool *) data);
 }
