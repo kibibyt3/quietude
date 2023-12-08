@@ -35,6 +35,7 @@ qwins_walk_wins_init(NullQwindowp_t *walk_win, NullQwindowp_t *dialogue_win,
 		NullQwindowp_t *environment_log_win) {
 
 	int returnval = Q_OK;
+
 	if ((*walk_win = qwindow_create(
 					QWIN_WALK_WIN_TITLE,
 					QWIN_WALK_WIN_SIZE_Y,
@@ -44,7 +45,6 @@ qwins_walk_wins_init(NullQwindowp_t *walk_win, NullQwindowp_t *dialogue_win,
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return Q_ERROR;
 	}
-
 	if (keypad((*walk_win)->win, true) == ERR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		returnval = Q_ERROR;
@@ -61,7 +61,6 @@ qwins_walk_wins_init(NullQwindowp_t *walk_win, NullQwindowp_t *dialogue_win,
 		qwindow_destroy(*walk_win);
 		return Q_ERROR;
 	}
-	
 	if (keypad((*dialogue_win)->win, true) == ERR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		returnval = Q_ERROR;
@@ -79,9 +78,12 @@ qwins_walk_wins_init(NullQwindowp_t *walk_win, NullQwindowp_t *dialogue_win,
 		qwindow_destroy(*dialogue_win);
 		return Q_ERROR;
 	}
-
 	if (keypad((*environment_log_win)->win, true) == ERR) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
+		Q_ERROR_SYSTEM("keypad()");
+		returnval = Q_ERROR;
+	}
+	if (scrollok((*environment_log_win)->win, true) == ERR) {
+		Q_ERROR_SYSTEM("scrollok()");
 		returnval = Q_ERROR;
 	}
 
