@@ -61,9 +61,11 @@
 - [x] Implement dialogue `become` command.
   - [x] Finish qdefault.
 - [ ] Make the environment log work.
-- [ ] Make everything w/ defaulting behaviour use qdefault.
+- [x] Make everything w/ defaulting behaviour use qdefault.
   - [x] Make devel\_walk use qdefault.
-- [ ] After `loc_attr_list_set` is rewritten in the broader conext of qwalk,
+- [x] After `loc_attr_list_set` is rewritten in the broader conext of qwalk,
   make devel\_walk use it, too.
+  - NOTE: the rewrite was implemented differently such that this no longer
+    applies.
 - [x] Make qwalk's dialogue interface use the distance-finding function from
   `qutils.h`.
