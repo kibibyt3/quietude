@@ -18,8 +18,6 @@
 
 
 
-/** Splint type for `/\*@only@*\/` #Qwindow_t. */
-typedef /*@only@*/Qwindow_t *OnlyQwindowp_t;
 /** Splint type for `/\*@null@*\/` #Qwindow_t. */
 typedef /*@null@*/Qwindow_t *NullQwindowp_t;
 
