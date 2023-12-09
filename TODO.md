@@ -70,3 +70,7 @@
     applies.
 - [x] Make qwalk's dialogue interface use the distance-finding function from
   `qutils.h`.
+- [ ] Add object-inspection functionality.
+  - [ ] This includes being able to hover over an object to see the name and
+    brief description.
+- [ ] Create the player module.
