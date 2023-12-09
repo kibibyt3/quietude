@@ -53,7 +53,7 @@
   `qwalk_attr_list_attr_set_default()` wherever possible.
 - [ ] Isolate the else-ifs in `devel_walkio_in()` into their own individual
   functions.
-- [ ] Change all destructor functions such that they return `void`.
+- [x] Change all destructor functions such that they return `void`.
   - [x] Make `qdatameta_destroy` return `void`.
 - [x] Change qwalk such that the argument provided in the init function refers
   to a specific area data file, rather than the area itself.
