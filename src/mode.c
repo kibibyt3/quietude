@@ -91,7 +91,7 @@ mode_exit()/*@modifies switch_data_curr, switch_data_next@*/
 	}
 
 	if (switch_data_next->datameta != NULL) {
-		qdatameta_destroy(switch_data_curr->datameta);
+		qdatameta_destroy(switch_data_next->datameta);
 	}
 
 	/*@i1@*/free(switch_data_curr);
