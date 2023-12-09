@@ -110,9 +110,7 @@ int
 qattr_list_destroy(QattrList_t *qattr_list) {
 	for (int i = 0; i < (int) qattr_list->index_ok; i++) {
 		if (qattr_list->attrp[i].key != QATTR_KEY_EMPTY) {
-			if (qdatameta_destroy(qattr_list->attrp[i].valuep) == Q_ERROR) {
-				Q_ERRORFOUND(QERROR_ERRORVAL);
-			}
+			qdatameta_destroy(qattr_list->attrp[i].valuep);
 			qattr_list->attrp[i].valuep = NULL;
 		}
 	}
@@ -195,10 +193,7 @@ qattr_list_resize(QattrList_t *qattr_list, int dilation_addend) {
 
 	/* clean up leftover attributes in the original */
 	while (sz < index_ok_old) {
-		/*@i1@*/if (qdatameta_destroy(qattr_list->attrp[sz].valuep) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-			abort();
-		}
+		/*@i1@*/qdatameta_destroy(qattr_list->attrp[sz].valuep);
 		sz++;
 	}
 	/*@i1@*/free(qattr_list->attrp);
@@ -460,10 +455,7 @@ qattr_list_attr_delete(OnlyQattrListp_t *attr_listp, QattrKey_t key) {
 	}
 
 	if ((*attr_listp)->attrp[index].key != QATTR_KEY_EMPTY) {
-		if (qdatameta_destroy((*attr_listp)->attrp[index].valuep) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-			abort();
-		}
+		qdatameta_destroy((*attr_listp)->attrp[index].valuep);
 	}
 
 	(*attr_listp)->attrp[index].key = QATTR_KEY_EMPTY;
@@ -507,9 +499,7 @@ qattr_list_attr_modify(QattrList_t *attr_list, QattrKey_t attr_key, Qdatameta_t 
 	 */
 	for (int i = 0; i < (int) qattr_list_count_get(attr_list); i++) {
 		if (qattr_list_attr_key_get(attr_list, i) == attr_key) {
-			if (qdatameta_destroy(attr_list->attrp[i].valuep) == Q_ERROR) {
-				Q_ERRORFOUND(QERROR_ERRORVAL);
-			}
+			qdatameta_destroy(attr_list->attrp[i].valuep);
 			attr_list->attrp[i].valuep = datameta;
 			return Q_OK;
 		}
@@ -518,9 +508,7 @@ qattr_list_attr_modify(QattrList_t *attr_list, QattrKey_t attr_key, Qdatameta_t 
 	/* 
 	 * to avoid memory leaks, destroy the parameter if it wasn't successfully set.
 	 */
-	if (qdatameta_destroy(datameta) == Q_ERROR) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-	}
+	qdatameta_destroy(datameta);
 	return Q_ERROR_NOCHANGE;
 }
 

@@ -187,7 +187,7 @@ extern /*@null@*//*@only@*/Qdatameta_t *qdatameta_create(/*@keep@*//*@returned@*
 extern /*@null@*//*@only@*/Qdatameta_t *qdatameta_clone(const Qdatameta_t *);
 
 /** Destroy a #Qdatameta_t.                   */
-extern int qdatameta_destroy(/*@only@*/Qdatameta_t *);
+extern void qdatameta_destroy(/*@only@*/Qdatameta_t *);
 
 /** Get the datap member from a #Qdatameta_t. */
 extern /*@observer@*//*@null@*/Qdata_t *qdatameta_datap_get(const Qdatameta_t *)/*@*/;

@@ -87,15 +87,11 @@ mode_exit()/*@modifies switch_data_curr, switch_data_next@*/
 
 	/* Free the datameta memory of both switch data containers. */
 	if (switch_data_curr->datameta != NULL) {
-		if (qdatameta_destroy(switch_data_curr->datameta) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-		}
+		qdatameta_destroy(switch_data_curr->datameta);
 	}
 
 	if (switch_data_next->datameta != NULL) {
-		if (qdatameta_destroy(switch_data_next->datameta) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-		}
+		qdatameta_destroy(switch_data_curr->datameta);
 	}
 
 	/*@i1@*/free(switch_data_curr);
@@ -155,9 +151,7 @@ mode_buffer_switch(Mode_t mode, Qdatameta_t *datameta)
 	if ((switch_data_curr == NULL) || (switch_data_next == NULL)) {
 		Q_ERRORFOUND(QERROR_MODULE_UNINITIALIZED);
 		if (datameta != NULL) {
-			if (qdatameta_destroy(datameta) == Q_ERROR) {
-				Q_ERRORFOUND(QERROR_ERRORVAL);
-			}
+			qdatameta_destroy(datameta);
 		}
 		return Q_ERROR;
 	}
@@ -298,10 +292,7 @@ mode_switch_data_datameta_set(
 	
 	int returnval = Q_OK;
 	if (switch_data->datameta != NULL) {
-		if (qdatameta_destroy(switch_data->datameta) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-			returnval = Q_ERROR;
-		}
+		qdatameta_destroy(switch_data->datameta);
 	}
 
 	switch_data->datameta = datameta;

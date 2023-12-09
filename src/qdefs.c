@@ -101,27 +101,21 @@ qdatameta_clone(const Qdatameta_t *datametar) {
 /**
  * Recursively destroy a #Qdatameta_t.
  * @param[out] datameta: #Qdatameta_t to free from memory.
- * @return #Q_OK or #Q_ERROR.
  */
-int
+void
 qdatameta_destroy(Qdatameta_t *datameta) {
-
-	if (datameta == NULL) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return Q_ERROR;
-	}
 
 	if (datameta->datap == NULL) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		free(datameta);
-		return Q_ERROR;
+		return;
 	}
 
 	if ((datameta->type < (QdataType_t) Q_ENUM_VALUE_START) || (datameta->type > QDATA_TYPE_COUNT)) {
 		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
 		free(datameta->datap);
 		free(datameta);
-		return Q_ERROR;
+		return;
 	}
 
 	
@@ -141,7 +135,7 @@ qdatameta_destroy(Qdatameta_t *datameta) {
 
 
 	free(datameta);
-	return Q_OK;
+	return;
 }
 
 

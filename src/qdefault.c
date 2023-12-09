@@ -259,9 +259,7 @@ qdefault_qwalk_attr_list_attr_default(QwalkLayer_t *layer, int index,
 
 	if ((attr_list = qwalk_layer_object_attr_list_get(layer, index)) == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		if (qdatameta_destroy(datameta) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-		}
+		qdatameta_destroy(datameta);
 		return Q_ERROR;
 	}
 

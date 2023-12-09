@@ -439,8 +439,7 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	
 	free(intstr2);
 
-	r = qdatameta_destroy(datameta);
-	assert(r != Q_ERROR);
+	qdatameta_destroy(datameta);
 	datameta = NULL;
 	r = endwin();
 	assert(r != Q_ERROR);
