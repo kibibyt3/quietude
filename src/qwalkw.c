@@ -139,9 +139,7 @@ qwalk_end() {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		returncode = Q_ERROR;
 	} else {
-		if ((qwalk_layer_destroy(walk_area_curr->layer_earth)) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-		}
+		qwalk_layer_destroy(walk_area_curr->layer_earth);
 		walk_area_curr->layer_earth = NULL;
 	}
 
@@ -149,9 +147,7 @@ qwalk_end() {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		returncode = Q_ERROR;
 	} else {
-		if ((qwalk_layer_destroy(walk_area_curr->layer_floater)) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-		}
+		qwalk_layer_destroy(walk_area_curr->layer_floater);
 		walk_area_curr->layer_floater = NULL;
 	}
 
@@ -447,28 +443,13 @@ qwalk_area_create(QwalkLayer_t *layer_earth, QwalkLayer_t *layer_floater) {
 /**
  * Recursively destroy a #QwalkArea_t.
  * @param[out] walk_area: #QwalkArea_t to destroy.
- * @return #Q_OK or #Q_ERROR.
  */
-int
+void
 qwalk_area_destroy(QwalkArea_t *walk_area) {
-	int r;
-	int returnval = Q_OK;
-	if (walk_area == NULL) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return Q_ERROR;
-	}
-	r = qwalk_layer_destroy(walk_area->layer_floater);
-	if (r == Q_ERROR) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		returnval = Q_ERROR;
-	}
-	r = qwalk_layer_destroy(walk_area->layer_earth);
-	if (r == Q_ERROR) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		returnval = Q_ERROR;
-	}
+	qwalk_layer_destroy(walk_area->layer_floater);
+	qwalk_layer_destroy(walk_area->layer_earth);
 	free(walk_area);
-	return returnval;
+	return;
 }
 
 
@@ -603,28 +584,20 @@ qwalk_layer_create() {
 
 /**
  * Destroy a #QwalkLayer_t and its contents.
- * @return #Q_OK or #Q_ERROR.
  * @note
  * Relies on the fact that @c calloc() automatically initializes memory to 0,
  * which compares equal to @c NULL.
  */
-int
+void
 qwalk_layer_destroy(QwalkLayer_t *walk_layer) {
-	int returnval = Q_OK;
 
-	if (walk_layer == NULL) {
-		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		return Q_ERROR;
-	}
 	for (int i = 0; i < walk_layer->index_ok; i++) {
 		/* destroy each QwalkObj_t and its contents */
-		if (qattr_list_destroy(walk_layer->objects[i].attr_list) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-		}
+		qattr_list_destroy(walk_layer->objects[i].attr_list);
 	}
 	/*@i1@*/free(walk_layer->objects);
 	free(walk_layer);
-	return returnval;
+	return;
 }
 
 
@@ -726,22 +699,16 @@ qwalk_layer_object_set(QwalkLayer_t *walk_layer, int y, int x, QattrList_t *attr
 	if ((walk_layer == NULL) || (attr_list == NULL)) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		if (attr_list != NULL) {
-			if (qattr_list_destroy(attr_list) == Q_ERROR) {
-				Q_ERRORFOUND(QERROR_ERRORVAL);
-			}
+			qattr_list_destroy(attr_list);
 		}
 		return Q_ERROR;
 	}
 	if (walk_layer->objects == NULL) {
-		if (qattr_list_destroy(attr_list) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-		}
+		qattr_list_destroy(attr_list);
 		return Q_ERROR;
 	}
 	if (walk_layer->index_ok >= QWALK_LAYER_SIZE) {
-		if (qattr_list_destroy(attr_list) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-		}
+		qattr_list_destroy(attr_list);
 		return Q_ERROR;
 	}
 	walk_layer->objects[walk_layer->index_ok].coord_y = y;

@@ -283,10 +283,7 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 		abort();
 	}
 
-	if (qattr_list_destroy(attribute_list) == Q_ERROR) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-		abort();
-	}
+	qattr_list_destroy(attribute_list);
 
 	QattrList_t *attr_list;
 	attr_list = qattr_list_create((size_t) 1);
@@ -312,9 +309,8 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	walk_layer_floater = qwalk_layer_create();
 	assert(walk_layer_floater != NULL);
 
-	r = qattr_list_destroy(attr_list);
-	assert(r != Q_ERROR);
-	
+	qattr_list_destroy(attr_list);
+
 	attr_list = NULL;
 	QobjType_t *obj_type;
 	
@@ -384,9 +380,8 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	r = qfile_close();
 	assert(r != Q_ERROR);
 
-	r = qwalk_area_destroy(walk_area1);
-	assert(r != Q_ERROR);
-	
+	qwalk_area_destroy(walk_area1);
+
 	walk_area1 = NULL;
 	
 	r = qfile_open(FILENAME2, QFILE_MODE_READ);

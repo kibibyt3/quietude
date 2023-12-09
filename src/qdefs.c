@@ -124,9 +124,7 @@ qdatameta_destroy(Qdatameta_t *datameta) {
 
 	/* Non-string typedeffed types */
 	case QDATA_TYPE_QWALK_AREA:
-		if (qwalk_area_destroy((QwalkArea_t *) datameta->datap) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-		}
+		qwalk_area_destroy((QwalkArea_t *) datameta->datap);
 		break;
 	
 	default:

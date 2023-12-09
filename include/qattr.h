@@ -203,7 +203,7 @@ extern QattrList_t *qattr_list_clone(const QattrList_t *);
 /** Resize a #QattrList_t.                                               */
 
 /** Free a given #QattrList_t from memory.                               */
-extern int qattr_list_destroy(/*@only@*/QattrList_t *);
+extern void qattr_list_destroy(/*@only@*/QattrList_t *);
 
 /** Resize a #QattrList_t.                                               */
 /*@only@*//*@null@*/

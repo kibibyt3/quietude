@@ -115,10 +115,7 @@ int
 qdefault_qwalk_layer_object_replace(QwalkLayer_t *layer, int index,
 		QobjType_t default_type) {
 
-	if (qattr_list_destroy(layer->objects[index].attr_list) == Q_ERROR) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-		abort();
-	}
+	qattr_list_destroy(layer->objects[index].attr_list);
 
 	if (qdefault_qwalk_layer_object(layer, index, default_type) == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
@@ -154,9 +151,7 @@ qdefault_qwalk_layer_object_incomplete(QwalkLayer_t *layer, int index,
 
 	if ((coords = qwalk_index_to_coords(index)) == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		if (qattr_list_destroy(attr_list) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-		}
+		qattr_list_destroy(attr_list);
 		return Q_ERROR;
 	}
 

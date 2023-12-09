@@ -218,7 +218,7 @@ extern int qwalk_input_player_object_select(WINDOW *select_win,
 extern /*@null@*//*@only@*/QwalkArea_t *qwalk_area_create(/*@returned@*//*@keep@*/QwalkLayer_t *, /*@returned@*//*@keep@*/QwalkLayer_t *);
 
 /** Destroy a #QwalkArea_t.                               */
-extern int qwalk_area_destroy(/*@only@*//*@null@*/QwalkArea_t *);
+extern void qwalk_area_destroy(/*@only@*/QwalkArea_t *);
 
 /** Write a #QwalkArea_t to storage.                      */
 extern int qwalk_area_write(const QwalkArea_t *)/*@*/;
@@ -238,7 +238,7 @@ extern /*@null@*//*@observer@*/QwalkLayer_t *qwalk_area_layer_floater_get(const/
 extern /*@null@*//*@partial@*/QwalkLayer_t *qwalk_layer_create(void);
  
 /** Destory a #QwalkLayer_t.                              */
-extern                        int           qwalk_layer_destroy(/*@only@*/QwalkLayer_t *);
+extern                        void          qwalk_layer_destroy(/*@only@*/QwalkLayer_t *);
 
 /** Write a #QwalkLayer_t to storage.                     */
 extern                        int           qwalk_layer_write(const QwalkLayer_t *);

@@ -74,10 +74,7 @@ devel_walkl_tick(QwalkArea_t *walk_area, int *curs_loc, DevelWalkCmd_t cmd) {
 			}
 		
 			if (attr_list_clipboard != NULL) {
-				if (qattr_list_destroy(attr_list_clipboard) == Q_ERROR) {
-					Q_ERRORFOUND(QERROR_ERRORVAL);
-					return Q_ERROR;
-				}
+				qattr_list_destroy(attr_list_clipboard);
 				attr_list_clipboard = NULL;
 			}
 
@@ -448,16 +445,12 @@ devel_walkl_loc_attr_list_set(QwalkArea_t *walk_area, const int *curs_loc, Qattr
 
 	if ((walk_area == NULL) || (curs_loc == NULL)) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
-		if (qattr_list_destroy(attr_list) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-		}
+		qattr_list_destroy(attr_list);
 		return Q_ERROR;
 	}
 	if (!devel_walkl_coords_arevalid(curs_loc[0], curs_loc[1], curs_loc[2])) {
 		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
-		if (qattr_list_destroy(attr_list) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-		}
+		qattr_list_destroy(attr_list);
 		return Q_ERROR;
 	}
 
@@ -467,23 +460,17 @@ devel_walkl_loc_attr_list_set(QwalkArea_t *walk_area, const int *curs_loc, Qattr
 		layer = qwalk_area_layer_floater_get(walk_area);
 	} else {
 		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
-		if (qattr_list_destroy(attr_list) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-		}
+		qattr_list_destroy(attr_list);
 		return Q_ERROR;
 	}
 
 	if ((index = qwalk_coords_to_index(curs_loc[0], curs_loc[1])) == Q_ERRORCODE_INT) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		if (qattr_list_destroy(attr_list) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-		}
+		qattr_list_destroy(attr_list);
 		return Q_ERROR;
 	}
 	
-	if (qattr_list_destroy(layer->objects[index].attr_list) == Q_ERROR) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-	}
+	qattr_list_destroy(layer->objects[index].attr_list);
 
 	layer->objects[index].attr_list = attr_list;
 

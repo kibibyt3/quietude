@@ -104,9 +104,8 @@ qattr_list_clone(const QattrList_t *attr_listr) {
 /**
  * Destroy a #QattrList_t
  * @param[in] qattr_list: #QattrList_t to free from memory
- * @return #Q_OK or #Q_ERROR
  */
-int
+void
 qattr_list_destroy(QattrList_t *qattr_list) {
 	for (int i = 0; i < (int) qattr_list->index_ok; i++) {
 		if (qattr_list->attrp[i].key != QATTR_KEY_EMPTY) {
@@ -117,7 +116,7 @@ qattr_list_destroy(QattrList_t *qattr_list) {
 
 	/*@i1@*/free(qattr_list->attrp);
 	free(qattr_list);
-	return Q_OK;
+	return;
 }
 
 
@@ -139,18 +138,14 @@ qattr_list_resize(QattrList_t *qattr_list, int dilation_addend) {
 	if ((count_orig = qattr_list_count_get(qattr_list))
 			== (size_t) Q_ERRORCODE_SIZE) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		if (qattr_list_destroy(qattr_list) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-		}
+		qattr_list_destroy(qattr_list);
 		return NULL;
 	}
 
 	/* check for a size_t overflow */
 	if ((int) count_orig + (int) dilation_addend < 1) {
 		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
-		if (qattr_list_destroy(qattr_list) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-		}
+		qattr_list_destroy(qattr_list);
 		return NULL;
 	}
 
@@ -161,9 +156,7 @@ qattr_list_resize(QattrList_t *qattr_list, int dilation_addend) {
 
 	if ((list_new = qattr_list_create(count_new)) == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
-		if (qattr_list_destroy(qattr_list) == Q_ERROR) {
-			Q_ERRORFOUND(QERROR_ERRORVAL);
-		}
+		qattr_list_destroy(qattr_list);
 		return NULL;
 	}
 
