@@ -72,6 +72,24 @@
 
 
 /**
+ * A series of flags.
+ * With a word size of 8 bits, one #Qflags_t will be stored in a byte. Because
+ * of this, functions related to #Qflags_t will take a #Qflags_t as a struct
+ * proper, rather than as a pointer-to-struct.
+ */
+typedef struct Qflags_t {
+	bool f0: 1;
+	bool f1: 1;
+	bool f2: 1;
+	bool f3: 1;
+	bool f4: 1;
+	bool f5: 1;
+	bool f6: 1;
+	bool f7: 1;
+} Qflags_t;
+
+
+/**
  * Type for representing data types.
  * Used primarily for error-checking and casting when data type is unknown.
  */
