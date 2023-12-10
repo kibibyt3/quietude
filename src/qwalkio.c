@@ -44,6 +44,8 @@
 #define QWALK_ICH_MOVE_SOUTH_ALT           KEY_DOWN
 /** Alternate input character for #QWALK_COMMAND_MOVE_WEST. */
 #define QWALK_ICH_MOVE_WEST_ALT            KEY_LEFT
+/** Input character for #QWALK_COMMAND_INSPECT. */
+#define QWALK_ICH_INSPECT                  '/'
 /** Input character for #QWALK_COMMAND_INTERACT. */
 #define QWALK_ICH_INTERACT                 'e'
 /** Input character for #QWALK_COMMAND_CONFIRM_OBJECT_SELECTION. */
@@ -91,6 +93,7 @@ static int qwalk_io_buffer_int = 0;
 
 
 
+static int qwalk_layer_object_info_display(int index);
 static QwalkCommand_t qwalk_input_to_command(int)/*@*/;
 
 
@@ -149,6 +152,7 @@ qwalk_input_subtick(int index) {
 
 	/* for commands that I/O handles part of */
 	switch (cmd) {
+	case QWALK_COMMAND_INSPECT:
 	case QWALK_COMMAND_INTERACT:
 		if ((player_index = qwalk_input_player_object_select(win, index))
 				== Q_ERRORCODE_INT) {
@@ -281,6 +285,14 @@ qwalk_input_player_object_select(WINDOW* select_win, int start_index) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 	}
 
+	if ((index = qwalk_coords_to_index(coords[0], coords[1]))
+			== Q_ERRORCODE_INT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+	if (qwalk_layer_object_info_display(index) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
 	while ((ch = wgetch(select_win))
 			!= (int) QWALK_ICH_CONFIRM_OBJECT_SELECTION) {
 
@@ -290,6 +302,8 @@ qwalk_input_player_object_select(WINDOW* select_win, int start_index) {
 
 			return Q_ERRORCODE_INT;
 		}
+
+
 
 		if ((cmd = qwalk_input_to_command(ch))
 				!= (QwalkCommand_t) Q_ERRORCODE_ENUM) {
@@ -311,14 +325,20 @@ qwalk_input_player_object_select(WINDOW* select_win, int start_index) {
 			}
 		}
 
+		if ((index = qwalk_coords_to_index(coords[0], coords[1]))
+				== Q_ERRORCODE_INT) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+		}
+		if (qwalk_layer_object_info_display(index) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+		}
 		if (wmove(select_win, coords[0], coords[1]) == ERR) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 		}
 	}
 
-	if ((index = qwalk_coords_to_index(coords[0], coords[1]))
-			== Q_ERRORCODE_INT) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
+	if (wclear(win) == ERR) {
+		Q_ERROR_SYSTEM("wclear()");
 	}
 
 	free(coords);
@@ -331,6 +351,62 @@ qwalk_input_player_object_select(WINDOW* select_win, int start_index) {
 	}
 
 	return index;
+}
+
+
+/**
+ * Display the info of a given #QwalkLayer_t at the bottom of the `WINDOW`.
+ * @param[in] index: index in the current #QwalkArea_t to list.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+qwalk_layer_object_info_display(int index) {
+
+	int maxy;
+	Qdatameta_t *datameta;
+	char *name, *description_brief;
+	Qdata_t *data;
+
+	if (win == NULL) {
+		Q_ERRORFOUND(QERROR_MODULE_UNINITIALIZED);
+		return Q_ERROR;
+	}
+
+	/*@i3@*/maxy = getmaxy(win);
+
+	if ((datameta = qwalk_area_curr_index_attr_value_get(
+					index, QATTR_KEY_NAME)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+	if ((data = qdatameta_datap_get(datameta)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+	name = (char *) data;
+	
+	if ((datameta = qwalk_area_curr_index_attr_value_get(
+					index, QATTR_KEY_DESCRIPTION_BRIEF)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+	if ((data = qdatameta_datap_get(datameta)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+	description_brief = (char *) data;
+
+	if (mvwprintw(win, maxy - 2, 0, "%s", name) == ERR) {
+		Q_ERROR_SYSTEM("mvprintw()");
+		return Q_ERROR;
+	}
+
+	if (mvwprintw(win, maxy - 1, 0, "%s", description_brief) == ERR) {
+		Q_ERROR_SYSTEM("mvprintw()");
+		return Q_ERROR;
+	}
+
+	return Q_OK;
 }
 
 
@@ -384,6 +460,8 @@ qwalk_input_to_command(int ch) {
 
 	case QWALK_ICH_CONFIRM_OBJECT_SELECTION:
 		return QWALK_COMMAND_CONFIRM_OBJECT_SELECTION;
+	case QWALK_ICH_INSPECT:
+		return QWALK_COMMAND_INSPECT;
 	case QWALK_ICH_INTERACT:
 		return QWALK_COMMAND_INTERACT;
 	case QWALK_ICH_WAIT:

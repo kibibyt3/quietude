@@ -216,6 +216,7 @@ extern int qwalk_input_player_object_select(WINDOW *select_win,
 		int start_index);
 
 
+/*@observer@*//*@null@*/
 extern Qdatameta_t *qwalk_area_curr_index_attr_value_get(
 		int index, QattrKey_t key)/*@globals internalState@*/;
 

@@ -244,7 +244,7 @@ qwalk_tick() {
 		return Q_ERROR;
 	}
 
-	r = qwalk_logic_subtick(cmd);
+	r = qwalk_logic_subtick(walk_area_curr, cmd);
 	if (r == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
@@ -429,7 +429,7 @@ qwalk_area_curr_index_attr_value_get(int index, QattrKey_t key)
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return NULL;
 	}
-	if ((layer_earth = qwalk_area_layer_earth_get(walk_area_curr)) == NULL) {
+	if ((layer_floater = qwalk_area_layer_earth_get(walk_area_curr)) == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return NULL;
 	}
@@ -452,7 +452,7 @@ qwalk_area_curr_index_attr_value_get(int index, QattrKey_t key)
 
 	if (obj_type == QOBJ_TYPE_VOID) {
 		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
-		return Q_ERROR;
+		return NULL;
 	}
 
 	Qdatameta_t *datameta;

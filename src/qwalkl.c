@@ -25,6 +25,8 @@
 
 static int qwalk_logic_interact(QwalkLayer_t *layer_earth,
 		QwalkLayer_t *layer_floater, int object_index);
+static int qwalk_logic_inspect(QwalkLayer_t *layer_earth,
+		QwalkLayer_t *layer_floater, int object_index);
 static           int          qwalk_logic_obj_move(/*@null@*/QwalkLayer_t *, int, Qdirection_t);
 static           int          qwalk_logic_objs_locs_trade(/*@null@*/QwalkLayer_t *, int, int);
 static /*@null@*/QobjType_t  *qwalk_logic_walk_layer_sanitize(QwalkLayer_t *)/*@*/;
@@ -149,7 +151,18 @@ qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command) {
 	/* interact command */
 	if (walk_command == QWALK_COMMAND_INTERACT) {
 		int object_index = qwalk_io_buffer_int_get();
-		if (qwalk_logic_interact(layer_earth, layer_floater, object_index) == Q_ERROR) {
+		if (qwalk_logic_interact(layer_earth, layer_floater, object_index)
+				== Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			qwalk_logic_qobj_type_destroy(obj_types_layer_earth);
+			qwalk_logic_qobj_type_destroy(obj_types_layer_floater);
+			return Q_ERROR;
+		}
+	}
+	if (walk_command == QWALK_COMMAND_INSPECT) {
+		int object_index = qwalk_io_buffer_int_get();
+		if (qwalk_logic_inspect(layer_earth, layer_floater, object_index)
+				== Q_ERROR) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 			qwalk_logic_qobj_type_destroy(obj_types_layer_earth);
 			qwalk_logic_qobj_type_destroy(obj_types_layer_floater);
@@ -230,6 +243,48 @@ qwalk_logic_interact(QwalkLayer_t *layer_earth, QwalkLayer_t *layer_floater,
 	}
 
 	return Q_OK;
+}
+
+
+/**
+ * Print the long description of an object to the environment log.
+ * @param[out] layer_earth: earth #QwalkLayer_t of the #QwalkArea_t.
+ * @param[out] layer_floater: floater #QwalkLayer_t of the #QwalkArea_t.
+ * @param[in] object_index: index of the object to inspect.
+ * @return #Q_ERROR or #Q_OK.
+ */
+int
+qwalk_logic_inspect(QwalkLayer_t *layer_earth, QwalkLayer_t *layer_floater,
+		int object_index) {
+
+	int returnval = Q_OK;
+
+	Qdatameta_t *datameta;
+	Qdata_t *data;
+
+	char *description_long;
+
+	if ((datameta = qwalk_area_curr_index_attr_value_get(
+					object_index, QATTR_KEY_DESCRIPTION_LONG)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+	if ((data = qdatameta_datap_get(datameta)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+	description_long = (char *) data;
+
+	if (qwalk_log_print(description_long) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+	if (qwalk_log_print("\n") == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		returnval = Q_ERROR;
+	}
+
+	return returnval;
 }
 
 
