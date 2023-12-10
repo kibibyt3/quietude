@@ -244,7 +244,7 @@ qwalk_tick() {
 		return Q_ERROR;
 	}
 
-	r = qwalk_logic_subtick(walk_area_curr, cmd);
+	r = qwalk_logic_subtick(cmd);
 	if (r == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
 		return Q_ERROR;
@@ -408,6 +408,61 @@ qwalk_dialogue_command_handler(QwalkLayer_t *layer, int index,
 	}
 
 	return Q_OK;
+}
+
+
+/**
+ * Get the @ref Qattr_t.valuep from @ref walk_area_curr.
+ * @param[in] index: index in @ref walk_area_curr to search.
+ * @param[in] key: #QattrKey_t to find in @p index.
+ * @return requested #Qdatameta_t or `NULL`.
+ */
+Qdatameta_t *
+qwalk_area_curr_index_attr_value_get(int index, QattrKey_t key)
+/*@globals walk_area_curr@*/
+{
+
+	QwalkLayer_t *layer_earth, *layer_floater, *layer_active;
+	QobjType_t obj_type;
+
+	if ((layer_earth = qwalk_area_layer_earth_get(walk_area_curr)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+	if ((layer_earth = qwalk_area_layer_earth_get(walk_area_curr)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+
+	layer_active = layer_floater;
+	if ((obj_type = qwalk_layer_object_type_get(layer_floater, index))
+			== (QobjType_t) Q_ERRORCODE_ENUM) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+
+	if (obj_type == QOBJ_TYPE_VOID) {
+		layer_active = layer_earth;
+		if ((obj_type = qwalk_layer_object_type_get(layer_earth, index))
+				== (QobjType_t) Q_ERRORCODE_ENUM) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return NULL;
+		}
+	}
+
+	if (obj_type == QOBJ_TYPE_VOID) {
+		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+		return Q_ERROR;
+	}
+
+	Qdatameta_t *datameta;
+	if ((datameta = qwalk_layer_obj_attr_value_get(layer_active, index, key))
+			== NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+
+	return datameta;
 }
 
 

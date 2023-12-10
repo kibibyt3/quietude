@@ -47,6 +47,8 @@ typedef enum QwalkCommand_t {
 
 	QWALK_COMMAND_INTERACT, /**< Interact with a #QwalkObj_t. */
 
+	QWALK_COMMAND_INSPECT,  /**< Inspect a #QwalkObj_t. */
+
 	/** Confirm selection of a #QwalkObj_t. */
 	QWALK_COMMAND_CONFIRM_OBJECT_SELECTION, 
 
@@ -212,6 +214,10 @@ extern int qwalk_log_print(const char *s)/*@modifies internalState@*/;
 
 extern int qwalk_input_player_object_select(WINDOW *select_win,
 		int start_index);
+
+
+extern Qdatameta_t *qwalk_area_curr_index_attr_value_get(
+		int index, QattrKey_t key)/*@globals internalState@*/;
 
 
 /** Create a #QwalkArea_t.                                */
