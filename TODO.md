@@ -20,7 +20,8 @@
 - [x] complete qwalkio rough draft
   - [x] give qwalkio a cursory debugging
 - [x] thoroughly debug the entirety of qwalk
-- [ ] look into using the `/*@abstract@*/` `splint` annotation
+- [x] look into using the `/*@abstract@*/` `splint` annotation
+  - In hindsight, this will prove too unwieldy to impelement.
 - [x] rewrite the `Qdatameta_t` interface such that datap is never calloc'd 
   directly; it should just store a pointer to the beginning of the data
   - [x] rewrite `qfile`'s read function such that it creates a new
@@ -48,8 +49,8 @@
   e.g. `DialogueObject_t dialogue_file_string_to_object(char *file_substring)`.
 - [x] Add destructor functions to dialogue.
 - [x] Add ability to add/remove object attributes in devel\_walk.
-- [ ] Add the ability to show the tree title in the dialogue I/O.
-- [ ] In `devel_attr_list_default_create()` replace defaulting functionality w/
+- [x] Add the ability to show the tree title in the dialogue I/O.
+- [x] In `devel_attr_list_default_create()` replace defaulting functionality w/
   `qwalk_attr_list_attr_set_default()` wherever possible.
 - [ ] Isolate the else-ifs in `devel_walkio_in()` into their own individual
   functions.
