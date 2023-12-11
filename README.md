@@ -1,5 +1,5 @@
 # Q
-## v0.2.2
+## v0.2.3
 
 This is a game TUI-based game being written by kibibyt3. This repo contains the
 dev tools as well as the game proper.
@@ -17,6 +17,7 @@ dev tools as well as the game proper.
 
 - `wasd` or Arrow keys: Navigate
 - `e`: Interact
+- `/`: Inspect
 - `q`: Quit
 
 # Development tools
