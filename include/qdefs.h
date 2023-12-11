@@ -216,6 +216,15 @@ extern size_t qdatameta_count_get(const Qdatameta_t *)/*@*/;
 /** Get the type member from a #Qdatameta_t.  */
 extern QdataType_t qdatameta_type_get(const Qdatameta_t *)/*@*/;
 
+
+extern Qflags_t qflags_init(void);
+
+extern bool qflags_getf(int i, Qflags_t flags)/*@*/;
+
+extern int qflags_setf(int i, Qflags_t *flags, bool b)
+	/*@modifies flags@*/;
+
+
 /** Get the size of a #QdataType_t.           */
 extern size_t qdata_type_size_get(QdataType_t)/*@*/;
 

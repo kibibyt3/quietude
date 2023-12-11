@@ -217,6 +217,99 @@ qdatameta_type_get(const Qdatameta_t *datameta) {
 
 
 /**
+ * Create a defaulted #Qflags_t.
+ * @return newly-created #Qflags_t with all values set to `false`.
+ */
+Qflags_t
+qflags_init() {
+	Qflags_t flags;
+	flags.f0 = false;
+	flags.f1 = false;
+	flags.f2 = false;
+	flags.f3 = false;
+	flags.f4 = false;
+	flags.f5 = false;
+	flags.f6 = false;
+	flags.f7 = false;
+	return flags;
+}
+
+
+/**
+ * Get a #Qflags_t member.
+ * @param[in] i: f member of @p flags to fetch.
+ * @param[in] flags: #Qflags_t to search through.
+ * @return requested value or `false` on error.
+ */
+bool
+qflags_getf(int i, Qflags_t flags) {
+	switch (i) {
+	case 0:
+		return flags.f0;
+	case 1:
+		return flags.f1;
+	case 2:
+		return flags.f2;
+	case 3:
+		return flags.f3;
+	case 4:
+		return flags.f4;
+	case 5:
+		return flags.f5;
+	case 6:
+		return flags.f6;
+	case 7:
+		return flags.f7;
+	default:
+		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+		return false;
+	}
+}
+
+
+/**
+ * Set a #Qflags_t member.
+ * @param[in] i: f member of @p flags to define.
+ * @param[out] flags: #Qflags_t to search through.
+ * @param[in] b: value to set the f member to.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+qflags_setf(int i, Qflags_t *flags, bool b) {
+	switch (i) {
+	case 0:
+		flags->f0 = b;
+		break;
+	case 1:
+		flags->f1 = b;
+		break;
+	case 2:
+		flags->f2 = b;
+		break;
+	case 3:
+		flags->f3 = b;
+		break;
+	case 4:
+		flags->f4 = b;
+		break;
+	case 5:
+		flags->f5 = b;
+		break;
+	case 6:
+		flags->f6 = b;
+		break;
+	case 7:
+		flags->f7 = b;
+		break;
+	default:
+		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+		return Q_ERROR;
+	}
+	return Q_OK;
+}
+
+
+/**
  * Convert a #QobjType_t to a `char *`.
  * @param[in] type: relevant #QobjType_t.
  * @return `char *` version of @p type.
