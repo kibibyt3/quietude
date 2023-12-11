@@ -429,7 +429,7 @@ qwalk_area_curr_index_attr_value_get(int index, QattrKey_t key)
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return NULL;
 	}
-	if ((layer_floater = qwalk_area_layer_earth_get(walk_area_curr)) == NULL) {
+	if ((layer_floater = qwalk_area_layer_floater_get(walk_area_curr)) == NULL) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return NULL;
 	}

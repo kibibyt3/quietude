@@ -25,8 +25,7 @@
 
 static int qwalk_logic_interact(QwalkLayer_t *layer_earth,
 		QwalkLayer_t *layer_floater, int object_index);
-static int qwalk_logic_inspect(QwalkLayer_t *layer_earth,
-		QwalkLayer_t *layer_floater, int object_index);
+static int qwalk_logic_inspect(int object_index);
 static           int          qwalk_logic_obj_move(/*@null@*/QwalkLayer_t *, int, Qdirection_t);
 static           int          qwalk_logic_objs_locs_trade(/*@null@*/QwalkLayer_t *, int, int);
 static /*@null@*/QobjType_t  *qwalk_logic_walk_layer_sanitize(QwalkLayer_t *)/*@*/;
@@ -161,7 +160,7 @@ qwalk_logic_subtick(QwalkArea_t *walk_area, QwalkCommand_t walk_command) {
 	}
 	if (walk_command == QWALK_COMMAND_INSPECT) {
 		int object_index = qwalk_io_buffer_int_get();
-		if (qwalk_logic_inspect(layer_earth, layer_floater, object_index)
+		if (qwalk_logic_inspect(object_index)
 				== Q_ERROR) {
 			Q_ERRORFOUND(QERROR_ERRORVAL);
 			qwalk_logic_qobj_type_destroy(obj_types_layer_earth);
@@ -248,14 +247,11 @@ qwalk_logic_interact(QwalkLayer_t *layer_earth, QwalkLayer_t *layer_floater,
 
 /**
  * Print the long description of an object to the environment log.
- * @param[out] layer_earth: earth #QwalkLayer_t of the #QwalkArea_t.
- * @param[out] layer_floater: floater #QwalkLayer_t of the #QwalkArea_t.
  * @param[in] object_index: index of the object to inspect.
  * @return #Q_ERROR or #Q_OK.
  */
 int
-qwalk_logic_inspect(QwalkLayer_t *layer_earth, QwalkLayer_t *layer_floater,
-		int object_index) {
+qwalk_logic_inspect(int object_index) {
 
 	int returnval = Q_OK;
 

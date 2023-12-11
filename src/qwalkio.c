@@ -272,6 +272,11 @@ qwalk_input_player_object_select(WINDOW* select_win, int start_index) {
 	QwalkCommand_t cmd;
 	int index;
 
+	if (win == NULL) {
+		Q_ERRORFOUND(QERROR_MODULE_UNINITIALIZED);
+		return Q_ERROR;
+	}
+
 	coords = qwalk_index_to_coords(start_index);
 
 	if (curs_set(1) == ERR) {
