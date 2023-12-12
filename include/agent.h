@@ -1,6 +1,6 @@
 /**
- * @file player.h
- * Header file for the player module.
+ * @file agent.h
+ * Header file for the agent module.
  * Depends on @ref qdefs.h.
  */
 
