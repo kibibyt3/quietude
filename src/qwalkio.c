@@ -286,10 +286,6 @@ qwalk_input_player_object_select(WINDOW* select_win, int start_index) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 	}
 
-	if (wmove(select_win, coords[0], coords[1]) == ERR) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-	}
-
 	if ((index = qwalk_coords_to_index(coords[0], coords[1]))
 			== Q_ERRORCODE_INT) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
@@ -297,6 +293,10 @@ qwalk_input_player_object_select(WINDOW* select_win, int start_index) {
 	if (qwalk_layer_object_info_display(index) == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 	}
+	if (wmove(select_win, coords[0], coords[1]) == ERR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
 
 	while ((ch = wgetch(select_win))
 			!= (int) QWALK_ICH_CONFIRM_OBJECT_SELECTION) {
