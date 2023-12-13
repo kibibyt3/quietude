@@ -52,6 +52,9 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 
 	test_qutils();
 
+	qutils_nobias_srand();
+	printf("randval: %i\n", qutils_nobias_rand(8));
+
 	int r;
 
 	char str[] = "   MY NAME   IS   WWWOWW LITEL DGGO  GGIE    ";
