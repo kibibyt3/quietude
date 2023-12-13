@@ -77,3 +77,4 @@
 - [x] Fix the object inspection only looking at the earth layer.
   - [x] Lint the new functionality.
 - [ ] Create the player module.
+  - [ ] Create the item module.
