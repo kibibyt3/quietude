@@ -10,6 +10,7 @@
 #include <stdbool.h>
 #include <float.h>
 #include <limits.h>
+#include <time.h>
 #include <math.h>
 
 #include "qdefs.h"
@@ -57,4 +58,34 @@ qutils_distance_calculate(int starty, int startx, int endy, int endx) {
 	}
 
 	return (int) sqrt((double) (deltax * deltax) + (deltay * deltay));
+}
+
+
+/**
+ * Generate a pseudo-random number.
+ * Specifically avoids some bias introduced by `rand()`.
+ * @param[in] i: upper bound of result.
+ * @return pseudo-random number between 0 and @p, inclusive.
+ */
+int
+qutils_nobias_rand(int i) {
+	int rawval;
+
+	int rand_max_remainder = RAND_MAX % (i + 1);
+
+	do {
+		rawval = rand();
+	} while (rawval > (RAND_MAX - rand_max_remainder));
+
+	return rawval % (i + 1);
+}
+
+
+/**
+ * Seed @ref qutils_nobias_rand().
+ * This should only be done once.
+ */
+void
+qutils_nobias_srand() {
+	srand((unsigned) time(0));
 }
