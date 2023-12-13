@@ -12,16 +12,17 @@ typedef enum ItemID_t {
 	ITEM_ID_WEAPON_SHORTSWORD = ITEM_ID_WEAPON_MIN,
 	ITEM_ID_WEAPON_BASTARDSWORD,
 	ITEM_ID_WEAPON_ZWEIHANDER,
-	ITEM_ID_WEAPON_MAX = ITEM_ID_ZWEIHANDER,
-
+	ITEM_ID_WEAPON_MAX = ITEM_ID_WEAPON_ZWEIHANDER,
 
 	ITEM_ID_ARMOUR_MIN,
 	ITEM_ID_ARMOUR_CLOAK = ITEM_ID_ARMOUR_MIN,
-	ITEM_ID_ARMOUR_KNIGHT,
 	ITEM_ID_ARMOUR_HAUBERK,
-	ITEM_ID_ARMOUR_MAX
+	ITEM_ID_ARMOUR_KNIGHT,
+	ITEM_ID_ARMOUR_MAX,
 
-	ITEM_ID_BOOK,
+	ITEM_ID_BOOK_ILOVEYOU,
+	ITEM_ID_BOOK_A,
+	ITEM_ID_BOOK_BABEL,
 
 	ITEM_ID_COUNT = ITEM_ID_WEAPON_MAX;
 
@@ -53,7 +54,8 @@ typedef struct ItemReferenceArmour_t {
 	const char *name;
 	const char *description;
 	int defense;
-	int encumberance;
+	float encumberance;
+	float warmth;
 } ItemReferenceArmour_t;
 
 typedef struct ItemReferenceBook_t {
