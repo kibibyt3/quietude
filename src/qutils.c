@@ -7,10 +7,12 @@
 
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <stdbool.h>
 #include <float.h>
 #include <limits.h>
 #include <time.h>
+#include <string.h>
 #include <math.h>
 
 #include "qdefs.h"
@@ -62,6 +64,33 @@ qutils_distance_calculate(int starty, int startx, int endy, int endx) {
 
 
 /**
+ * Create a randomized string of characters.
+ * @param[in] alphabet: alphabet of characters to pull from.
+ * @param[in] len: length of the string to generate.
+ * @return randomized string of characters from @p alphabet of length @p len,
+ * or `NULL` on error.
+ */
+char *
+qutils_nobias_randstring(const char *alphabet, int len) {
+	char *s;
+
+	if ((s = calloc((size_t) len + (size_t) 1, sizeof(*s))) == NULL) {
+		Q_ERROR_SYSTEM("calloc()");
+		return NULL;
+	}
+
+	int alphabet_len = (int) strlen(alphabet);
+	for (int i = 0; i < len; i++) {
+		s[i] = alphabet[qutils_nobias_rand(alphabet_len - 1)];
+	}
+
+	s[len] = '\0';
+
+	return s;
+}
+
+
+/**
  * Generate a pseudo-random number.
  * Specifically avoids some bias introduced by `rand()`.
  * @param[in] i: upper bound of result.
@@ -82,7 +111,7 @@ qutils_nobias_rand(int i) {
 
 
 /**
- * Seed @ref qutils_nobias_rand().
+ * Seed the qutils_rand class of functions.
  * This should only be done once.
  */
 void
