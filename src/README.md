@@ -3,6 +3,7 @@ This directory holds the source files for Q.
 
 ```
 .
+├── agent.c
 ├── devel_walk.c
 ├── devel_walkio.c
 ├── devel_walkl.c
@@ -11,6 +12,7 @@ This directory holds the source files for Q.
 ├── dialogueio.c
 ├── dialoguel.c
 ├── ioutils.c
+├── item.c
 ├── main.c
 ├── mode.c
 ├── mode.c.old
@@ -19,6 +21,7 @@ This directory holds the source files for Q.
 ├── qdefs.c
 ├── qerror.c
 ├── qfile.c
+├── qutils.c
 ├── qwalkio.c
 ├── qwalkl.c
 ├── qwalkw.c
@@ -26,5 +29,5 @@ This directory holds the source files for Q.
 ├── README.md
 └── test.c
 
-1 directory, 22 files
+1 directory, 25 files
 ```

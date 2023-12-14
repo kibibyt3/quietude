@@ -12,16 +12,19 @@
 │   └── README.md
 ├── Doxyfile
 ├── include
+│   ├── agent.h
 │   ├── devel_walk.h
 │   ├── dialogue.h
 │   ├── iodefs.h
 │   ├── ioutils.h
+│   ├── item.h
 │   ├── mode.h
 │   ├── qattr.h
 │   ├── qdefault.h
 │   ├── qdefs.h
 │   ├── qerror.h
 │   ├── qfile.h
+│   ├── qutils.h
 │   ├── qwalk.h
 │   ├── qwins.h
 │   ├── README.md
@@ -30,6 +33,7 @@
 ├── README.md
 ├── saves
 ├── src
+│   ├── agent.c
 │   ├── devel_walk.c
 │   ├── devel_walkio.c
 │   ├── devel_walkl.c
@@ -38,6 +42,7 @@
 │   ├── dialogueio.c
 │   ├── dialoguel.c
 │   ├── ioutils.c
+│   ├── item.c
 │   ├── main.c
 │   ├── mode.c
 │   ├── mode.c.old
@@ -46,6 +51,7 @@
 │   ├── qdefs.c
 │   ├── qerror.c
 │   ├── qfile.c
+│   ├── qutils.c
 │   ├── qwalkio.c
 │   ├── qwalkl.c
 │   ├── qwalkw.c
@@ -54,5 +60,5 @@
 │   └── test.c
 └── TODO.md
 
-10 directories, 44 files
+10 directories, 50 files
 ```
