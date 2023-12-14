@@ -26,7 +26,7 @@ typedef enum ItemID_t {
 	ITEM_ID_BOOK_BABEL,
 	ITEM_ID_BOOK_MAX = ITEM_ID_BOOK_BABEL,
 
-	ITEM_ID_COUNT = ITEM_ID_WEAPON_MAX;
+	ITEM_ID_COUNT = ITEM_ID_WEAPON_MAX
 
 } ItemID_t;
 
@@ -53,30 +53,30 @@ typedef enum ItemType_t {
 typedef struct ItemReferenceWeapon_t {
 	ItemID_t id;
 	ItemEquipSlot_t equip_slot;
-	const char *name;
-	const char *description;
+	/*@observer@*/const char *name;
+	/*@observer@*/const char *description;
 	int damage;
 	int max_range;
-	float hit_chance;
-	float armour_penetration;
+	double hit_chance;
+	double armour_penetration;
 } ItemReferenceWeapon_t;
 
 typedef struct ItemReferenceArmour_t {
 	ItemID_t id;
 	ItemEquipSlot_t equip_slot;
-	const char *name;
-	const char *description;
+	/*@observer@*/const char *name;
+	/*@observer@*/const char *description;
 	int defense;
-	float encumberance;
-	float warmth;
+	double encumberance;
+	double warmth;
 } ItemReferenceArmour_t;
 
 typedef struct ItemReferenceBook_t {
 	ItemID_t id;
 	ItemEquipSlot_t equip_slot;
-	const char *name;
-	const char *description;
-	const char *book_filename;
+	/*@observer@*/const char *name;
+	/*@observer@*/const char *description;
+	/*@observer@*/const char *book_filename;
 } ItemReferenceBook_t;
 
 

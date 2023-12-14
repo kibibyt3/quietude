@@ -5,6 +5,15 @@
  */
 
 
+#include <stdlib.h>
+#include <stdbool.h>
+
+#include "qdefs.h"
+#include "qerror.h"
+
+#include "item.h"
+
+
 
 /**********
  * WEAPONS
@@ -51,7 +60,7 @@ static const ItemReferenceWeapon_t weapons[WEAPONSC] = {
 	{ITEM_ID_WEAPON_ZWEIHANDER, ITEM_EQUIP_SLOT_HANDS,
 		"zweihander", ITEM_DESCRIPTION_WEAPON_ZWEIHANDER,
 		5, 2, 0.5, 0.4}
-}
+};
 
 /** @} */
 
@@ -68,7 +77,7 @@ static const ItemReferenceWeapon_t weapons[WEAPONSC] = {
 
 #define ITEM_DESCRIPTION_ARMOUR_CLOAK \
 	"A coat of thick fur pulled from the body of a long-dead creature. You " \
-	"think you can still smell the blood and the sticky, greasy, thick meat "
+	"think you can still smell the blood and the sticky, greasy, thick meat " \
 	"from the night (day?) of its death."
 
 #define ITEM_DESCRIPTION_ARMOUR_HAUBERK \
@@ -99,7 +108,7 @@ static const ItemReferenceArmour_t armour[ARMOURC] = {
 	{ITEM_ID_ARMOUR_KNIGHT, ITEM_EQUIP_SLOT_BODY,
 		"knight's armour", ITEM_DESCRIPTION_ARMOUR_KNIGHT,
 		3, 0.3, 0.05}
-}
+};
 
 /** @} */
 
@@ -177,7 +186,7 @@ item_isarmour(ItemID_t id) {
  * @return `true` if it is a book, false if otherwise.
  */
 bool
-item_isarmour(ItemID_t id) {
+item_isbook(ItemID_t id) {
 	if ((id >= ITEM_ID_BOOK_MIN) && (id <= ITEM_ID_BOOK_MAX)) {
 		return true;
 	}
