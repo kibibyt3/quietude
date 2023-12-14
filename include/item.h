@@ -20,13 +20,24 @@ typedef enum ItemID_t {
 	ITEM_ID_ARMOUR_KNIGHT,
 	ITEM_ID_ARMOUR_MAX,
 
-	ITEM_ID_BOOK_ILOVEYOU,
+	ITEM_ID_BOOK_MIN,
+	ITEM_ID_BOOK_ILOVEYOU = ITEM_ID_BOOK_MIN,
 	ITEM_ID_BOOK_A,
 	ITEM_ID_BOOK_BABEL,
+	ITEM_ID_BOOK_MAX = ITEM_ID_BOOK_BABEL,
 
 	ITEM_ID_COUNT = ITEM_ID_WEAPON_MAX;
 
 } ItemID_t;
+
+
+
+typedef enum ItemEquipSlot_t {
+	ITEM_EQUIP_SLOT_HANDS = Q_ENUM_VALUE_START,
+	ITEM_EQUIP_SLOT_BODY,
+
+	ITEM_EQUIP_SLOT_COUNT = ITEM_EQUIP_SLOT_BODY
+} ItemEquipSlot_t;
 
 
 
@@ -41,6 +52,7 @@ typedef enum ItemType_t {
 
 typedef struct ItemReferenceWeapon_t {
 	ItemID_t id;
+	ItemEquipSlot_t equip_slot;
 	const char *name;
 	const char *description;
 	int damage;
@@ -51,6 +63,7 @@ typedef struct ItemReferenceWeapon_t {
 
 typedef struct ItemReferenceArmour_t {
 	ItemID_t id;
+	ItemEquipSlot_t equip_slot;
 	const char *name;
 	const char *description;
 	int defense;
@@ -60,7 +73,16 @@ typedef struct ItemReferenceArmour_t {
 
 typedef struct ItemReferenceBook_t {
 	ItemID_t id;
+	ItemEquipSlot_t equip_slot;
 	const char *name;
 	const char *description;
 	const char *book_filename;
 } ItemReferenceBook_t;
+
+
+
+extern bool item_isweapon(ItemID_t id);
+extern bool item_isarmour(ItemID_t id);
+extern bool item_isbook(ItemID_t id);
+
+extern ItemType_t item_gettype(ItemID_t id);

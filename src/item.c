@@ -9,6 +9,13 @@
 /**********
  * WEAPONS
  **********/
+
+/**
+ * @defgroup ItemReferenceWeapons Item Reference Weapons
+ * All values associated with weapon item references.
+ * @{
+ */
+
 /* i'm using a xeiphos as reference */
 #define ITEM_DESCRIPTION_WEAPON_SHORTSWORD \
 	"A short blade; you take care not to point it at yourself; you can detect " \
@@ -27,7 +34,7 @@
 
 #define WEAPONSC 3
 static const ItemReferenceWeapon_t weapons[WEAPONSC] = {
-	{ITEM_ID_WEAPON_SHORTSWORD, 
+	{ITEM_ID_WEAPON_SHORTSWORD, ITEM_EQUIP_SLOT_HANDS,
 		"short sword", ITEM_DESCRIPTION_WEAPON_SHORTSWORD,
 		3, 1, 0.7, 0.2},
 /*  ^  ^  ^    ^
@@ -37,20 +44,27 @@ static const ItemReferenceWeapon_t weapons[WEAPONSC] = {
  *  '------------  damage
  */
 
-	{ITEM_ID_WEAPON_BASTARDSWORD,
+	{ITEM_ID_WEAPON_BASTARDSWORD, ITEM_EQUIP_SLOT_HANDS,
 		"bastard sword", ITEM_DESCRIPTION_WEAPON_BASTARDSWORD,
 		4, 1, 0.6, 0.3},
 
-	{ITEM_ID_WEAPON_ZWEIHANDER,
+	{ITEM_ID_WEAPON_ZWEIHANDER, ITEM_EQUIP_SLOT_HANDS,
 		"zweihander", ITEM_DESCRIPTION_WEAPON_ZWEIHANDER,
 		5, 2, 0.5, 0.4}
 }
 
+/** @} */
 
 
 /*********
  * ARMOUR
  *********/
+
+/**
+ * @defgroup ItemReferenceArmour Item Reference Armour
+ * All values associated with armour item references.
+ * @{
+ */
 
 #define ITEM_DESCRIPTION_ARMOUR_CLOAK \
 	"A coat of thick fur pulled from the body of a long-dead creature. You " \
@@ -70,7 +84,7 @@ static const ItemReferenceWeapon_t weapons[WEAPONSC] = {
 
 #define ARMOURC 3
 static const ItemReferenceArmour_t armour[ARMOURC] = {
-	{ITEM_ID_ARMOUR_CLOAK,
+	{ITEM_ID_ARMOUR_CLOAK, ITEM_EQUIP_SLOT_BODY,
 		"cloak", ITEM_DESCRIPTION_ARMOUR_CLOAK,
 		0, 0.0, 0.2},
 /*  ^  ^    ^
@@ -79,20 +93,26 @@ static const ItemReferenceArmour_t armour[ARMOURC] = {
  *  '---------  defense
  */
 
-	{ITEM_ID_ARMOUR_HAUBERK,
+	{ITEM_ID_ARMOUR_HAUBERK, ITEM_EQUIP_SLOT_BODY,
 		"hauberk", ITEM_DESCRIPTION_ARMOUR_HAUBERK,
 		1, 0.05, 0.02},
-	{ITEM_ID_ARMOUR_KNIGHT,
+	{ITEM_ID_ARMOUR_KNIGHT, ITEM_EQUIP_SLOT_BODY,
 		"knight's armour", ITEM_DESCRIPTION_ARMOUR_KNIGHT,
 		3, 0.3, 0.05}
 }
 
+/** @} */
 
 
 /********
  * BOOKS
  ********/
 
+/**
+ * @defgroup ItemReferenceBooks Item Reference Books
+ * All values associated with book item references.
+ * @{
+ */
 #define ITEM_DESCRIPTION_BOOK_ILOVEYOU \
 	"A book whose cover reads: \"I LOVE YOU\", written in immaculate gothic " \
 	"font. The cover is deep blood-red. Is it bleeding?"
@@ -107,13 +127,78 @@ static const ItemReferenceArmour_t armour[ARMOURC] = {
 
 #define BOOKC 3
 static const ItemReferenceBook_t books[BOOKC] = {
-	{ITEM_ID_BOOK_ILOVEYOU,
+	{ITEM_ID_BOOK_ILOVEYOU, ITEM_EQUIP_SLOT_HANDS,
 		"book: ILOVEYOU", ITEM_DESCRIPTION_BOOK_ILOVEYOU,
 		"iloveyou.txt"},
-	{ITEM_ID_BOOK_A,
+	{ITEM_ID_BOOK_A, ITEM_EQUIP_SLOT_HANDS,
 		"book: AAAAAAAA", ITEM_DESCRIPTION_BOOK_A,
 		"a.txt"},
-	{ITEM_ID_BOOK_BABEL,
+	{ITEM_ID_BOOK_BABEL, ITEM_EQUIP_SLOT_HANDS,
 		"book: oeooii hmepizlzz", ITEM_DESCRIPTION_BOOK_BABEL,
 		"babel.txt"}
 };
+
+/** @} */
+
+
+
+
+/**
+ * Determine if an #ItemID_t refers to a weapon.
+ * @param[in] id: #ItemID_t in question.
+ * @return `true` if it is a weapon, false if otherwise.
+ */
+bool
+item_isweapon(ItemID_t id) {
+	if ((id >= ITEM_ID_WEAPON_MIN) && (id <= ITEM_ID_WEAPON_MAX)) {
+		return true;
+	}
+	return false;
+}
+
+
+/**
+ * Determine if an #ItemID_t refers to armour.
+ * @param[in] id: #ItemID_t in question.
+ * @return `true` if it is armour, false if otherwise.
+ */
+bool
+item_isarmour(ItemID_t id) {
+	if ((id >= ITEM_ID_ARMOUR_MIN) && (id <= ITEM_ID_ARMOUR_MAX)) {
+		return true;
+	}
+	return false;
+}
+
+
+/**
+ * Determine if an #ItemID_t refers to a book.
+ * @param[in] id: #ItemID_t in question.
+ * @return `true` if it is a book, false if otherwise.
+ */
+bool
+item_isarmour(ItemID_t id) {
+	if ((id >= ITEM_ID_BOOK_MIN) && (id <= ITEM_ID_BOOK_MAX)) {
+		return true;
+	}
+	return false;
+}
+
+
+/**
+ * Determine the #ItemType_t that corresponds to an #ItemID_t.
+ * @param[in] id: #ItemID_t in question.
+ * @return corresponding #ItemType_t or #Q_ERRORCODE_ENUM on error.
+ */
+ItemType_t
+item_gettype(ItemID_t id) {
+	if ((id >= ITEM_ID_WEAPON_MIN) && (id <= ITEM_ID_WEAPON_MAX)) {
+		return ITEM_TYPE_WEAPON;
+	} else if ((id >= ITEM_ID_ARMOUR_MIN) && (id <= ITEM_ID_ARMOUR_MAX)) {
+		return ITEM_TYPE_ARMOUR;
+	} else if ((id >= ITEM_ID_BOOK_MIN) && (id <= ITEM_ID_BOOK_MAX)) {
+		return ITEM_TYPE_BOOK;
+	} else {
+		return (ItemType_t) Q_ERRORCODE_ENUM;
+	}
+}
