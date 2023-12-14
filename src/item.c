@@ -73,6 +73,12 @@ static const ItemReferenceArmour_t armour[ARMOURC] = {
 	{ITEM_ID_ARMOUR_CLOAK,
 		"cloak", ITEM_DESCRIPTION_ARMOUR_CLOAK,
 		0, 0.0, 0.2},
+/*  ^  ^    ^
+ *  |  |    '-  warmth
+ *  |  '------  encumberance
+ *  '---------  defense
+ */
+
 	{ITEM_ID_ARMOUR_HAUBERK,
 		"hauberk", ITEM_DESCRIPTION_ARMOUR_HAUBERK,
 		1, 0.05, 0.02},
@@ -96,4 +102,18 @@ static const ItemReferenceArmour_t armour[ARMOURC] = {
 	"curls awkwardly. It's still warm..."
 
 #define ITEM_DESCRIPTION_BOOK_BABEL \
-	""
+	"A book with a rough, fuzzy cover. Stitched into it is the title: " \
+	"oeooii hmepizlzz."
+
+#define BOOKC 3
+static const ItemReferenceBook_t books[BOOKC] = {
+	{ITEM_ID_BOOK_ILOVEYOU,
+		"book: ILOVEYOU", ITEM_DESCRIPTION_BOOK_ILOVEYOU,
+		"iloveyou.txt"},
+	{ITEM_ID_BOOK_A,
+		"book: AAAAAAAA", ITEM_DESCRIPTION_BOOK_A,
+		"a.txt"},
+	{ITEM_ID_BOOK_BABEL,
+		"book: oeooii hmepizlzz", ITEM_DESCRIPTION_BOOK_BABEL,
+		"babel.txt"}
+};
