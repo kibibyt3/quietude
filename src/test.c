@@ -54,6 +54,17 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 
 	qutils_nobias_srand();
 	printf("randval: %i\n", qutils_nobias_rand(8));
+	char *charlist = "abcdefghijlmnoprstuvyz ,.";
+
+	char *randstring;
+	if ((randstring = qutils_nobias_randstring(charlist, 16)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+	printf("%s\n", randstring);
+
+	free(randstring);
 
 	int r;
 
