@@ -41,6 +41,9 @@
 /** Generic error for functions that otherwise return a meaningful @c int. */
 #define Q_ERRORCODE_INT -1
 
+/** Generic error for functions that otherwise return a meaningful `double`. */
+#define Q_ERRORCODE_DOUBLE -1.0
+
 /** Generic error for functions that otherwise return a meaningful @c char. */
 #define Q_ERRORCODE_CHAR '\0'
 
