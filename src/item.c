@@ -41,8 +41,8 @@
 	"swollen clouds above. It wields you. You are its instrument; you are its " \
 	"extension. It is your fear congealed into weaponform."
 
-#define WEAPONSC 3
-static const ItemReferenceWeapon_t weapons[WEAPONSC] = {
+#define ITEM_WEAPONSC 3
+static const ItemReferenceWeapon_t weapons[ITEM_WEAPONSC] = {
 	{ITEM_ID_WEAPON_SHORTSWORD, ITEM_EQUIP_SLOT_HANDS,
 		"short sword", ITEM_DESCRIPTION_WEAPON_SHORTSWORD,
 		3, 1, 0.7, 0.2},
@@ -91,8 +91,8 @@ static const ItemReferenceWeapon_t weapons[WEAPONSC] = {
 	"black, withered fingers. You can taste the carbon dioxide building. You " \
 	"take shallower breaths to compensate. It doesn't help."
 
-#define ARMOURC 3
-static const ItemReferenceArmour_t armour[ARMOURC] = {
+#define ITEM_ARMOURC 3
+static const ItemReferenceArmour_t armour[ITEM_ARMOURC] = {
 	{ITEM_ID_ARMOUR_CLOAK, ITEM_EQUIP_SLOT_BODY,
 		"cloak", ITEM_DESCRIPTION_ARMOUR_CLOAK,
 		0, 0.0, 0.2},
@@ -134,8 +134,8 @@ static const ItemReferenceArmour_t armour[ARMOURC] = {
 	"A book with a rough, fuzzy cover. Stitched into it is the title: " \
 	"oeooii hmepizlzz."
 
-#define BOOKC 3
-static const ItemReferenceBook_t books[BOOKC] = {
+#define ITEM_BOOKC 3
+static const ItemReferenceBook_t books[ITEM_BOOKC] = {
 	{ITEM_ID_BOOK_ILOVEYOU, ITEM_EQUIP_SLOT_HANDS,
 		"book: ILOVEYOU", ITEM_DESCRIPTION_BOOK_ILOVEYOU,
 		"iloveyou.txt"},
@@ -150,6 +150,283 @@ static const ItemReferenceBook_t books[BOOKC] = {
 /** @} */
 
 
+
+
+ItemEquipSlot_t
+item_reference_equip_slot_get(ItemID_t id)
+	/*@globals weapons, armour, books@*/
+{
+	ItemType_t item_type;
+	int index;
+
+	if ((item_type = item_type_get(id)) == (ItemType_t) Q_ERRORCODE_ENUM) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return (ItemEquipSlot_t) Q_ERRORCODE_ENUM;
+	}
+
+	switch (item_type) {
+	case ITEM_TYPE_WEAPON:
+		if ((index = item_reference_weapons_index_get(id)) == Q_ERRORCODE_INT) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return (ItemEquipSlot_t) Q_ERRORCODE_ENUM;
+		}
+		return weapons[index].equip_slot;
+	case ITEM_TYPE_ARMOUR:
+		if ((index = item_reference_armour_index_get(id)) == Q_ERRORCODE_INT) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return (ItemEquipSlot_t) Q_ERRORCODE_ENUM;
+		}
+		return armour[index].equip_slot;
+	case ITEM_TYPE_BOOK:
+		if ((index = item_reference_books_index_get(id)) == Q_ERRORCODE_INT) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return (ItemEquipSlot_t) Q_ERRORCODE_ENUM;
+		}
+		return books[index].equip_slot;
+	/*@i1@*/}
+
+	Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+	return (ItemEquipSlot_t) Q_ERRORCODE_ENUM;
+}
+
+
+const char *
+item_reference_name_get(ItemID_t id)
+	/*@globals weapons, armour, books@*/
+{
+	ItemType_t item_type;
+	int index;
+
+	if ((item_type = item_type_get(id)) == (ItemType_t) Q_ERRORCODE_ENUM) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+
+	switch (item_type) {
+	case ITEM_TYPE_WEAPON:
+		if ((index = item_reference_weapons_index_get(id)) == Q_ERRORCODE_INT) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return NULL;
+		}
+		return weapons[index].name;
+	case ITEM_TYPE_ARMOUR:
+		if ((index = item_reference_armour_index_get(id)) == Q_ERRORCODE_INT) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return NULL;
+		}
+		return armour[index].name;
+	case ITEM_TYPE_BOOK:
+		if ((index = item_reference_books_index_get(id)) == Q_ERRORCODE_INT) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return NULL;
+		}
+		return books[index].name;
+	/*@i1@*/}
+
+	Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+	return NULL;
+}
+
+
+const char *
+item_reference_description_get(ItemID_t id)
+	/*@globals weapons, armour, books@*/
+{
+	ItemType_t item_type;
+	int index;
+
+	if ((item_type = item_type_get(id)) == (ItemType_t) Q_ERRORCODE_ENUM) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+
+	switch (item_type) {
+	case ITEM_TYPE_WEAPON:
+		if ((index = item_reference_weapons_index_get(id)) == Q_ERRORCODE_INT) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return NULL;
+		}
+		return weapons[index].description;
+	case ITEM_TYPE_ARMOUR:
+		if ((index = item_reference_armour_index_get(id)) == Q_ERRORCODE_INT) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return NULL;
+		}
+		return armour[index].description;
+	case ITEM_TYPE_BOOK:
+		if ((index = item_reference_books_index_get(id)) == Q_ERRORCODE_INT) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return NULL;
+		}
+		return books[index].description;
+	/*@i1@*/}
+
+	Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+	return NULL;
+}
+
+
+int
+item_reference_weapon_damage_get(ItemID_t id)
+	/*@globals weapons@*/
+{
+	int index;
+	if ((index = item_reference_weapons_index_get(id)) == Q_ERRORCODE_INT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERRORCODE_INT;
+	}
+
+	return weapons[index].damage;
+}
+
+
+int
+item_reference_weapon_max_range_get(ItemID_t id)
+	/*@globals weapons@*/
+{
+	int index;
+	if ((index = item_reference_weapons_index_get(id)) == Q_ERRORCODE_INT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERRORCODE_INT;
+	}
+
+	return weapons[index].max_range;
+}
+
+
+double
+item_reference_weapon_hit_chance_get(ItemID_t id)
+	/*@globals weapons@*/
+{
+	int index;
+	if ((index = item_reference_weapons_index_get(id)) == Q_ERRORCODE_INT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERRORCODE_DOUBLE;
+	}
+
+	return weapons[index].hit_chance;
+}
+
+
+double
+item_reference_weapon_armour_penetration_get(ItemID_t id)
+	/*@globals weapons@*/
+{
+	int index;
+	if ((index = item_reference_weapons_index_get(id)) == Q_ERRORCODE_INT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERRORCODE_DOUBLE;
+	}
+
+	return weapons[index].armour_penetration;
+}
+
+
+int
+item_reference_armour_defense_get(ItemID_t id)
+	/*@globals armour@*/
+{
+	int index;
+	if ((index = item_reference_armour_index_get(id)) == Q_ERRORCODE_INT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERRORCODE_INT;
+	}
+
+	return armour[index].defense;
+}
+
+
+double
+item_reference_armour_encumberance_get(ItemID_t id)
+	/*@globals armour@*/
+{
+	int index;
+	if ((index = item_reference_armour_index_get(id)) == Q_ERRORCODE_INT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERRORCODE_DOUBLE;
+	}
+
+	return armour[index].encumberance;
+}
+
+
+double
+item_reference_armour_warmth_get(ItemID_t id)
+	/*@globals armour@*/
+{
+	int index;
+	if ((index = item_reference_armour_index_get(id)) == Q_ERRORCODE_INT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERRORCODE_DOUBLE;
+	}
+
+	return armour[index].warmth;
+}
+
+
+const char *
+item_reference_book_filename_get(ItemID_t id)
+	/*@globals books@*/
+{
+	int index;
+	if ((index = item_reference_books_index_get(id)) == Q_ERRORCODE_INT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+
+	return books[index].book_filename;
+}
+
+
+/**
+ * Get the index of the #ItemReferenceWeapon_t from the weapons.
+ * @param[in] id: #ItemID_t to match.
+ * @return index of @p id match or #Q_ERRORCODE_INT.
+ */
+int
+item_reference_weapons_index_get(ItemID_t id)
+/*@globals weapons@*/ {
+	for (int i = 0; i < ITEM_WEAPONSC; i++) {
+		if (weapons[i].id == id) {
+			return i;
+		}
+	}
+	return Q_ERRORCODE_INT;
+}
+
+
+/**
+ * Get the index of the #ItemReferenceArmour_t from the armour.
+ * @param[in] id: #ItemID_t to match.
+ * @return index of @p id match or #Q_ERRORCODE_INT.
+ */
+int
+item_reference_armour_index_get(ItemID_t id)
+/*@globals armour@*/ {
+	for (int i = 0; i < ITEM_ARMOURC; i++) {
+		if (armour[i].id == id) {
+			return i;
+		}
+	}
+	return Q_ERRORCODE_INT;
+}
+
+
+/**
+ * Get the index of the #ItemReferenceBook_t from the books.
+ * @param[in] id: #ItemID_t to match.
+ * @return index of @p id match or #Q_ERRORCODE_INT.
+ */
+int
+item_reference_books_index_get(ItemID_t id)
+/*@globals books@*/ {
+	for (int i = 0; i < ITEM_BOOKC; i++) {
+		if (books[i].id == id) {
+			return i;
+		}
+	}
+	return Q_ERRORCODE_INT;
+}
 
 
 /**
@@ -200,7 +477,7 @@ item_isbook(ItemID_t id) {
  * @return corresponding #ItemType_t or #Q_ERRORCODE_ENUM on error.
  */
 ItemType_t
-item_gettype(ItemID_t id) {
+item_type_get(ItemID_t id) {
 	if ((id >= ITEM_ID_WEAPON_MIN) && (id <= ITEM_ID_WEAPON_MAX)) {
 		return ITEM_TYPE_WEAPON;
 	} else if ((id >= ITEM_ID_ARMOUR_MIN) && (id <= ITEM_ID_ARMOUR_MAX)) {

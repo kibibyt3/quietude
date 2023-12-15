@@ -80,9 +80,75 @@ typedef struct ItemReferenceBook_t {
 } ItemReferenceBook_t;
 
 
+/**
+ * @defgroup ItemReferenceGetters Item Reference Getters
+ * Get members from item reference arrays, as indexed by an #ItemID_t.
+ * @{
+ */
 
-extern bool item_isweapon(ItemID_t id);
-extern bool item_isarmour(ItemID_t id);
-extern bool item_isbook(ItemID_t id);
+/**
+ * @defgroup ItemReferenceGettersUniversal Universal Item Reference Getters
+ * Getters for members shared among each item reference type.
+ * @{
+ */
 
-extern ItemType_t item_gettype(ItemID_t id);
+extern ItemEquipSlot_t item_reference_equip_slot_get(ItemID_t id)
+	/*@globals internalState@*/;
+
+/*@observer@*//*@null@*/
+extern const char     *item_reference_name_get(ItemID_t id)
+	/*@globals internalState@*/;
+
+/*@observer@*//*@null@*/
+extern const char     *item_reference_description_get(ItemID_t id)
+	/*@globals internalState@*/;
+
+/** @} */
+
+extern int item_reference_weapon_damage_get(ItemID_t id)
+	/*@globals internalState@*/;
+extern int item_reference_weapon_max_range_get(ItemID_t id)
+	/*@globals internalState@*/;
+extern double item_reference_weapon_hit_chance_get(ItemID_t id)
+	/*@globals internalState@*/;
+extern double item_reference_weapon_armour_penetration_get(ItemID_t id)
+	/*@globals internalState@*/;
+
+extern int item_reference_armour_defense_get(ItemID_t id)
+	/*@globals internalState@*/;
+extern double item_reference_armour_encumberance_get(ItemID_t id)
+	/*@globals internalState@*/;
+extern double item_reference_armour_warmth_get(ItemID_t id)
+	/*@globals internalState@*/;
+
+/*@observer@*//*@null@*/
+extern const char *item_reference_book_filename_get(ItemID_t id)
+	/*@globals internalState@*/;
+
+/** @} */
+
+
+/**
+ * @defgroup ItemReferenceIndexGetters Item Reference Index Getters
+ * Functions to get indexes for item references from item reference arrays.
+ * @{
+ */
+extern int  item_reference_weapons_index_get(ItemID_t id)
+	/*@globals internalState@*/;
+extern int  item_reference_armour_index_get(ItemID_t id)
+	/*@globals internalState@*/;
+extern int  item_reference_books_index_get(ItemID_t id)
+	/*@globals internalState@*/;
+/** @} */
+
+/**
+ * @defgroup ItemIstypeFunctions Item Istype Functions
+ * Determines if a given #ItemID_t refers to a specific #ItemType_t.
+ * @{
+ */
+extern bool item_isweapon(ItemID_t id)/*@*/;
+extern bool item_isarmour(ItemID_t id)/*@*/;
+extern bool item_isbook(ItemID_t id)/*@*/;
+/** @} */
+
+extern ItemType_t item_type_get(ItemID_t id)/*@*/;
