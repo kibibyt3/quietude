@@ -21,11 +21,9 @@
 #include "dialogue.h"
 #include "qwalk.h"
 #include "qwins.h"
+#include "item.h"
 
 
-/*
-#include "mode.h"
-*/
 
 #define COUNT 5
 #define FILENAME "saves/test.sav"
@@ -36,6 +34,7 @@
 
 static void test_qwins(void);
 static void test_qutils(void);
+static void test_item(void);
 
 
 
@@ -49,6 +48,8 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	Q_IFERROR(1 == 1 && 2 == 2, (Qerror_t) QERROR_MODULE_UNINITIALIZED);
 	Q_IFERROR(true, 0);
 	fprintf(stderr, "------END PHONY ERRORS------\n\n\n");
+
+	test_item();
 
 	test_qutils();
 
@@ -564,6 +565,80 @@ test_qutils() {
 
 	r = qutils_distance_calculate(0, 0, 30, 12);
 	printf("Expects: 32; Gets: %i\n", r);
+
+	return;
+}
+
+
+void
+test_item() {
+	if (item_reference_equip_slot_get(ITEM_ID_WEAPON_SHORTSWORD)
+			!= ITEM_EQUIP_SLOT_HANDS) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+	if (item_reference_equip_slot_get(ITEM_ID_ARMOUR_KNIGHT)
+			!= ITEM_EQUIP_SLOT_BODY) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+	if (item_reference_equip_slot_get(ITEM_ID_BOOK_A)
+			!= ITEM_EQUIP_SLOT_HANDS) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
+	if (strcmp(item_reference_name_get(ITEM_ID_WEAPON_BASTARDSWORD),
+				"bastard sword") != 0) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+	if (strcmp(item_reference_name_get(ITEM_ID_ARMOUR_HAUBERK),
+				"hauberk") != 0) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+	if (strcmp(item_reference_name_get(ITEM_ID_BOOK_ILOVEYOU),
+				"book: ILOVEYOU") != 0) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
+	if (item_reference_weapon_damage_get(ITEM_ID_WEAPON_ZWEIHANDER) != 5) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+	if (item_reference_weapon_max_range_get(ITEM_ID_WEAPON_ZWEIHANDER) != 2) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+	if (item_reference_weapon_hit_chance_get(ITEM_ID_WEAPON_SHORTSWORD) != 0.7) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+	if (item_reference_weapon_armour_penetration_get(ITEM_ID_WEAPON_SHORTSWORD)
+			!= 0.2) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
+	if (item_reference_armour_defense_get(ITEM_ID_ARMOUR_CLOAK) != 0) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
+	if (strcmp(item_reference_book_filename_get(ITEM_ID_BOOK_A), "a.txt") != 0) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
+	if (!item_isweapon(ITEM_ID_WEAPON_ZWEIHANDER)) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+	if (!item_isarmour(ITEM_ID_ARMOUR_KNIGHT)) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+	if (!item_isbook(ITEM_ID_BOOK_BABEL)) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
+	if (item_isweapon(ITEM_ID_BOOK_A)) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+	if (item_isarmour(ITEM_ID_WEAPON_BASTARDSWORD)) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+	if (item_isbook(ITEM_ID_ARMOUR_HAUBERK)) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
 
 	return;
 }
