@@ -566,6 +566,14 @@ test_qutils() {
 	r = qutils_distance_calculate(0, 0, 30, 12);
 	printf("Expects: 32; Gets: %i\n", r);
 
+	if (qutils_doubles_areequal(0.01, 0.02)) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
+	if (!qutils_doubles_areequal(0.00000001, 0.000000011)) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
 	return;
 }
 
