@@ -86,12 +86,22 @@ typedef struct ItemReferenceBook_t {
 
 
 
+/** Used to set an equip slot as empty. */
+#define ITEM_INVENTORY_EQUIP_SLOT_EMPTY -1000
 typedef struct ItemInventory_t {
 	ItemID_t *items;
 	int items_max;
 	int index_ok;
-	ItemID_t equip_slot_hands;
-	ItemID_t equip_slot_body;
+	/**
+	 * Index in @ref ItemInventory_t.items to equip to hands.
+	 * Can be set to #ITEM_INVENTORY_EQUIP_SLOT_EMPTY if nothing is equipped.
+	 */
+	int equip_slot_hands;
+	/**
+	 * Index in @ref ItemInventory_t.items to equip to body.
+	 * Can be set to #ITEM_INVENTORY_EQUIP_SLOT_EMPTY if nothing is equipped.
+	 */
+	int equip_slot_body;
 } ItemInventory_t;
 
 
@@ -102,6 +112,7 @@ typedef struct ItemInventory_t {
  * @{
  */
 
+#define ITEM_INVENTORY_ITEMS_MAX_DEFAULT 15
 extern ItemInventory_t *item_inventory_create(void)/*@*/;
 
 extern void item_inventory_destroy(ItemInventory_t *inventory)
@@ -119,11 +130,14 @@ extern ItemInventory_t *item_inventory_read(void);
 extern int item_inventory_item_set(ItemInventory_t *inventory, ItemID_t id)
 	/*@modifies inventory@*/;
 
+extern int item_inventory_item_unset(ItemInventory_t *inventory, int index)
+	/*@modifies inventory@*/;
+
 extern int item_inventory_items_max_set(
 		ItemInventory_t *inventory, int items_max)/*@modifies inventory@*/;
 
 extern int item_inventory_equip_slot_set(
-		ItemInventory_t *inventory, ItemEquipSlot_t equip_slot)
+		ItemInventory_t *inventory, ItemEquipSlot_t equip_slot, int index)
 	/*@modifies inventory@*/;
 
 /** @} */
