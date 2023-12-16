@@ -118,3 +118,19 @@ void
 qutils_nobias_srand() {
 	srand((unsigned) time(0));
 }
+
+
+/**
+ * Check if two given `double` values are equal.
+ * Uses #QUTILS_DOUBLES_AREEQUAL_TOLERANCE as a tolerance for comparison.
+ * @param [in] lhd: left-hand `double` to compare.
+ * @param [in] rhd: right-hand `double` to compare.
+ * @return `false` if @p lhd and @p rhd compare unequal, and `true` otherwise.
+ */
+bool
+qutils_doubles_areequal(double lhd, double rhd) {
+	if (fabs(lhd - rhd) > QUTILS_DOUBLES_AREEQUAL_TOLERANCE) {
+		return false;
+	}
+	return true;
+}
