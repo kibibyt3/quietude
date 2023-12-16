@@ -8,7 +8,9 @@
 
 typedef enum ItemID_t {
 
-	ITEM_ID_WEAPON_MIN = Q_ENUM_VALUE_START,
+	ITEM_ID_EMPTY = Q_ENUM_VALUE_START,
+
+	ITEM_ID_WEAPON_MIN,
 	ITEM_ID_WEAPON_SHORTSWORD = ITEM_ID_WEAPON_MIN,
 	ITEM_ID_WEAPON_BASTARDSWORD,
 	ITEM_ID_WEAPON_ZWEIHANDER,
@@ -32,21 +34,22 @@ typedef enum ItemID_t {
 
 
 
-typedef enum ItemEquipSlot_t {
-	ITEM_EQUIP_SLOT_HANDS = Q_ENUM_VALUE_START,
-	ITEM_EQUIP_SLOT_BODY,
-
-	ITEM_EQUIP_SLOT_COUNT = ITEM_EQUIP_SLOT_BODY
-} ItemEquipSlot_t;
-
-
-
 typedef enum ItemType_t {
 	ITEM_TYPE_WEAPON = Q_ENUM_VALUE_START,
 	ITEM_TYPE_ARMOUR,
 	ITEM_TYPE_BOOK,
 	ITEM_TYPE_COUNT = ITEM_TYPE_BOOK
 } ItemType_t;
+
+
+typedef enum ItemEquipSlot_t {
+	/** Used to refer to @ref ItemInventory_t.equip_slot_hands. */
+	ITEM_EQUIP_SLOT_HANDS = Q_ENUM_VALUE_START,
+	/** Used to refer to @ref ItemInventory_t.equip_slot_body. */
+	ITEM_EQUIP_SLOT_BODY,
+
+	ITEM_EQUIP_SLOT_COUNT = ITEM_EQUIP_SLOT_BODY
+} ItemEquipSlot_t;
 
 
 
@@ -61,6 +64,7 @@ typedef struct ItemReferenceWeapon_t {
 	double armour_penetration;
 } ItemReferenceWeapon_t;
 
+
 typedef struct ItemReferenceArmour_t {
 	ItemID_t id;
 	ItemEquipSlot_t equip_slot;
@@ -71,6 +75,7 @@ typedef struct ItemReferenceArmour_t {
 	double warmth;
 } ItemReferenceArmour_t;
 
+
 typedef struct ItemReferenceBook_t {
 	ItemID_t id;
 	ItemEquipSlot_t equip_slot;
@@ -78,6 +83,68 @@ typedef struct ItemReferenceBook_t {
 	/*@observer@*/const char *description;
 	/*@observer@*/const char *book_filename;
 } ItemReferenceBook_t;
+
+
+
+typedef struct ItemInventory_t {
+	ItemID_t *items;
+	int items_max;
+	int index_ok;
+	ItemID_t equip_slot_hands;
+	ItemID_t equip_slot_body;
+} ItemInventory_t;
+
+
+
+/**
+ * @defgroup ItemInventoryInterface Item Inventory Interface
+ * Interface for #ItemInventory_t.
+ * @{
+ */
+
+extern ItemInventory_t *item_inventory_create(void)/*@*/;
+
+extern void item_inventory_destroy(ItemInventory_t *inventory)
+	/*@modifies inventory@*/;
+
+extern int item_inventory_write(ItemInventory_t *inventory);
+extern ItemInventory_t *item_inventory_read(void);
+
+
+/**
+ * @defgroup ItemInventorySetters Item Inventory Setters
+ * @{
+ */
+
+extern int item_inventory_item_set(ItemInventory_t *inventory, ItemID_t id)
+	/*@modifies inventory@*/;
+
+extern int item_inventory_items_max_set(
+		ItemInventory_t *inventory, int items_max)/*@modifies inventory@*/;
+
+extern int item_inventory_equip_slot_set(
+		ItemInventory_t *inventory, ItemEquipSlot_t equip_slot)
+	/*@modifies inventory@*/;
+
+/** @} */
+
+
+/**
+ * @defgroup ItemInventoryGetters Item Inventory Getters
+ * @{
+ */
+
+extern ItemID_t item_inventory_item_get(ItemInventory_t *inventory, int index)
+	/*@*/;
+extern int item_inventory_items_max_get(ItemInventory_t *inventory)/*@*/;
+extern int item_inventory_index_ok_get(ItemInventory_t *inventory)/*@*/;
+extern ItemID_t item_inventory_equip_slot_get(
+		ItemInventory_t *inventory, ItemEquipSlot_t equip_slot)/*@*/;
+
+/** @} */
+
+
+/** @} */
 
 
 /**
