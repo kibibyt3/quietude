@@ -593,16 +593,23 @@ test_item() {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 	}
 
-	if (strcmp(item_reference_name_get(ITEM_ID_WEAPON_BASTARDSWORD),
-				"bastard sword") != 0) {
+	const char *s;
+
+	if ((s = item_reference_name_get(ITEM_ID_WEAPON_BASTARDSWORD)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	} else if (strcmp(s, "bastard sword") != 0) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 	}
-	if (strcmp(item_reference_name_get(ITEM_ID_ARMOUR_HAUBERK),
-				"hauberk") != 0) {
+
+	if ((s = item_reference_name_get(ITEM_ID_ARMOUR_HAUBERK)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	} else if (strcmp(s, "hauberk") != 0) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 	}
-	if (strcmp(item_reference_name_get(ITEM_ID_BOOK_ILOVEYOU),
-				"book: ILOVEYOU") != 0) {
+
+	if ((s = item_reference_name_get(ITEM_ID_BOOK_ILOVEYOU)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	} else if (strcmp(s, "book: ILOVEYOU") != 0) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 	}
 
@@ -612,11 +619,13 @@ test_item() {
 	if (item_reference_weapon_max_range_get(ITEM_ID_WEAPON_ZWEIHANDER) != 2) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 	}
-	if (item_reference_weapon_hit_chance_get(ITEM_ID_WEAPON_SHORTSWORD) != 0.7) {
+	if (!qutils_doubles_areequal(
+				item_reference_weapon_hit_chance_get(ITEM_ID_WEAPON_SHORTSWORD), 0.7)) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 	}
-	if (item_reference_weapon_armour_penetration_get(ITEM_ID_WEAPON_SHORTSWORD)
-			!= 0.2) {
+	if (!qutils_doubles_areequal(
+				item_reference_weapon_armour_penetration_get(ITEM_ID_WEAPON_SHORTSWORD),
+			0.2)) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 	}
 
@@ -624,7 +633,9 @@ test_item() {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 	}
 
-	if (strcmp(item_reference_book_filename_get(ITEM_ID_BOOK_A), "a.txt") != 0) {
+	if ((s = item_reference_book_filename_get(ITEM_ID_BOOK_A)) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	} else if (strcmp(s, "a.txt") != 0) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 	}
 
