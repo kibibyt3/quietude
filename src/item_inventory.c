@@ -8,9 +8,12 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 
-#include <qdefs.h>
-#include <qerror.h>
+#include "qdefs.h"
+#include "qerror.h"
+
+#include "item.h"
 
 
 
@@ -35,7 +38,7 @@ item_inventory_create(void) {
 	}
 
 	for (int i = 0; i < ITEM_INVENTORY_ITEMS_MAX_DEFAULT; i++) {
-		inventory[i] = ITEM_ID_EMPTY;
+		inventory->items[i] = ITEM_ID_EMPTY;
 	}
 
 	inventory->items_max = ITEM_INVENTORY_ITEMS_MAX_DEFAULT;
@@ -145,7 +148,7 @@ int
 item_inventory_equip_slot_set(
 		ItemInventory_t *inventory, ItemEquipSlot_t equip_slot, int index) {
 
-	ItemEquipSlot_t *equip_slotp;
+	int *equip_slotp;
 
 	if (index >= inventory->items_max) {
 		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
@@ -159,6 +162,9 @@ item_inventory_equip_slot_set(
 	case ITEM_EQUIP_SLOT_HANDS:
 		equip_slotp = &(inventory->equip_slot_hands);
 		break;
+	default:
+		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+		return Q_ERROR;
 	}
 
 	if (index >= inventory->index_ok) {
