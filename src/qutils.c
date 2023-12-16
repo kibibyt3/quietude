@@ -129,7 +129,7 @@ qutils_nobias_srand() {
  */
 bool
 qutils_doubles_areequal(double lhd, double rhd) {
-	if (fabs(lhd - rhd) > QUTILS_DOUBLES_AREEQUAL_TOLERANCE) {
+	/*@i1@*/if (fabs(lhd - rhd) > QUTILS_DOUBLES_AREEQUAL_TOLERANCE) {
 		return false;
 	}
 	return true;
