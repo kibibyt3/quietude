@@ -1,6 +1,7 @@
 /**
  * @file qfile.h
  * Header file for the file module of Q.
+ * Depends on @ref item.h.
  */
 
 
@@ -67,6 +68,8 @@ extern           int          qfile_size_write(size_t);
 /** Write a #QattrKey_t to storage.   */
 extern           int          qfile_qattr_key_write(QattrKey_t);
 
+extern           int          qfile_item_id_write(ItemID_t id);
+
 
 /** Read a #Qdatameta_t from a file.  */
 extern /*@null@*/Qdatameta_t *qfile_qdatameta_read(void);
@@ -82,6 +85,8 @@ extern           size_t      qfile_size_read(void);
 
 /** Read a #QattrKey_t from storage.  */
 extern           QattrKey_t  qfile_qattr_key_read(void);
+
+extern           ItemID_t    qfile_item_id_read(void);
 
 /** Read a #Qdata_t from a file.      */
 extern /*@null@*/Qdata_t    *qfile_qdata_read(QdataType_t, size_t);
