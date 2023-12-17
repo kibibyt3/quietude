@@ -130,9 +130,6 @@ extern ItemInventory_t *item_inventory_read(void);
 extern int item_inventory_item_set(ItemInventory_t *inventory, ItemID_t id)
 	/*@modifies inventory@*/;
 
-extern int item_inventory_item_unset(ItemInventory_t *inventory, int index)
-	/*@modifies inventory@*/;
-
 extern int item_inventory_items_max_set(
 		ItemInventory_t *inventory, int items_max)/*@modifies inventory@*/;
 
