@@ -113,12 +113,14 @@ typedef struct ItemInventory_t {
  */
 
 #define ITEM_INVENTORY_ITEMS_MAX_DEFAULT 15
+/*@null@*/
 extern ItemInventory_t *item_inventory_create(void)/*@*/;
 
-extern void item_inventory_destroy(ItemInventory_t *inventory)
+extern void item_inventory_destroy(/*@only@*/ItemInventory_t *inventory)
 	/*@modifies inventory@*/;
 
 extern int item_inventory_write(ItemInventory_t *inventory);
+/*@null@*/
 extern ItemInventory_t *item_inventory_read(void);
 
 

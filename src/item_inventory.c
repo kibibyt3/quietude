@@ -39,6 +39,10 @@ item_inventory_create(void) {
 		return NULL;
 	}
 
+#ifdef S_SPLINT_S
+	*(inventory->items) = ITEM_ID_EMPTY;
+#endif
+
 	for (int i = 0; i < ITEM_INVENTORY_ITEMS_MAX_DEFAULT; i++) {
 		inventory->items[i] = ITEM_ID_EMPTY;
 	}
@@ -134,11 +138,17 @@ item_inventory_read() {
 		return NULL;
 	}
 
-	if ((inventory->items = calloc((size_t) items_max, *inventory->items))
+	if ((inventory->items = calloc(
+					(size_t) items_max, sizeof(*inventory->items)))
 			== NULL) {
 		Q_ERROR_SYSTEM("calloc()");
+		free(inventory);
 		return NULL;
 	}
+
+#ifdef S_SPLINT_S
+	*(inventory->items) = ITEM_ID_EMPTY;
+#endif
 
 	for (int i = 0; i < items_max; i++) {
 		if ((inventory->items[i] = qfile_item_id_read())
@@ -205,6 +215,10 @@ item_inventory_items_max_set(ItemInventory_t *inventory, int items_max) {
 		Q_ERROR_SYSTEM("calloc()");
 		return Q_ERROR;
 	}
+
+#ifdef S_SPLINT_S
+	*(items_new) = ITEM_ID_EMPTY;
+#endif
 
 	for (int i = 0; i < items_max; i++) {
 		if (i < inventory->index_ok) {
