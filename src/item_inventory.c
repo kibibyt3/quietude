@@ -276,3 +276,65 @@ item_inventory_equip_slot_set(
 
 	return Q_OK;
 }
+
+
+/**
+ * Get an element from @ref ItemInventory_t.items.
+ * @param[in] inventory: #ItemInventory_t in question.
+ * @param[in] index: index in @ref ItemInventory_t.items to fetch.
+ * @return fetched #ItemID_t or #Q_ERRORCODE_ENUM.
+ */
+ItemID_t
+item_inventory_item_get(ItemInventory_t *inventory, int index) {
+
+	if (index >= inventory->items_max) {
+		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
+		return (ItemID_t) Q_ERRORCODE_ENUM;
+	}
+
+	return inventory->items[index];
+}
+
+
+/**
+ * Get @ref ItemInventory_t.items_max.
+ * @param[in] #ItemInventory_t in question.
+ * @return requested value.
+ */
+int
+item_inventory_items_max_get(ItemInventory_t *inventory) {
+	return inventory->items_max;
+}
+
+
+/**
+ * Get @ref ItemInventory_t.index_ok.
+ * @param[in] #ItemInventory_t in question.
+ * @return requested value.
+ */
+int
+item_inventory_index_ok_get(ItemInventory_t *inventory) {
+	return inventory->index_ok;
+}
+
+
+/**
+ * Get the index in an item inventory of the item in an #ItemEquipSlot_t.
+ * @param[in] inventory: #ItemInventory_t to search through.
+ * @param[in] equip_slot: #ItemEquipSlot_t to fetch.
+ * @return requested value or #Q_ERRORCODE_INT.
+ */
+int
+item_inventory_equip_slot_get(
+		ItemInventory_t *inventory, ItemEquipSlot_t equip_slot) {
+	
+	switch (equip_slot) {
+	case ITEM_EQUIP_SLOT_BODY:
+		return inventory->equip_slot_body;
+	case ITEM_EQUIP_SLOT_HANDS:
+		return inventory->equip_slot_hands;
+	default:
+		Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+		return Q_ERRORCODE_INT;
+	}
+}
