@@ -13,7 +13,9 @@
 #include "qdefs.h"
 #include "qerror.h"
 
+#include "qattr.h"
 #include "item.h"
+#include "qfile.h"
 
 
 
@@ -63,13 +65,97 @@ item_inventory_destroy(ItemInventory_t *inventory) {
 
 int
 item_inventory_write(ItemInventory_t *inventory) {
+
+	if (qfile_int_write(inventory->items_max) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+
+	if (qfile_int_write(inventory->index_ok) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+
+	if (qfile_int_write(inventory->equip_slot_hands) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+
+	if (qfile_int_write(inventory->equip_slot_body) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+
+	for (int i = 0; i < inventory->items_max; i++) {
+		if (qfile_item_id_write(inventory->items[i]) == Q_ERROR) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			return Q_ERROR;
+		}
+	}
+
+
+
 	return Q_OK;
 }
 
 
 ItemInventory_t *
 item_inventory_read() {
-	return NULL;
+
+	int items_max;
+	int index_ok;
+	int equip_slot_hands;
+	int equip_slot_body;
+
+	if ((items_max = qfile_int_read()) == Q_ERRORCODE_INT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+
+	if ((index_ok = qfile_int_read()) == Q_ERRORCODE_INT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+
+	if ((equip_slot_hands = qfile_int_read()) == Q_ERRORCODE_INT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+
+	if ((equip_slot_body = qfile_int_read()) == Q_ERRORCODE_INT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return NULL;
+	}
+
+	ItemInventory_t *inventory;
+
+	if ((inventory = calloc((size_t) 1, sizeof(*inventory))) == NULL) {
+		Q_ERROR_SYSTEM("calloc()");
+		return NULL;
+	}
+
+	if ((inventory->items = calloc((size_t) items_max, *inventory->items))
+			== NULL) {
+		Q_ERROR_SYSTEM("calloc()");
+		return NULL;
+	}
+
+	for (int i = 0; i < items_max; i++) {
+		if ((inventory->items[i] = qfile_item_id_read())
+				== (ItemID_t) Q_ERRORCODE_ENUM) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			free(inventory->items);
+			free(inventory);
+			return NULL;
+		}
+	}
+
+	inventory->items_max = items_max;
+	inventory->index_ok = index_ok;
+	inventory->equip_slot_hands = equip_slot_hands;
+	inventory->equip_slot_body = equip_slot_body;
+
+	return inventory;
 }
 
 
