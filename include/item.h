@@ -151,7 +151,7 @@ extern ItemID_t item_inventory_item_get(ItemInventory_t *inventory, int index)
 	/*@*/;
 extern int item_inventory_items_max_get(ItemInventory_t *inventory)/*@*/;
 extern int item_inventory_index_ok_get(ItemInventory_t *inventory)/*@*/;
-extern ItemID_t item_inventory_equip_slot_get(
+extern int item_inventory_equip_slot_get(
 		ItemInventory_t *inventory, ItemEquipSlot_t equip_slot)/*@*/;
 
 /** @} */
