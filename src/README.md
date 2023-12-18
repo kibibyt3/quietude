@@ -13,6 +13,7 @@ This directory holds the source files for Q.
 ├── dialoguel.c
 ├── ioutils.c
 ├── item.c
+├── item_inventory.c
 ├── main.c
 ├── mode.c
 ├── mode.c.old
@@ -29,5 +30,5 @@ This directory holds the source files for Q.
 ├── README.md
 └── test.c
 
-1 directory, 25 files
+1 directory, 26 files
 ```

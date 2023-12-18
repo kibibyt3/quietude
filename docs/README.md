@@ -43,6 +43,7 @@
 │   ├── dialoguel.c
 │   ├── ioutils.c
 │   ├── item.c
+│   ├── item_inventory.c
 │   ├── main.c
 │   ├── mode.c
 │   ├── mode.c.old
@@ -60,5 +61,5 @@
 │   └── test.c
 └── TODO.md
 
-10 directories, 50 files
+10 directories, 51 files
 ```
