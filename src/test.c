@@ -35,6 +35,7 @@
 static void test_qwins(void);
 static void test_qutils(void);
 static void test_item(void);
+static void test_item_inventory(void); 
 
 
 
@@ -52,6 +53,8 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	test_item();
 
 	test_qutils();
+
+	test_item_inventory();
 
 	qutils_nobias_srand();
 	printf("randval: %i\n", qutils_nobias_rand(8));
@@ -658,6 +661,22 @@ test_item() {
 	if (item_isbook(ITEM_ID_ARMOUR_HAUBERK)) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 	}
+
+	return;
+}
+
+
+void
+test_item_inventory() {
+
+	ItemInventory_t *inventory;
+
+	if ((inventory = item_inventory_create()) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return;
+	}
+
+	item_inventory_destroy(inventory);
 
 	return;
 }
