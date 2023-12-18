@@ -20,6 +20,7 @@
 #include "dialogue.h"
 #include "mode.h"
 #include "qattr.h"
+#include "item.h"
 #include "qfile.h"
 #include "qwalk.h"
 #include "qdefault.h"

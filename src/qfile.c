@@ -16,6 +16,7 @@
 #include "qerror.h"
 
 #include "qattr.h"
+#include "item.h"
 #include "qfile.h"
 
 
@@ -223,6 +224,7 @@ qfile_qdata_type_write(QdataType_t type) {
  */
 int
 qfile_qattr_key_write(QattrKey_t attr_key) {
+
 	size_t data_written_count;
 
 	if (qfile_ptr == NULL) {
@@ -240,6 +242,32 @@ qfile_qattr_key_write(QattrKey_t attr_key) {
 		return Q_ERROR;
 	}
 	
+	return Q_OK;
+}
+
+
+/**
+ * Write an #ItemID_t to storage.
+ * @param[in] id: #ItemID_t to write.
+ * @return #Q_OK or #Q_ERROR.
+ */
+int
+qfile_item_id_write(ItemID_t id) {
+
+	if (qfile_ptr == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return Q_ERROR;
+	}
+	if (qfile_mode != QFILE_MODE_WRITE) {
+		Q_ERRORFOUND(QERROR_FILE_MODE);
+		return Q_ERROR;
+	}
+
+	if (fwrite((void *) &id, sizeof(id), (size_t) 1, qfile_ptr) < (size_t) 1) {
+		Q_ERROR_SYSTEM("fwrite()");
+		return Q_ERROR;
+	}
+
 	return Q_OK;
 }
 
@@ -400,6 +428,33 @@ qfile_qattr_key_read() {
 	}
 	
 	return attr_key;
+}
+
+
+/**
+ * Read an #ItemID_t from storage.
+ * @return newly-read #ItemID_t or #Q_ERRORCODE_ENUM.
+ */
+ItemID_t
+qfile_item_id_read() {
+
+	ItemID_t id;
+
+	if (qfile_ptr == NULL) {
+		Q_ERRORFOUND(QERROR_NULL_POINTER_UNEXPECTED);
+		return (ItemID_t) Q_ERRORCODE_ENUM;
+	}
+	if (qfile_mode != QFILE_MODE_READ) {
+		Q_ERRORFOUND(QERROR_FILE_MODE);
+		return (ItemID_t) Q_ERRORCODE_ENUM;
+	}
+
+	if (fread((void *) &id, sizeof(id), (size_t) 1, qfile_ptr) < (size_t) 1) {
+		Q_ERROR_SYSTEM("fread()");
+		return (ItemID_t) Q_ERRORCODE_ENUM;
+	}
+
+	return id;
 }
 
 

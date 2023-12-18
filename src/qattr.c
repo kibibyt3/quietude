@@ -14,6 +14,7 @@
 #include "qerror.h"
 
 #include "qattr.h"
+#include "item.h"
 #include "qfile.h"
 
 

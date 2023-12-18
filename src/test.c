@@ -15,13 +15,13 @@
 #include "ioutils.h"
 
 #include "qattr.h"
+#include "item.h"
 #include "qfile.h"
 #include "qerror.h"
 #include "mode.h"
 #include "dialogue.h"
 #include "qwalk.h"
 #include "qwins.h"
-#include "item.h"
 
 
 

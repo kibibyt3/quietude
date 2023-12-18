@@ -17,6 +17,7 @@
 #include "qutils.h"
 #include "mode.h"
 #include "qattr.h"
+#include "item.h"
 #include "qfile.h"
 #include "qwins.h"
 #include "dialogue.h"
