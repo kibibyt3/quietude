@@ -23,8 +23,17 @@ typedef enum AgentType_t {
 typedef struct Agent_t {
 	AgentType_t agent_type;
 	char *name;
+	int hp_max;
 	int hp;
 	int level;
 	ItemInventory_t *inventory;
 	Qflags_t flags;
 } Agent_t;
+
+
+
+
+/*@only@*//*@null@*/
+extern Agent_t *agent_create(int preset_index);
+
+extern void agent_destroy(/*@only@*/Agent_t *agent);
