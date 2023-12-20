@@ -91,7 +91,6 @@ typedef struct ItemReferenceBook_t {
 typedef struct ItemInventory_t {
 	ItemID_t *items;
 	int items_max;
-	int index_ok;
 	/**
 	 * Index in @ref ItemInventory_t.items to equip to hands.
 	 * Can be set to #ITEM_INVENTORY_EQUIP_SLOT_EMPTY if nothing is equipped.
@@ -129,7 +128,8 @@ extern ItemInventory_t *item_inventory_read(void);
  * @{
  */
 
-extern int item_inventory_item_set(ItemInventory_t *inventory, ItemID_t id)
+extern int item_inventory_item_set(ItemInventory_t *inventory, int index,
+		ItemID_t id)
 	/*@modifies inventory@*/;
 
 extern int item_inventory_items_max_set(
@@ -150,7 +150,6 @@ extern int item_inventory_equip_slot_set(
 extern ItemID_t item_inventory_item_get(ItemInventory_t *inventory, int index)
 	/*@*/;
 extern int item_inventory_items_max_get(ItemInventory_t *inventory)/*@*/;
-extern int item_inventory_index_ok_get(ItemInventory_t *inventory)/*@*/;
 extern int item_inventory_equip_slot_get(
 		ItemInventory_t *inventory, ItemEquipSlot_t equip_slot)/*@*/;
 
