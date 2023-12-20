@@ -676,6 +676,71 @@ test_item_inventory() {
 		return;
 	}
 
+	if (item_inventory_item_get(inventory, 3) != ITEM_ID_EMPTY) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
+	if (item_inventory_item_set(inventory, 3, ITEM_ID_ARMOUR_KNIGHT)
+			== Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
+	if (item_inventory_item_get(inventory, 3) != ITEM_ID_ARMOUR_KNIGHT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
+	if (item_inventory_items_max_set(inventory, 35) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
+	if (item_inventory_item_get(inventory, 3) != ITEM_ID_ARMOUR_KNIGHT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
+	if (qfile_open("tests/inventory.dat", QFILE_MODE_WRITE) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+	if (item_inventory_write(inventory) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+	item_inventory_destroy(inventory);
+
+	if (qfile_close() == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+	if (qfile_open("tests/inventory.dat", QFILE_MODE_READ) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+	if ((inventory = item_inventory_read()) == NULL) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		abort();
+	}
+
+	if (item_inventory_item_get(inventory, 3) != ITEM_ID_ARMOUR_KNIGHT) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
+	if (item_inventory_items_max_get(inventory) != 35) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
+	if (item_inventory_equip_slot_set(
+				inventory, ITEM_EQUIP_SLOT_HANDS, 3) == Q_ERROR) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
+	if (item_inventory_equip_slot_get(inventory, ITEM_EQUIP_SLOT_HANDS) != 3) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+
 	item_inventory_destroy(inventory);
 
 	return;
