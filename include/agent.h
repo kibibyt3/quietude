@@ -6,19 +6,25 @@
 
 
 
+/**
+ * Type of an #Agent_t.
+ */
+typedef enum AgentType_t {
+
+	AGENT_TYPE_PLAYER = Q_ENUM_VALUE_START, /** Player type. */
+	AGENT_TYPE_NPC_FRIENDLY, /**< Friendly NPC type. */
+	AGENT_TYPE_NPC_ENEMY, /**< Enemy NPC type. */
+
+	/** Number of possible values for an #AgentType_t. */
+	AGENT_TYPE_COUNT = AGENT_TYPE_NPC_ENEMY
+
+} AgentType_t;
+
 typedef struct Agent_t {
+	AgentType_t agent_type;
 	char *name;
 	int hp;
 	int level;
-	Qflags_t status_flags;
+	ItemInventory_t *inventory;
+	Qflags_t flags;
 } Agent_t;
-
-typedef struct Player_t {
-	Agent_t agent;
-	Qflags_t progress_flags;
-} Player_t;
-
-typedef struct AgentMain_t {
-	Agent_t agent;
-	Qflags_t tree_flags;
-}
