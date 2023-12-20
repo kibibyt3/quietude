@@ -48,7 +48,6 @@ item_inventory_create(void) {
 	}
 
 	inventory->items_max = ITEM_INVENTORY_ITEMS_MAX_DEFAULT;
-	inventory->index_ok = 0;
 
 	inventory->equip_slot_hands = ITEM_INVENTORY_EQUIP_SLOT_EMPTY;
 	inventory->equip_slot_body = ITEM_INVENTORY_EQUIP_SLOT_EMPTY;
@@ -71,11 +70,6 @@ int
 item_inventory_write(ItemInventory_t *inventory) {
 
 	if (qfile_int_write(inventory->items_max) == Q_ERROR) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-		return Q_ERROR;
-	}
-
-	if (qfile_int_write(inventory->index_ok) == Q_ERROR) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return Q_ERROR;
 	}
@@ -107,16 +101,10 @@ ItemInventory_t *
 item_inventory_read() {
 
 	int items_max;
-	int index_ok;
 	int equip_slot_hands;
 	int equip_slot_body;
 
 	if ((items_max = qfile_int_read()) == Q_ERRORCODE_INT) {
-		Q_ERRORFOUND(QERROR_ERRORVAL);
-		return NULL;
-	}
-
-	if ((index_ok = qfile_int_read()) == Q_ERRORCODE_INT) {
 		Q_ERRORFOUND(QERROR_ERRORVAL);
 		return NULL;
 	}
@@ -161,7 +149,6 @@ item_inventory_read() {
 	}
 
 	inventory->items_max = items_max;
-	inventory->index_ok = index_ok;
 	inventory->equip_slot_hands = equip_slot_hands;
 	inventory->equip_slot_body = equip_slot_body;
 
@@ -172,13 +159,14 @@ item_inventory_read() {
 /**
  * Set an #ItemID_t to belong to an #ItemInventory_t.
  * @param[out] inventory: #ItemInventory_t in question.
+ * @param[in] index: index to give @p id to.
  * @param[in] id: #ItemID_t to give to @p inventory.
  * @return #Q_OK or #Q_ERROR.
  */
 int
-item_inventory_item_set(ItemInventory_t *inventory, ItemID_t id) {
+item_inventory_item_set(ItemInventory_t *inventory, int index, ItemID_t id) {
 
-	if (inventory->index_ok >= inventory->items_max) {
+	if (index >= inventory->items_max) {
 		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
 		return Q_ERROR;
 	}
@@ -188,7 +176,7 @@ item_inventory_item_set(ItemInventory_t *inventory, ItemID_t id) {
 		return Q_ERROR;
 	}
 
-	inventory->items[inventory->index_ok++] = id;
+	inventory->items[index] = id;
 
 	return Q_OK;
 }
@@ -197,6 +185,7 @@ item_inventory_item_set(ItemInventory_t *inventory, ItemID_t id) {
 /**
  * Resize an #ItemInventory_t.
  * Change @ref ItemInventory_t.items_max and resize @ref ItemInventory_t.items.
+ * Can only be resized to be larger to prevent item deletion.
  * @param[out] inventory: #ItemInventory_t to resize.
  * @param[in] items_max: value to resize @p inventory to.
  * @return #Q_OK or #Q_ERROR.
@@ -204,7 +193,7 @@ item_inventory_item_set(ItemInventory_t *inventory, ItemID_t id) {
 int
 item_inventory_items_max_set(ItemInventory_t *inventory, int items_max) {
 
-	if (inventory->index_ok > items_max) {
+	if (inventory->items_max > items_max) {
 		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
 		return Q_ERROR;
 	}
@@ -221,7 +210,7 @@ item_inventory_items_max_set(ItemInventory_t *inventory, int items_max) {
 #endif
 
 	for (int i = 0; i < items_max; i++) {
-		if (i < inventory->index_ok) {
+		if (i < inventory->items_max) {
 			items_new[i] = inventory->items[i];
 		} else {
 			items_new[i] = ITEM_ID_EMPTY;
@@ -267,7 +256,7 @@ item_inventory_equip_slot_set(
 		return Q_ERROR;
 	}
 
-	if (index >= inventory->index_ok) {
+	if (item_inventory_item_get(inventory, index) == ITEM_ID_EMPTY) {
 		*equip_slotp = ITEM_INVENTORY_EQUIP_SLOT_EMPTY; 
 		return Q_OK;
 	}
@@ -304,17 +293,6 @@ item_inventory_item_get(ItemInventory_t *inventory, int index) {
 int
 item_inventory_items_max_get(ItemInventory_t *inventory) {
 	return inventory->items_max;
-}
-
-
-/**
- * Get @ref ItemInventory_t.index_ok.
- * @param[in] #ItemInventory_t in question.
- * @return requested value.
- */
-int
-item_inventory_index_ok_get(ItemInventory_t *inventory) {
-	return inventory->index_ok;
 }
 
 
