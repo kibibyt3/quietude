@@ -11,7 +11,7 @@
  */
 typedef enum AgentType_t {
 
-	AGENT_TYPE_PLAYER = Q_ENUM_VALUE_START, /** Player type. */
+	AGENT_TYPE_PLAYER = Q_ENUM_VALUE_START, /**< Player type. */
 	AGENT_TYPE_NPC_FRIENDLY, /**< Friendly NPC type. */
 	AGENT_TYPE_NPC_ENEMY, /**< Enemy NPC type. */
 
