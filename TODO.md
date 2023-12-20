@@ -78,4 +78,4 @@
   - [x] Lint the new functionality.
 - [ ] Create the player module.
   - [x] Create the item module.
-    - [ ] Add test cases for the item inventory module.
+    - [x] Add test cases for the item inventory module.
