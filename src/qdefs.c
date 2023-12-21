@@ -272,40 +272,39 @@ qflags_getf(int i, Qflags_t flags) {
  * @param[in] i: f member of @p flags to define.
  * @param[out] flags: #Qflags_t to search through.
  * @param[in] b: value to set the f member to.
- * @return #Q_OK or #Q_ERROR.
+ * @return updated version of @p flags.
  */
-int
-qflags_setf(int i, Qflags_t *flags, bool b) {
+Qflags_t
+qflags_internal_setf(int i, Qflags_t flags, bool b) {
 	switch (i) {
 	case 0:
-		flags->f0 = b;
+		flags.f0 = b;
 		break;
 	case 1:
-		flags->f1 = b;
+		flags.f1 = b;
 		break;
 	case 2:
-		flags->f2 = b;
+		flags.f2 = b;
 		break;
 	case 3:
-		flags->f3 = b;
+		flags.f3 = b;
 		break;
 	case 4:
-		flags->f4 = b;
+		flags.f4 = b;
 		break;
 	case 5:
-		flags->f5 = b;
+		flags.f5 = b;
 		break;
 	case 6:
-		flags->f6 = b;
+		flags.f6 = b;
 		break;
 	case 7:
-		flags->f7 = b;
+		flags.f7 = b;
 		break;
 	default:
 		Q_ERRORFOUND(QERROR_PARAMETER_INVALID);
-		return Q_ERROR;
 	}
-	return Q_OK;
+	return flags;
 }
 
 

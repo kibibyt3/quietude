@@ -173,6 +173,10 @@ typedef enum QobjType_t {
 
 
 
+#define qflags_setf(i, flags, b) {flags = qflags_internal_setf(i, flags, b);}
+
+
+
 /** 
  * Type for holding arbitrary amounts of data to pass between modules. Meant to
  * be used in a pointer; it should never be called in isolation prior to being
@@ -224,8 +228,7 @@ extern Qflags_t qflags_init(void);
 
 extern bool qflags_getf(int i, Qflags_t flags)/*@*/;
 
-extern int qflags_setf(int i, Qflags_t *flags, bool b)
-	/*@modifies flags@*/;
+extern Qflags_t qflags_internal_setf(int i, Qflags_t flags, bool b);
 
 
 /** Get the size of a #QdataType_t.           */
