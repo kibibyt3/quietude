@@ -79,3 +79,6 @@
 - [ ] Create the player module.
   - [x] Create the item module.
     - [x] Add test cases for the item inventory module.
+- [ ] The `QattrList_t` type is kindof stupid. Each thing that uses it should
+  just have a unique implementation as a struct. This really sucks! This will be
+  a lot of work! Ah, well.
