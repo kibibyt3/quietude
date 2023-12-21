@@ -35,8 +35,8 @@
 static void test_qwins(void);
 static void test_qutils(void);
 static void test_item(void);
-static void test_item_inventory(void); 
-
+static void test_item_inventory(void);
+static void test_qflags(void);
 
 
 int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
@@ -55,6 +55,8 @@ int main(/*@unused@*/int argc, /*@unused@*/char** argv) {
 	test_qutils();
 
 	test_item_inventory();
+
+	test_qflags();
 
 	qutils_nobias_srand();
 	printf("randval: %i\n", qutils_nobias_rand(8));
@@ -742,6 +744,26 @@ test_item_inventory() {
 	}
 
 	item_inventory_destroy(inventory);
+
+	return;
+}
+
+
+void
+test_qflags() {
+
+	Qflags_t flags = qflags_init();
+
+	qflags_setf(3, flags, true);
+	qflags_setf(4, flags, false);
+
+	if (!qflags_getf(3, flags)) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
+	
+	if (qflags_getf(4, flags)) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+	}
 
 	return;
 }
