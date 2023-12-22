@@ -1,0 +1,6 @@
+TYPE: ENEMY
+NAME: "frank" | "bob" | "ouger" | "bong"
+HP_MAX: 10-15
+LEVEL: 3-4
+INVENTORY: BASTARDSWORD, HAUBERK
+FLAGS: 01010111
