@@ -7,10 +7,12 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #include "qdefs.h"
 #include "qerror.h"
-
+#include "item.h"
+#include "agent.h"
 
 
 
@@ -23,6 +25,12 @@ agent_create(char *preset_file) {
 
 void
 agent_destroy(/*@only@*/Agent_t *agent) {
+
+	free(agent->name);
+	free(agent->inventory);
+
+	free(agent);
+
 	return;
 }
 
@@ -134,13 +142,19 @@ agent_level_get(Agent_t *agent) {
 ItemID_t
 agent_inventory_item_id_get(Agent_t *agent, int index) {
 
+	ItemID_t id;
+	if ((id = item_inventory_item_get(agent->inventory, index))
+			== (ItemID_t) Q_ERRORCODE_ENUM) {
+		Q_ERRORFOUND(QERROR_ERRORVAL);
+		return Q_ERROR;
+	}
+
+	return id;
 }
 
 
 bool
 agent_flags_getf(int i, Agent_t *agent) {
 
+	return qflags_getf(i, agent->flags);
 }
-
-
-
