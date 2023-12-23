@@ -153,7 +153,7 @@ qutils_line_read(FILE *fp) {
 	}
 
 	int ch;
-	while ((ch = fgetc(fp)) != '\n') {
+	while ((ch = fgetc(fp)) != (int) '\n') {
 		if (ch == EOF) {
 			if (ferror(fp) != 0) {
 				Q_ERRORFOUND(QERROR_FILE_ERROR);
@@ -179,11 +179,12 @@ qutils_line_read(FILE *fp) {
 		return NULL;
 	}
 
-	while ((ch = fgetc(fp)) != '\n') {
+	while ((ch = fgetc(fp)) != (int) '\n') {
 
 		if (ch == EOF) {
 			if (ferror(fp) != 0) {
 				Q_ERRORFOUND(QERROR_FILE_ERROR);
+				free(s);
 				return NULL;
 			}
 		} else {
