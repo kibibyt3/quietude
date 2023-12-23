@@ -34,10 +34,22 @@ typedef struct Agent_t {
 } Agent_t;
 
 
+typedef enum AgentPresetFileSection_t {
+
+	AGENT_PRESET_FILE_SECTION_TYPE = Q_ENUM_VALUE_START,
+	AGENT_PRESET_FILE_SECTION_NAME,
+	AGENT_PRESET_FILE_SECTION_HP_MAX,
+	AGENT_PRESET_FILE_SECTION_LEVEL,
+	AGENT_PRESET_FILE_SECTION_INVENTORY,
+	AGENT_PRESET_FILE_SECTION_FLAGS
+
+} AgentPresetFileSection_t;
+
+
 
 
 /*@only@*//*@null@*/
-extern Agent_t	*agent_create(char *preset_file);
+extern Agent_t	*agent_create(const char *preset_file);
 extern void			agent_destroy(/*@only@*/Agent_t *agent);
 
 
