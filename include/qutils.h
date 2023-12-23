@@ -17,3 +17,6 @@ extern void qutils_nobias_srand(void);
 
 #define QUTILS_DOUBLES_AREEQUAL_TOLERANCE .00001
 extern bool qutils_doubles_areequal(double lhd, double rhd)/*@*/;
+
+/*@null@*//*@only@*/
+extern char *qutils_line_read(FILE *fp)/*@modifies fp@*/;

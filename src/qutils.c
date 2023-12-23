@@ -134,3 +134,66 @@ qutils_doubles_areequal(double lhd, double rhd) {
 	}
 	return true;
 }
+
+
+/**
+ * Get the next line in a `FILE *`.
+ * @param[out] fp: pointer to `FILE *` to read from.
+ * return allocated string containing text of next line in @p fp.
+ */
+char *
+qutils_line_read(FILE *fp) {
+
+	size_t charc = 0;
+
+	fpos_t start_pos;
+	if (fgetpos(fp, &start_pos) != 0) {
+		Q_ERROR_SYSTEM("fgetpos()");
+		return NULL;
+	}
+
+	int ch;
+	while ((ch = fgetc(fp)) != '\n') {
+		if (ch == EOF) {
+			if (ferror(fp) != 0) {
+				Q_ERRORFOUND(QERROR_FILE_ERROR);
+				return NULL;
+			}
+		} else {
+			break;
+		}
+
+		charc++;
+	}
+
+	if (fsetpos(fp, &start_pos) != 0) {
+		Q_ERROR_SYSTEM("fsetpos()");
+		return NULL;
+	}
+
+	char *s;
+	int sindex = 0;
+
+	if ((s = calloc(charc + (size_t) 1, sizeof(*s))) == NULL) {
+		Q_ERROR_SYSTEM("calloc()");
+		return NULL;
+	}
+
+	while ((ch = fgetc(fp)) != '\n') {
+
+		if (ch == EOF) {
+			if (ferror(fp) != 0) {
+				Q_ERRORFOUND(QERROR_FILE_ERROR);
+				return NULL;
+			}
+		} else {
+			break;
+		}
+
+		s[sindex++] = (char) ch;
+	}
+
+	s[charc] = '\0';
+
+	return s;
+}
