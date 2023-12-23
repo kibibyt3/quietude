@@ -37,6 +37,10 @@
 #define QERROR_STRING_SYSTEM_MEMORY \
 	"A system memory function (e.g. malloc(), calloc(), ...) failed"
 
+/** String for #QERROR_FILE_ERROR.                        */
+#define QERROR_STRING_FILE_ERROR \
+	"A file's error indicator is set"
+
 /** String for #QERROR_ZERO_VALUE_UNEXPECTED.             */
 #define QERROR_STRING_ZERO_VALUE_UNEXPECTED \
 	"Encountered unexpected zero value"
@@ -131,6 +135,9 @@ qerror_internal(Qerror_t error, const char *file, const char *func, int line) {
 		break;
 	case QERROR_SYSTEM_MEMORY:
 		strcpy(error_string, QERROR_STRING_SYSTEM_MEMORY);
+		break;
+	case QERROR_FILE_ERROR:
+		strcpy(error_string, QERROR_STRING_FILE_ERROR);
 		break;
 	case QERROR_NEGATIVE_VALUE_UNEXPECTED:
 		strcpy(error_string, QERROR_STRING_NEGATIVE_VALUE_UNEXPECTED);

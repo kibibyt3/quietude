@@ -56,6 +56,9 @@ typedef enum Qerror_t {
 	/** Error for a system memory function failing.                           */
 	QERROR_SYSTEM_MEMORY,
 
+	/** Error for a `FILE *` whose error indicator is set.                    */
+	QERROR_FILE_ERROR,
+
 	/** Error for an unexpected zero value.                                   */
 	QERROR_ZERO_VALUE_UNEXPECTED,
 
