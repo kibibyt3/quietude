@@ -18,7 +18,63 @@
 
 
 Agent_t *
-agent_create(char *preset_file) {
+agent_create(const char *preset_file) {
+
+	char *line;
+	FILE *fp;
+	if ((file = fopen(preset_file, "r")) == NULL) {
+		Q_ERROR_SYSTEM("fopen()");
+		return NULL;
+	}
+
+	AgentPresetFileSection_t preset_file_section;
+
+	AgentType_t type;
+	char **names;
+	int hp_range[2];
+	int level_range[2];
+	ItemID_t *ids;
+	Qflags_t flags;
+
+	while (feof(fp) == 0) {
+		if ((line = qutils_line_read(fp)) == NULL) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			abort();
+		}
+
+		if ((preset_file_section = agent_preset_file_line_section_find(line))
+				== (AgentPresetFileSection_t) Q_ERRORCODE_ENUM) {
+			Q_ERRORFOUND(QERROR_ERRORVAL);
+			abort();
+		}
+
+		switch (preset_file_section) {
+		case AGENT_PRESET_FILE_SECTION_TYPE:
+			type = agent_preset_file_line_type_parse(line);
+			break;
+		case AGENT_PRESET_FILE_SECTION_NAME:
+			names = agent_preset_file_line_names_parse(line);
+			break;
+		case AGENT_PRESET_FILE_SECTION_HP_MAX:
+			hp_range = agent_preset_file_line_hp_range_parse(line);
+			break;
+		case AGENT_PRESET_FILE_SECTION_LEVEL:
+			level_range = agent_preset_file_line_level_range_parse(line);
+			break;
+		case AGENT_PRESET_FILE_SECTION_INVENTORY:
+			ids = agent_preset_file_line_ids_parse(line);
+			break;
+		case AGENT_PRESET_FILE_SECTION_FLAGS:
+			flags = agent_preset_file_line_flags_parse(line);
+			break;
+		default:
+			Q_ERRORFOUND(QERROR_ENUM_CONSTANT_INVALID);
+			abort();
+		}
+
+		free(line);
+	}
+
 	return NULL;
 }
 
