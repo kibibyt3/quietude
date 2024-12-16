@@ -70,7 +70,7 @@ impl DialogueTree {
         }
     }
 
-    pub fn save(&self, path: PathBuf) -> Result<()> {
+    pub fn save(&self, path: &Path) -> Result<()> {
         save(&path, &(&self.speaker_name, &self.nodes))
     }
 

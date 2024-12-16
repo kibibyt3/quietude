@@ -30,7 +30,7 @@ where
     Ok(data)
 }
 
-pub fn save<T: Serialize>(path: &PathBuf, data: &T) -> Result<()> {
+pub fn save<T: Serialize>(path: &Path, data: &T) -> Result<()> {
     if let Some(parent) = path.parent() {
         if !&parent.exists() {
             DirBuilder::new().recursive(true).create(&path)?;
