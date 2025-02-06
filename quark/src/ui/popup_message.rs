@@ -1,6 +1,7 @@
+use anyhow::Result;
 use crossterm::event::KeyEvent;
 use quietude::types::{Color, FormattedString};
-use ratatui::style::Style;
+use ratatui::{layout::Rect, style::Style, text::Line, widgets::{Block, Clear, Paragraph}, Frame};
 use serde::{Deserialize, Serialize};
 use tui_textarea::TextArea;
 
@@ -10,16 +11,8 @@ use super::{
 };
 
 pub enum PopupMessage {
-    Ok(FormattedString<PopupStyle>),
-    Err(FormattedString<PopupStyle>),
-}
-
-#[derive(Clone, Default, Deserialize, Serialize, Debug, PartialEq)]
-pub enum PopupStyle {
-    #[default]
-    Default,
-    Emphasis(Color),
-    Error,
+    Ok(FormattedString),
+    Err(FormattedString),
 }
 
 impl PopupMessage {
@@ -36,10 +29,15 @@ impl PopupMessage {
         }
         None
     }
-}
 
-impl From<PopupStyle> for Style {
-    fn from(value: PopupStyle) -> Self {
-        Style::new()
+    pub fn render(&self, f: &mut Frame, area: Rect) -> Result<()> {
+        let spans = match self {
+            PopupMessage::Ok(s) => FormattedString::into_spans(s),
+            PopupMessage::Err(s) => FormattedString::into_spans(s),
+        };
+        let p = Paragraph::new(Line::from(spans)).block(Block::bordered());
+        f.render_widget(Clear, area);
+        f.render_widget(p, area);
+        Ok(())
     }
 }

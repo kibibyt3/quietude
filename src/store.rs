@@ -7,7 +7,7 @@ use std::{
 use anyhow::{anyhow, Result};
 use directories::ProjectDirs;
 use include_dir::{include_dir, Dir};
-use log::{debug, info, trace};
+use log::{debug, trace};
 use serde::{Deserialize, Serialize};
 use serde_json::{from_reader, to_writer};
 
@@ -31,16 +31,16 @@ where
 }
 
 pub fn save<T: Serialize>(path: &Path, data: &T) -> Result<()> {
+    trace!("Saving data at {}", path.to_str().unwrap());
     if let Some(parent) = path.parent() {
         if !&parent.exists() {
-            DirBuilder::new().recursive(true).create(&path)?;
+            DirBuilder::new().recursive(true).create(&parent)?;
         }
     }
     let file = File::create(path)?;
     assert!(file.metadata()?.is_file());
     let buffer = BufWriter::new(file);
     to_writer(buffer, data)?;
-    trace!("Saved data at {}", path.to_str().unwrap());
     Ok(())
 }
 

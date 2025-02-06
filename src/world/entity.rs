@@ -1,4 +1,4 @@
-use std::{collections::HashMap, default, fmt::Display, result, str::FromStr, sync::OnceLock};
+use std::{collections::HashMap, default, fmt::Display, path::Path, result, str::FromStr, sync::OnceLock};
 
 use anyhow::{anyhow, Result};
 use serde::{Deserialize, Serialize};
@@ -11,7 +11,7 @@ use crate::{
 };
 
 use super::{
-    action::{Action, SoloAction}, allegiance::Allegiance, chunk::Chunk, item::{Item, ItemType}, log::LogStyle, traits::VisibilityModifier
+    action::{Action, SoloAction}, allegiance::Allegiance, chunk::Chunk, dialogue::DialogueTree, item::{Item, ItemType}, log::StringStyle, traits::VisibilityModifier
 };
 
 #[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
@@ -48,8 +48,8 @@ pub static mut NEXT_ID: u32 = 0;
 #[derive(Debug, Default, Serialize, Deserialize, PartialEq, Clone)]
 pub struct Entity {
     pub entity_type: EntityType,
-    pub name: FormattedString<LogStyle>,
-    pub description: FormattedString<LogStyle>,
+    pub name: FormattedString,
+    pub description: FormattedString,
     pub is_rooted: Option<bool>,
     pub has_agency: Option<bool>,
     pub allegiance: Option<String>,
@@ -68,6 +68,7 @@ const HAS_AGENCY_DEFAULT: bool = false;
 pub enum EntityAttribute {
     Text(EntityAttributeText),
     Choice(EntityAttributeChoice),
+    Dialogue,
 }
 
 #[derive(Clone, Copy, Default)]
@@ -88,7 +89,7 @@ pub enum EntityAttributeChoice {
     Size,
 }
 
-const ATTRIBUTE_COUNT: usize = 8;
+const ATTRIBUTE_COUNT: usize = 9;
 const ATTRIBUTE_ORDER: [EntityAttribute; ATTRIBUTE_COUNT] = [
     EntityAttribute::Choice(EntityAttributeChoice::Type),
     EntityAttribute::Text(EntityAttributeText::Name),
@@ -98,6 +99,7 @@ const ATTRIBUTE_ORDER: [EntityAttribute; ATTRIBUTE_COUNT] = [
     EntityAttribute::Choice(EntityAttributeChoice::Allegiance),
     EntityAttribute::Choice(EntityAttributeChoice::Opacity),
     EntityAttribute::Choice(EntityAttributeChoice::Size),
+    EntityAttribute::Dialogue,
 ];
 
 #[derive(Clone, PartialEq, Debug, Serialize, Deserialize)]
@@ -222,7 +224,7 @@ impl Entity {
         }
     }
 
-    pub fn get_attribute_value(&self, attr: &EntityAttribute) -> FormattedString<LogStyle> {
+    pub fn get_attribute_value(&self, attr: &EntityAttribute) -> FormattedString {
         match attr {
             EntityAttribute::Text(attr_text) => match attr_text {
                 EntityAttributeText::Name => self.name.clone(),
@@ -231,43 +233,47 @@ impl Entity {
             EntityAttribute::Choice(attr_choice) => match attr_choice {
                 EntityAttributeChoice::Type => FormattedString::from(
                     &None,
-                    FormattedText::new(&format!("{}", self.entity_type), LogStyle::Value),
+                    FormattedText::new(&format!("{}", self.entity_type), Some(StringStyle::Value)),
                 ),
                 EntityAttributeChoice::IsRooted => FormattedString::from(
                     &None,
-                    FormattedText::new(&format!("{}", self.is_rooted()), LogStyle::Value),
+                    FormattedText::new(&format!("{}", self.is_rooted()), Some(StringStyle::Value)),
                 ),
                 EntityAttributeChoice::HasAgency => FormattedString::from(
                     &None,
-                    FormattedText::new(&format!("{}", self.has_agency()), LogStyle::Value),
+                    FormattedText::new(&format!("{}", self.has_agency()), Some(StringStyle::Value)),
                 ),
                 EntityAttributeChoice::Allegiance => FormattedString::from(
                     &None,
-                    FormattedText::new(&format!("{}", self.allegiance()), LogStyle::Value),
+                    FormattedText::new(&format!("{}", self.allegiance()), Some(StringStyle::Value)),
                 ),
                 EntityAttributeChoice::Opacity => FormattedString::from(
                     &None,
-                    FormattedText::new(&format!("{}", self.opacity()), LogStyle::Value),
+                    FormattedText::new(&format!("{}", self.opacity()), Some(StringStyle::Value)),
                 ),
                 EntityAttributeChoice::Size => FormattedString::from(
                     &None,
-                    FormattedText::new(&format!("{}", self.size()), LogStyle::Value),
+                    FormattedText::new(&format!("{}", self.size()), Some(StringStyle::Value)),
                 ),
             },
+            EntityAttribute::Dialogue => FormattedString::from(
+                &None,
+                FormattedText::new("...", Some(StringStyle::Value))
+            ),
         }
     }
 
-    pub fn attribute_count(&self) -> usize {
+    pub fn attribute_count(&self, path: &Path) -> usize {
         let mut count = 0;
         for attr in EntityAttribute::attribute_order() {
-            if self.has_attribute(attr) {
+            if self.has_attribute(attr, path) {
                 count += 1;
             }
         }
         count
     }
 
-    pub fn add_attribute(&mut self, attr: &EntityAttribute) -> Result<()> {
+    pub fn add_attribute(&mut self, attr: &EntityAttribute, path: &Path) -> Result<()> {
         match attr {
             EntityAttribute::Text(attr) => {
                 match attr {
@@ -320,10 +326,18 @@ impl Entity {
                     }
                 }
             }
+            EntityAttribute::Dialogue => {
+                if DialogueTree::exists(&self.name.to_string(), path) {
+                    Err(anyhow!("dialogue file for {} already exists at {}", self.name, path.to_str().unwrap()))
+                } else {
+                    DialogueTree::new(&self.name.to_string()).save(path)?;
+                    Ok(())
+                }
+            }
         }
     }
 
-    pub fn remove_attribute(&mut self, attr: &EntityAttribute) -> Result<()> {
+    pub fn remove_attribute(&mut self, attr: &EntityAttribute, path: &Path) -> Result<()> {
         match attr {
             EntityAttribute::Text(attr) => {
                 match attr {
@@ -376,10 +390,18 @@ impl Entity {
                     }
                 }
             }
+            EntityAttribute::Dialogue => {
+                if !DialogueTree::exists(&self.name.to_string(), path) {
+                    Err(anyhow!("dialogue file for {} does not exist", self.name))
+                } else {
+                    DialogueTree::delete(&self.name.to_string(), path)?;
+                    Ok(())
+                }
+            }
         }
     }
 
-    pub fn has_attribute(&self, attr: &EntityAttribute) -> bool {
+    pub fn has_attribute(&self, attr: &EntityAttribute, path: &Path) -> bool {
         match attr {
             EntityAttribute::Text(attr_text) => match attr_text {
                 EntityAttributeText::Name => true,
@@ -423,6 +445,7 @@ impl Entity {
                     }
                 }
             },
+            EntityAttribute::Dialogue => DialogueTree::exists(&self.name.to_string(), path),
         }
     }
 
@@ -631,6 +654,7 @@ impl FromStr for EntityAttribute {
             "Allegiance" => Ok(EntityAttribute::Choice(EntityAttributeChoice::Allegiance)),
             "Opacity" => Ok(EntityAttribute::Choice(EntityAttributeChoice::Opacity)),
             "Size" => Ok(EntityAttribute::Choice(EntityAttributeChoice::Size)),
+            "Dialogue" => Ok(EntityAttribute::Dialogue),
             _ => Err(anyhow!("could not parse {s} as entity attribute")),
         }
     }
@@ -641,6 +665,7 @@ impl Display for EntityAttribute {
         match self {
             EntityAttribute::Text(attr_text) => write!(f, "{attr_text}"),
             EntityAttribute::Choice(attr_choice) => write!(f, "{attr_choice}"),
+            EntityAttribute::Dialogue => write!(f, "Dialogue"),
         }
     }
 }

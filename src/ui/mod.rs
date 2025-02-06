@@ -10,7 +10,7 @@ pub mod splash_screen;
 pub mod traits;
 pub mod ui;
 pub mod ui_callback;
-mod utils;
+pub mod utils;
 mod widgets;
 pub mod errors;
 pub mod tui;

@@ -2,15 +2,15 @@ use std::{io, path::{Path, PathBuf}};
 
 use anyhow::Result;
 use crossterm::event::{self, poll, Event, KeyCode, KeyEvent};
-use log::error;
+use log::{error, info};
 use quietude::{
-    types::{FormattedString, FormattedText}, ui::choice_menu, utils::frequency_to_period, world::{chunk::Chunk, world::World}
+    types::{FormattedString, FormattedText}, ui::choice_menu, utils::frequency_to_period, world::{chunk::Chunk, log::StringStyle, world::World}
 };
 use ratatui::{prelude::CrosstermBackend, Frame};
 
 use crate::{
-    store::{guarantee_project_structure, load_project, save_project}, types::Message, ui::{
-        choice_menu::ChoiceMenu, popup_message::{PopupMessage, PopupStyle}, tui::Tui, ui::Ui
+    store::{guarantee_project_structure, load_project, register_save_path, save_project}, types::Message, ui::{
+        choice_menu::ChoiceMenu, popup_message::PopupMessage, tui::Tui, ui::Ui
     }
 };
 
@@ -27,17 +27,19 @@ impl App {
         let project_dir = project_dir.unwrap_or_else(|| {
             let mut s = String::new();
 
-            println!("Please choose where to save your new project:");
+            println!("Please enter the location of your project:");
             io::stdin()
                 .read_line(&mut s)
                 .unwrap_or_else(|e| panic!("{e} while getting project directory from user"));
             s.trim().to_string()
         });
 
+        register_save_path(Path::new(&project_dir)).unwrap_or_else(|e| panic!("{e} while registering save path"));
+
         let (id, chunk) = {
             let project_dir = Path::new(&project_dir);
             if guarantee_project_structure(&project_dir).unwrap_or_else(|e| panic!("{e} while checking project directory structure")) {
-                load_project(&project_dir).unwrap_or_else(|e| panic!("{e} while loading project"))
+                load_project(&project_dir).unwrap_or_else(|e| panic!("{e} while loading project from path {}", project_dir.to_str().unwrap()))
             } else {
                 (0, Chunk::default())
             }
@@ -113,9 +115,10 @@ impl App {
                         }
                         Ok(None) => {}
                         Err(e) => {
+                            info!("{}", e.to_string());
                             let string = FormattedString::from(
                                 &None,
-                                FormattedText::new(&e.to_string(), PopupStyle::Error),
+                                FormattedText::new(&e.to_string(), Some(StringStyle::Error)),
                             );
                             self.ui.set_popup(PopupMessage::Err(string));
                         }

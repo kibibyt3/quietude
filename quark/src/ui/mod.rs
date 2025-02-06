@@ -10,3 +10,5 @@ pub mod cursor;
 pub mod entity_view;
 pub mod dialogue_editor;
 pub mod choice_menu;
+pub mod text_editor;
+pub mod data_builder;

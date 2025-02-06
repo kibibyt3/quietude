@@ -6,7 +6,7 @@ use ratatui::{
 };
 use serde::{Deserialize, Serialize};
 
-use crate::{ui::popup_message::PopupStyle, world::log::LogStyle};
+use crate::{world::log::StringStyle};
 
 #[derive(Default, Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Clone, Copy)]
 pub struct Coords4D(pub i32, pub i32, pub i32, pub i32);
@@ -46,20 +46,20 @@ pub enum Direction1D {
 
 #[derive(Deserialize, Serialize, Debug, PartialEq)]
 pub enum Message {
-    Popup(FormattedString<PopupStyle>),
-    Log(FormattedString<LogStyle>),
+    Popup(FormattedString),
+    Log(FormattedString),
 }
 
 #[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
-pub struct FormattedString<T> {
-    texts: Vec<FormattedText<T>>,
+pub struct FormattedString {
+    texts: Vec<FormattedText>,
     origin: Option<Coords3D>,
 }
 
 #[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
-pub struct FormattedText<T> {
+pub struct FormattedText {
     s: String,
-    style: T,
+    style: Option<StringStyle>,
 }
 
 #[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
@@ -354,42 +354,48 @@ impl LineSegment3D {
     }
 }
 
-impl<T> Display for FormattedString<T> {
+impl Display for FormattedString {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let s: String = self.texts.iter().map(|text| text.s.clone()).collect();
         write!(f, "{s}")
     }
 }
 
-impl<T: Into<Style> + Clone + Default> FormattedString<T> {
-    pub fn from(origin: &Option<Coords3D>, text: FormattedText<T>) -> Self {
+impl FormattedString {
+    pub fn from(origin: &Option<Coords3D>, text: FormattedText) -> Self {
         FormattedString {
             origin: origin.clone(),
             texts: vec![text],
         }
     }
 
-    pub fn insert(&mut self, index: usize, text: FormattedText<T>) {
+    pub fn insert(&mut self, index: usize, text: FormattedText) {
         self.texts.insert(index, text);
     }
 
     pub fn raw(origin: &Option<Coords3D>, s: &str) -> Self {
-        let texts = vec![FormattedText { s: String::from(s), style: <T>::default() }];
+        let texts = vec![FormattedText { s: String::from(s), style: None }];
         FormattedString {
             origin: origin.clone(),
             texts,
         }
     }
 
-    pub fn push(&mut self, text: FormattedText<T>) {
+    pub fn push(&mut self, text: FormattedText) {
         self.texts.push(text);
+    }
+
+    /// Concatenates two strings.
+    /// This overrides the origin in s.
+    pub fn concatenate(&mut self, mut s: FormattedString) {
+        self.texts.append(&mut s.texts);
     }
 
     pub fn origin(&self) -> &Option<Coords3D> {
         &self.origin
     }
 
-    pub fn truncate(&self, max_chars: usize) -> FormattedString<T> {
+    pub fn truncate(self, max_chars: usize) -> FormattedString {
         let mut char_count = 0;
         let mut string = FormattedString {
             texts: vec![],
@@ -398,56 +404,58 @@ impl<T: Into<Style> + Clone + Default> FormattedString<T> {
         
         let max_chars = max_chars - 3;
 
-        for text in &self.texts {
+        for text in self.texts {
             char_count += text.s.len();
             if char_count < max_chars {
-                string.texts.push(text.clone());
+                string.texts.push(text);
             } else {
                 let difference = char_count - max_chars;
-                let text = FormattedText::new(&text.s[0..=text.s.len() - difference].to_string(), text.style.clone());
+                let text = FormattedText::new(&text.s[0..=text.s.len() - difference].to_string(), text.style);
                 string.texts.push(text);
-                string.texts.push(FormattedText::new("...", Default::default()));
+                string.texts.push(FormattedText::new("...", None));
                 break;
             }
         }
 
         string
     }
+}
 
-    pub fn into_spans(s: &FormattedString<T>) -> Vec<Span> {
+impl FormattedString {
+    pub fn into_spans(s: &FormattedString) -> Vec<Span> {
         let spans = s
             .texts
             .iter()
-            .map(|text| Span::styled(text.s.clone(), text.style.clone()))
+            .map(|text| {
+                let style = match &text.style {
+                    Some(style) => style.to_style(),
+                    None => Style::default(),
+                };
+                Span::styled(text.s.clone(), style)
+            })
             .collect();
 
         spans
     }
 }
 
-impl<T: Into<Style> + Clone> FormattedText<T> {
-    pub fn new(s: &str, style: T) -> Self {
+impl FormattedText {
+    pub fn new(s: &str, style: Option<StringStyle>) -> Self {
         FormattedText {
             s: String::from(s),
             style,
         }
     }
 
-    pub fn truncate(&self, max_chars: usize) -> FormattedText<T> {
+    pub fn truncate(self, max_chars: usize) -> FormattedText {
         let max_chars = max_chars - 3;
         if self.s.len() < max_chars as usize {
-            FormattedText::new(&self.s, self.style.clone())
+            FormattedText::new(&self.s, self.style)
         } else {
             let mut s = String::from(&self.s[0..=max_chars]);
             s.push_str("...");
-            FormattedText::new(&s, self.style.clone())
+            FormattedText::new(&s, self.style)
         }
-    }
-}
-
-impl From<GenericStyle> for Style {
-    fn from(value: GenericStyle) -> Self {
-        Style::new()
     }
 }
 

@@ -1,3 +1,4 @@
+use ratatui::layout::{Constraint, Direction, Layout, Rect};
 use tui_textarea::TextArea;
 
 use super::{
@@ -17,4 +18,18 @@ pub fn validate_textarea_input(textarea: &mut TextArea<'_>, title: String) -> bo
         textarea.set_block(default_block().title(title));
         true
     }
+}
+
+pub fn centered_rect(r: Rect, padding_x: u16, padding_y: u16) -> Rect {
+    let layout = Layout::new(Direction::Horizontal, vec![
+        Constraint::Length(padding_x),
+        Constraint::Min(1),
+        Constraint::Length(padding_x),
+    ]).split(r);
+
+    Layout::new(Direction::Vertical, vec![
+        Constraint::Length(padding_y),
+        Constraint::Min(1),
+        Constraint::Length(padding_y),
+    ]).split(layout[1])[1]
 }

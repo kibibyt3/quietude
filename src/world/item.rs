@@ -7,7 +7,9 @@ use std::{
 };
 
 use anyhow::{anyhow, Result};
+use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
+use strum::EnumIter;
 
 use crate::store::ASSETS_DIR;
 
@@ -28,29 +30,35 @@ struct ItemData {
     unique_id: Option<u32>,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Display, FromStr, Default, EnumIter, Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[display("{}({0})")]
 pub enum ItemType {
     Book(BookType),
     Weapon(WeaponType),
     Armour(ArmourType),
+    #[default]
+    #[display("{}")]
     Torch,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Display, FromStr, Default, EnumIter, Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub enum BookType {
+    #[default]
     ILoveYou,
     Babel,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Display, FromStr, Default, EnumIter, Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub enum WeaponType {
+    #[default]
     ShortSword,
     BastardSword,
     Zweihander,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Display, FromStr, Default, EnumIter, Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub enum ArmourType {
+    #[default]
     Cloak,
     Hauberk,
     Knight,
@@ -139,35 +147,5 @@ impl Item {
         }
         
         Err(anyhow!("could not find item from item id {id}"))
-    }
-}
-
-impl Display for ItemType {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let s = match self {
-            ItemType::Book(book) => format!("book: {book}"),
-            ItemType::Weapon(weapon) => format!("weapon: {weapon}"),
-            ItemType::Armour(armour) => format!("armour: {armour}"),
-            ItemType::Torch => format!("torch"),
-        };
-        write!(f, "{}", s)
-    }
-}
-
-impl Display for BookType {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:?}", self)
-    }
-}
-
-impl Display for WeaponType {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:?}", self)
-    }
-}
-
-impl Display for ArmourType {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:?}", self)
     }
 }

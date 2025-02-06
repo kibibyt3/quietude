@@ -1,4 +1,4 @@
-use std::{fs::DirBuilder, path::{Path, PathBuf}};
+use std::{fs::DirBuilder, path::{Path, PathBuf}, sync::OnceLock};
 
 use anyhow::{anyhow, Result};
 use log::info;
@@ -54,6 +54,22 @@ pub fn load_chunk(path: &Path, chunk_coords: Coords4D) -> Result<Chunk> {
     Ok(
         load(path.as_path())?
     )
+}
+
+static SAVE_PATH: OnceLock<PathBuf> = OnceLock::new();
+
+pub fn register_save_path(path: &Path) -> Result<()> {
+    match SAVE_PATH.set(path.to_path_buf()) {
+        Ok(_) => Ok(()),
+        Err(_) => Err(anyhow!("save path was not initialized")),
+    }
+}
+
+pub fn get_save_path() -> PathBuf {
+    match SAVE_PATH.get() {
+        Some(path) => path.clone(),
+        None => panic!("save path requested before registration"),
+    }
 }
 
 /// Guarantees that all of the necessary directories exist to save a project.

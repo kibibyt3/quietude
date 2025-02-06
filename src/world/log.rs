@@ -7,16 +7,16 @@ use crate::types::{Color, Coords3D, FormattedString, FormattedText};
 
 #[derive(Default, Debug, Serialize, Deserialize, PartialEq)]
 pub struct Log {
-    pub contents: Vec<FormattedString<LogStyle>>,
+    pub contents: Vec<FormattedString>,
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq)]
-pub enum LogStyle {
-    #[default]
-    Default,
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+pub enum StringStyle {
     Emphasis(Color),
+    Dim,
     Attribute,
     Value,
+    Error,
 }
 
 impl Log {
@@ -26,20 +26,20 @@ impl Log {
         }
     }
 
-    pub fn print_formatted_string(&mut self, string: FormattedString<LogStyle>) {
+    pub fn print_formatted_string(&mut self, string: FormattedString) {
         self.contents.push(string);
     }
 
 }
 
-
-impl From<LogStyle> for Style {
-    fn from(value: LogStyle) -> Self {
-        match value {
-            LogStyle::Default => Style::new(),
-            LogStyle::Emphasis(color) => todo!(),
-            LogStyle::Attribute =>Style::default().fg(ratatui::style::Color::Yellow).bg(ratatui::style::Color::DarkGray),
-            LogStyle::Value => Style::default().fg(ratatui::style::Color::Cyan),
+impl StringStyle {
+    pub fn to_style(&self) -> Style {
+        match self {
+            StringStyle::Emphasis(color) => todo!(),
+            StringStyle::Dim => Style::new().fg(ratatui::style::Color::DarkGray).bg(ratatui::style::Color::Black),
+            StringStyle::Attribute => Style::default().fg(ratatui::style::Color::Yellow).bg(ratatui::style::Color::DarkGray),
+            StringStyle::Value => Style::default().fg(ratatui::style::Color::Cyan),
+            StringStyle::Error => Style::default().fg(ratatui::style::Color::Red),
         }
     }
 }

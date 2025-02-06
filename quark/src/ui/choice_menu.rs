@@ -1,28 +1,46 @@
 use anyhow::Result;
 use crossterm::event::KeyEvent;
 use quietude::{
-    app::App, types::Direction1D, world::{log::LogStyle, world::World}
+    types::Direction1D,
+    world::{log::StringStyle, world::World},
 };
 use ratatui::{
-    prelude::Rect, style::{Modifier, Stylize}, text::Line, widgets::{Block, Clear, Paragraph}, Frame
+    prelude::Rect,
+    style::{Modifier, Stylize},
+    text::Line,
+    widgets::{Block, Clear, Paragraph},
+    Frame,
 };
 
 use super::{
-    control_scheme::{ControlSchemeType, UiKey}, traits::Screen, ui::Ui, ui_callback::UiCallbackPreset
+    control_scheme::{ControlSchemeType, UiKey},
+    traits::Screen,
+    ui::{PopupState, Ui},
+    ui_callback::UiCallbackPreset,
 };
 
+#[derive(Default)]
 pub struct ChoiceMenu {
     pub index: usize,
     pub options: Vec<String>,
-    pub on_exit: Option<fn(&str, &mut Ui) -> Result<()>>,
+    pub on_exit: Option<fn(&str, &mut Ui) -> Result<Option<PopupState>>>,
+    pub location: ChoiceMenuLoc,
+}
+
+#[derive(Default, Clone, Copy)]
+pub enum ChoiceMenuLoc {
+    #[default]
+    Global,
+    DataBuilder,
 }
 
 impl ChoiceMenu {
-    pub fn new(options: Vec<String>, on_exit: fn(&str, &mut Ui) -> Result<()>) -> Self {
+    pub fn new(options: Vec<String>, location: ChoiceMenuLoc, on_exit: fn(&str, &mut Ui) -> Result<Option<PopupState>>) -> Self {
         ChoiceMenu {
             index: 0,
             options,
             on_exit: Some(on_exit),
+            location,
         }
     }
 
@@ -45,15 +63,10 @@ impl ChoiceMenu {
         self.index
     }
 
-    pub fn exit(&self, ui: &mut Ui) -> Result<()> {
+    // TODO: remove later
+    pub fn exit(&self, ui: &mut Ui) -> Result<Option<PopupState>> {
         let s = &self.options[self.index];
         (self.on_exit.as_ref().unwrap().clone())(s, ui)
-    }
-}
-
-impl Default for ChoiceMenu {
-    fn default() -> Self{
-        Self { index: 0, options: vec![], on_exit: None }
     }
 }
 
@@ -66,7 +79,7 @@ impl Screen for ChoiceMenu {
         let mut lines = vec![];
 
         for (i, option) in self.options.iter().enumerate() {
-            let mut line = Line::styled(option, LogStyle::Value);
+            let mut line = Line::styled(option, StringStyle::Value.to_style());
             if i == self.index {
                 line = line.add_modifier(Modifier::REVERSED);
             }
@@ -94,18 +107,16 @@ impl Screen for ChoiceMenu {
         for key in keys {
             match key {
                 UiKey::MoveDown => {
-                    return Some(UiCallbackPreset::MoveChoiceMenuCursor(Direction1D::Down));
+                    return Some(UiCallbackPreset::MoveChoiceMenuCursor(Direction1D::Down, self.location));
                 }
                 UiKey::MoveUp => {
-                    return Some(UiCallbackPreset::MoveChoiceMenuCursor(Direction1D::Up));
+                    return Some(UiCallbackPreset::MoveChoiceMenuCursor(Direction1D::Up, self.location));
                 }
                 UiKey::Confirm => {
-                    return Some(UiCallbackPreset::ChoiceMenuSelectAndExit(
-                        self.options[self.index].clone(),
-                    ));
+                    return Some(UiCallbackPreset::ConfirmChoice(self.location));
                 }
                 UiKey::ExitSubmenu => {
-                    return Some(UiCallbackPreset::ExitChoiceMenu);
+                    return Some(UiCallbackPreset::ExitChoiceMenu(self.location));
                 }
                 _ => {}
             }

@@ -9,12 +9,10 @@ use crate::{
     store::save_profile,
     types::{FormattedString, FormattedText, Message},
     ui::{
-        popup_message::{PopupMessage, PopupStyle},
-        tui::Tui,
-        ui::Ui,
+        popup_message::PopupMessage, tui::Tui, ui::Ui
     },
     utils::frequency_to_period,
-    world::{log::LogStyle, world::World},
+    world::{log::StringStyle, world::World},
 };
 
 pub struct App {
@@ -94,7 +92,7 @@ impl App {
                         Err(e) => {
                             let string = FormattedString::from(
                                 &None,
-                                FormattedText::new(&e.to_string(), PopupStyle::Error),
+                                FormattedText::new(&e.to_string(), Some(StringStyle::Error)),
                             );
                             self.ui.set_popup(PopupMessage::Err(string));
                         }

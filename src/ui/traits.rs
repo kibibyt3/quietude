@@ -2,7 +2,7 @@ use std::{collections::HashMap, fmt::{Debug, Formatter}, sync::OnceLock};
 
 use anyhow::{anyhow, Result};
 use crossterm::event::KeyEvent;
-use ratatui::{layout::Rect, Frame};
+use ratatui::{layout::Rect, style::Style, Frame};
 
 use crate::world::world::World;
 

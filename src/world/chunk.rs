@@ -12,7 +12,7 @@ use crate::{
 use super::{
     action::{Action, SoloAction},
     entity::{Entity, Focus},
-    log::LogStyle,
+    log::StringStyle,
 };
 
 #[derive(Default, Debug, Serialize, Deserialize, PartialEq, Clone)]
@@ -98,7 +98,7 @@ impl Chunk {
         }
     }
 
-    pub fn inspect_entity(&self, id: u32) -> Result<FormattedString<LogStyle>> {
+    pub fn inspect_entity(&self, id: u32) -> Result<FormattedString> {
         Ok(self
             .get_entity_from_id(id)
             .unwrap_or(Err(anyhow!(
@@ -232,7 +232,7 @@ impl Chunk {
             .unwrap_or(Err(anyhow!("entity {actor_id} not found"))?)
             .coords
             .clone();
-        Ok(Some(Message::Log(FormattedString::from(&Some(coords), FormattedText::new("hey", LogStyle::Default)))))
+        Ok(Some(Message::Log(FormattedString::from(&Some(coords), FormattedText::new("hey", None)))))
     }
 
     fn entity_fight(&mut self, actor_id: u32, actee_id: u32) -> Result<Option<Message>> {
