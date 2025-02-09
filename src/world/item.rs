@@ -30,7 +30,7 @@ struct ItemData {
     unique_id: Option<u32>,
 }
 
-#[derive(Display, FromStr, Default, EnumIter, Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Hash, Eq, Display, FromStr, Default, EnumIter, Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[display("{}({0})")]
 pub enum ItemType {
     Book(BookType),
@@ -41,14 +41,14 @@ pub enum ItemType {
     Torch,
 }
 
-#[derive(Display, FromStr, Default, EnumIter, Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Hash, Eq, Display, FromStr, Default, EnumIter, Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub enum BookType {
     #[default]
     ILoveYou,
     Babel,
 }
 
-#[derive(Display, FromStr, Default, EnumIter, Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Hash, Eq, Display, FromStr, Default, EnumIter, Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub enum WeaponType {
     #[default]
     ShortSword,
@@ -56,7 +56,7 @@ pub enum WeaponType {
     Zweihander,
 }
 
-#[derive(Display, FromStr, Default, EnumIter, Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Hash, Eq, Display, FromStr, Default, EnumIter, Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub enum ArmourType {
     #[default]
     Cloak,

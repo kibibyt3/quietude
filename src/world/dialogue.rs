@@ -40,7 +40,7 @@ pub struct DialogueChoice {
     destination: String,
 }
 
-#[derive(FromStr, Display, Debug, EnumIter, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(FromStr, Hash, Eq, Display, Debug, EnumIter, Clone, Serialize, Deserialize, PartialEq)]
 #[display("{}({0})")]
 pub enum DialoguePrecondition {
     InterlocutorHasSpecificItem(u32),
@@ -49,7 +49,7 @@ pub enum DialoguePrecondition {
     WorldConditionIsInactive(WorldCondition),
 }
 
-#[derive(FromStr, Display, EnumIter, Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[derive(FromStr, Hash, Eq, Display, EnumIter, Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[display("{}({0})")]
 pub enum DialogueOutcome {
     GiveInterlocutorItem(ItemType),
@@ -240,20 +240,20 @@ impl DialogueNode {
         self.choices[index].preconditions.push(precondition.clone());
     }
 
-    pub fn remove_choice_precondition(&mut self, choice_index: usize, precondition_index: usize) {
-        self.choices[choice_index].preconditions.remove(precondition_index);
+    pub fn remove_choice_precondition(&mut self, choice_index: usize, precondition: &DialoguePrecondition) {
+        self.choices[choice_index].preconditions.retain(|item| item != precondition);
     }
 
     pub fn choice_preconditions(&self, index: usize) -> Vec<DialoguePrecondition> {
         self.choices[index].preconditions.clone()
     }
 
-    pub fn add_choice_outcome(&mut self, index: usize, outcome: &DialogueOutcome) {
+    pub fn push_choice_outcome(&mut self, index: usize, outcome: DialogueOutcome) {
         self.choices[index].outcomes.push(outcome.clone());
     }
 
-    pub fn remove_choice_outcome(&mut self, choice_index: usize, outcome_index: usize) {
-        self.choices[choice_index].outcomes.remove(outcome_index);
+    pub fn remove_choice_outcome(&mut self, choice_index: usize, outcome: &DialogueOutcome) {
+        self.choices[choice_index].outcomes.retain(|item| item != outcome);
     }
 
     pub fn choice_outcomes(&self, index: usize) -> Vec<DialogueOutcome> {

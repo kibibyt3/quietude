@@ -1,11 +1,11 @@
-use std::fmt::{Debug, Formatter};
+use std::fmt::{Debug, Display, Formatter};
 
 use anyhow::Result;
 use crossterm::event::KeyEvent;
 use quietude::world::world::World;
 use ratatui::{layout::Rect, Frame};
 
-use super::{control_scheme::ControlSchemeType, ui::Ui, ui_callback::UiCallbackPreset};
+use super::{control_scheme::ControlSchemeType, ui_callback::UiCallbackPreset};
 
 pub trait Screen {
     fn update(&mut self, world: &World) -> Result<()>;

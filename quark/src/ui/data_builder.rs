@@ -19,7 +19,7 @@ use strum::IntoEnumIterator;
 use super::{
     choice_menu::{ChoiceMenu, ChoiceMenuLoc},
     control_scheme::ControlSchemeType,
-    dialogue_editor::ChoiceAttribute,
+    dialogue_editor::DialogueAttr,
     text_editor::{TextEditor, TextEditorLoc},
     traits::Screen,
     ui::{PopupState, Ui},
@@ -44,9 +44,9 @@ use super::{
 // ______________________________
 
 pub struct DataBuilder {
-    data: Option<BuilderData>,
+    pub data: Option<BuilderData>,
     pub state: Option<BuilderState>,
-    cb: Option<fn(BuilderData, BuilderDest, &mut Ui) -> Result<()>>,
+    pub cb: Option<fn(BuilderDest, &mut Ui) -> Result<()>>,
     depth: usize,
     pub choice_menu: ChoiceMenu,
     pub text_editor: TextEditor,
@@ -77,7 +77,7 @@ pub enum BuilderData {
 pub enum BuilderDest {
     #[default]
     None,
-    ChoiceAttribute(ChoiceAttribute),
+    ChoiceAttribute(DialogueAttr),
 }
 
 impl DataBuilder {
@@ -85,7 +85,7 @@ impl DataBuilder {
         &mut self,
         data: BuilderData,
         dest: BuilderDest,
-        cb: fn(BuilderData, BuilderDest, &mut Ui) -> Result<()>,
+        cb: fn(BuilderDest, &mut Ui) -> Result<()>,
     ) -> Result<()> {
         self.data = Some(data);
         self.cb = Some(cb);
@@ -101,6 +101,7 @@ impl DataBuilder {
             ChoiceMenuLoc::DataBuilder,
             DataBuilder::choice_cb,
         );
+        self.choice_menu.abbreviate_choices('(');
 
         Ok(())
     }
@@ -137,6 +138,7 @@ impl DataBuilder {
             }
             None => {
                 ui.data_builder.state = next_state;
+                /*ui.data_builder.call()?;*/
                 return Ok(None);
             }
         }
@@ -149,28 +151,16 @@ impl DataBuilder {
         Ok(())
     }
 
-    pub fn call(&mut self, ui: &mut Ui) -> Result<()> {
-        self.cb
-            .take()
-            .ok_or(anyhow!("tried to call an inactive data builder"))?(
-            self.data
-                .take()
-                .ok_or(anyhow!("tried to call an inactive data builder"))?,
-            self.dest
-                .take()
-                .ok_or(anyhow!("tried to call an incactive data builder"))?,
-            ui,
-        )?;
-        self.state = None;
+    pub fn reset(&mut self) {
         self.depth = 0;
-        Ok(())
+        self.state = None;
     }
 
     pub fn choices(&self) -> Result<Vec<BuilderData>> {
         let data = self
             .data
             .as_ref()
-            .ok_or(anyhow!("tried to get choices from inactive data builder"))?;
+            .ok_or(anyhow!("cannot get choices from inactive data builder"))?;
         Self::choices_internal(data, self.depth)
     }
 
@@ -523,8 +513,8 @@ impl TryInto<DialogueOutcome> for BuilderData {
     }
 }
 
-impl From<ChoiceAttribute> for BuilderDest {
-    fn from(value: ChoiceAttribute) -> Self {
+impl From<DialogueAttr> for BuilderDest {
+    fn from(value: DialogueAttr) -> Self {
         BuilderDest::ChoiceAttribute(value)
     }
 }

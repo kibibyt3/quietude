@@ -25,6 +25,7 @@ pub struct ChoiceMenu {
     pub options: Vec<String>,
     pub on_exit: Option<fn(&str, &mut Ui) -> Result<Option<PopupState>>>,
     pub location: ChoiceMenuLoc,
+    abbr_delim: Option<char>,
 }
 
 #[derive(Default, Clone, Copy)]
@@ -41,7 +42,12 @@ impl ChoiceMenu {
             options,
             on_exit: Some(on_exit),
             location,
+            abbr_delim: None,
         }
+    }
+
+    pub fn abbreviate_choices(&mut self, delim: char) {
+        self.abbr_delim = Some(delim);
     }
 
     pub fn move_cursor(&mut self, direction: Direction1D) {
@@ -78,7 +84,15 @@ impl Screen for ChoiceMenu {
     fn render(&mut self, frame: &mut Frame, _world: &World, area: Rect) -> Result<()> {
         let mut lines = vec![];
 
-        for (i, option) in self.options.iter().enumerate() {
+        let mut choices = self.options.clone();
+        if let Some(delimiter) = self.abbr_delim {
+            choices = choices.iter().map(|s| match s.split_once(delimiter) {
+                Some((s, _)) => s.to_string(),
+                None => s.to_string(),
+            }).collect();
+        }
+
+        for (i, option) in choices.iter().enumerate() {
             let mut line = Line::styled(option, StringStyle::Value.to_style());
             if i == self.index {
                 line = line.add_modifier(Modifier::REVERSED);

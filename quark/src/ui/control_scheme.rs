@@ -59,7 +59,7 @@ impl ControlScheme {
             scheme
                 .controls
                 .insert(KeyCode::Char('Q'), vec![UiKey::Quit]);
-            scheme
+            /* scheme
                 .controls
                 .insert(KeyCode::Char('w'), vec![UiKey::MoveNorth, UiKey::MoveUp]);
             scheme
@@ -71,6 +71,7 @@ impl ControlScheme {
             scheme
                 .controls
                 .insert(KeyCode::Char('d'), vec![UiKey::MoveEast]);
+            */
             scheme
                 .controls
                 .insert(KeyCode::Up, vec![UiKey::MoveNorth, UiKey::MoveUp]);
@@ -97,7 +98,10 @@ impl ControlScheme {
                 .insert(KeyCode::Char('x'), vec![UiKey::Save]);
             scheme
                 .controls
-                .insert(KeyCode::Char('e'), vec![UiKey::EditEntity, UiKey::EditOption, UiKey::AddItem]);
+                .insert(KeyCode::Char('e'), vec![UiKey::EditEntity, UiKey::EditOption]);
+            scheme
+                .controls
+                .insert(KeyCode::Char('a'), vec![UiKey::AddItem]);
             scheme
                 .controls
                 .insert(KeyCode::Char('r'), vec![UiKey::RemoveItem]);
@@ -124,3 +128,5 @@ impl ControlSchemeType {
         .controls.get(&code)
     }
 }
+
+// TODO: add unit tests to ensure every UiKey variant mapped for every control scheme

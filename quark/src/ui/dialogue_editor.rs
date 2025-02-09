@@ -1,9 +1,9 @@
-use std::{fmt::Display, str::FromStr};
-
 use anyhow::{anyhow, Result};
 use crossterm::event::KeyEvent;
-use quietude::{types::{Direction1D, FormattedString, FormattedText}, world::{dialogue::DialogueTree, log::StringStyle, world::World}};
+use parse_display::{Display, FromStr};
+use quietude::{types::{Direction1D, FormattedString, FormattedText}, world::{dialogue::{DialogueOutcome, DialoguePrecondition, DialogueTree}, log::StringStyle, world::World}};
 use ratatui::{prelude::Rect, style::{Modifier, Stylize}, text::Line, widgets::{Block, Borders, Paragraph}, Frame};
+use strum::EnumIter;
 
 use super::{control_scheme::{ControlSchemeType, UiKey}, data_builder::{BuilderData, BuilderDest}, traits::Screen, ui_callback::UiCallbackPreset};
 
@@ -12,19 +12,13 @@ pub struct DialogueEditor {
     pub cursor_pos: usize,
 }
 
-#[derive(Debug, PartialEq, Clone, Copy)]
-pub enum ChoiceAttribute {
-    Preconditions,
-    Outcomes,
-    Destination,
+#[derive(FromStr, Display, EnumIter, Debug, PartialEq, Clone, Hash, Eq)]
+#[display("{}({0})")]
+pub enum DialogueAttr {
+    Precondition(DialoguePrecondition),
+    Outcome(DialogueOutcome),
+    Destination(String),
 }
-
-/* TODO: replace using EnumIter */
-static CHOICE_ATTRIBUTES: [ChoiceAttribute; 3] = [
-    ChoiceAttribute::Preconditions,
-    ChoiceAttribute::Outcomes,
-    ChoiceAttribute::Destination,
-];
 
 impl DialogueEditor {
     pub fn new() -> Self {
@@ -46,39 +40,65 @@ impl DialogueEditor {
         tree
     }
 
-    pub fn edit_current_entry_attribute(&mut self, data: BuilderData, attr: ChoiceAttribute) -> Result<()> {
-        let index = self.cursor_pos;
-        if self.cursor_pos == 0 {
-            return Err(anyhow!("tried to edit attribute of speaker dialogue"));
+    pub fn add_entry_attr(&mut self, attr: DialogueAttr) -> Result<()> {
+        let mut index = self.cursor_pos;
+        if index == 0 {
+            return Err(anyhow!("cannot add attribute {attr} to speaker dialogue"));
         } else {
-            let node = self.tree.as_mut().ok_or(anyhow!("tried to edit entry of inactive dialogue tree"))?.get_active_node_mut()?;
+            index -= 1;
+            let node = self.tree.as_mut().ok_or(anyhow!("cannot add attribute {attr} to inactive dialogue tree"))?.get_active_node_mut()?;
             match attr {
-                ChoiceAttribute::Preconditions => {
-                    if let BuilderData::DialoguePrecondition(precondition) = data {
-                        node.push_choice_precondition(index, precondition);
-                    }
+                DialogueAttr::Precondition(precondition) => {
+                    node.push_choice_precondition(index, precondition);
                 }
-                ChoiceAttribute::Outcomes => {
-                    node.add_choice_outcome(index, &data.try_into()?);
+                DialogueAttr::Outcome(outcome) => {
+                    node.push_choice_outcome(index, outcome);
                 }
-                ChoiceAttribute::Destination => {
-                    return Err(anyhow!("tried to set a destination with builder data"));
+                DialogueAttr::Destination(s) => {
+                    node.set_choice_destination(index, &s);
                 }
             }
         }
-
         Ok(())
     }
-    
-    pub fn edit_current_entry_destination(&mut self, s: &str) -> Result<()> {
+
+    pub fn remove_entry_attr(&mut self, attr: DialogueAttr) -> Result<()> {
         let mut index = self.cursor_pos;
         if index == 0 {
-            return Err(anyhow!("speaker dialogue has no destination"));
+            Err(anyhow!("cannot remove attribute {attr} from speaker dialogue"))
+        } else {
+            index -= 1;
+            let node = self.tree.as_mut().ok_or(anyhow!("cannot remove attribute {attr} from inactive dialogue tree"))?.get_active_node_mut()?;
+            match &attr {
+                DialogueAttr::Precondition(precondition) => {
+                    node.remove_choice_precondition(index, precondition);
+                    Ok(())
+                }
+                DialogueAttr::Outcome(outcome) => {
+                    node.remove_choice_outcome(index, outcome);
+                    Ok(())
+                }
+                DialogueAttr::Destination(s) => Err(anyhow!("cannot remove dialogue destination {s}")),
+            }
         }
+    }
 
-        index -= 1;
-        self.tree.as_mut().ok_or(anyhow!("tried to edit entry of inactive dialogue tree"))?.get_active_node_mut()?.set_choice_destination(index, s);
-        Ok(())
+    pub fn removeable_attrs(&self) -> Result<Vec<DialogueAttr>> {
+        let mut index = self.cursor_pos;
+        if index == 0 {
+            Err(anyhow!("speaker dialogue does not have attributes"))
+        } else {
+            index -= 1;
+            let node = self.tree.as_ref().ok_or(anyhow!("cannot get removeable attributes from inactive dialogue tree"))?.get_active_node()?;
+            let precondition_choices = node.choice_preconditions(index);
+            let outcome_choices = node.choice_outcomes(index);
+            
+            let mut precondition_choices: Vec<_> = precondition_choices.iter().map(|precondition| DialogueAttr::Precondition(precondition.clone())).collect();
+            let mut outcome_choices: Vec<_> = outcome_choices.iter().map(|outcome| DialogueAttr::Outcome(outcome.clone())).collect();
+
+            precondition_choices.append(&mut outcome_choices);
+            Ok(precondition_choices)
+        }
     }
     
     pub fn edit_current_entry_text(&mut self, s: &FormattedString) -> Result<()> {
@@ -124,10 +144,6 @@ impl DialogueEditor {
     
     pub fn choices_count(&self) -> Result<usize> {
         Ok(self.tree.as_ref().ok_or(anyhow!("tried to access choices of inactive dialogue tree"))?.get_active_node()?.choices_count_unconditional())
-    }
-
-    pub fn choice_attributes() -> Vec<ChoiceAttribute> {
-        CHOICE_ATTRIBUTES.iter().map(|attr| *attr).collect()
     }
 }
 
@@ -199,7 +215,8 @@ impl Screen for DialogueEditor {
                 UiKey::MoveUp => return Some(UiCallbackPreset::MoveDialogueEditorCursor(Direction1D::Up)),
                 UiKey::MoveDown => return Some(UiCallbackPreset::MoveDialogueEditorCursor(Direction1D::Down)),
                 UiKey::Confirm => return Some(UiCallbackPreset::DialogueEditorAddEntry),
-                UiKey::EditOption => return Some(UiCallbackPreset::DialogueEditorEditEntry),
+                UiKey::EditOption => return Some(UiCallbackPreset::DialogueEditorAddAttr),
+                UiKey::RemoveItem => return Some(UiCallbackPreset::DialogueEditorRemoveAttr),
                 UiKey::ExitSubmenu => return Some(UiCallbackPreset::ExitDialogueEditor),
                 _ => {}
             }
@@ -213,7 +230,7 @@ impl Screen for DialogueEditor {
     }
 }
 
-impl TryFrom<BuilderDest> for ChoiceAttribute {
+impl TryFrom<BuilderDest> for DialogueAttr {
     type Error = anyhow::Error;
 
     fn try_from(value: BuilderDest) -> std::result::Result<Self, Self::Error> {
@@ -224,25 +241,32 @@ impl TryFrom<BuilderDest> for ChoiceAttribute {
     }
 }
 
-impl FromStr for ChoiceAttribute {
-    type Err = anyhow::Error;
+#[cfg(test)]
+mod tests {
+    use quietude::world::{conditions::WorldCondition, item::{BookType, ItemType}};
 
-    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
-        match s {
-            "Preconditions" => Ok(ChoiceAttribute::Preconditions),
-            "Outcomes" => Ok(ChoiceAttribute::Outcomes),
-            "Destination" => Ok(ChoiceAttribute::Destination),
-            _ => Err(anyhow!("cannot convert {s} to choice attribute")),
-        }
-    }
-}
+    use crate::utils::UnsortedEq;
 
-impl Display for ChoiceAttribute {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            ChoiceAttribute::Preconditions => write!(f, "Preconditions"),
-            ChoiceAttribute::Outcomes => write!(f, "Outcomes"),
-            ChoiceAttribute::Destination => write!(f, "Destination"),
-        }
+    use super::*;
+
+    #[test]
+    fn add_and_remove_attrs() {
+        let mut editor = DialogueEditor::new();
+        let tree = DialogueTree::new("test");
+        editor.start(&tree);
+        editor.cursor_pos += 1;
+        editor.edit_current_entry_text(&FormattedString::default());
+       
+        let precondition = DialogueAttr::Precondition(DialoguePrecondition::InterlocutorHasItem(ItemType::Book(BookType::Babel)));
+        let outcome = DialogueAttr::Outcome(DialogueOutcome::RemoveWorldCondition(WorldCondition::DiscoveredTimeIsles));
+        editor.add_entry_attr(precondition.clone()).unwrap();
+        editor.add_entry_attr(outcome.clone()).unwrap();
+
+        let attrs = vec![precondition.clone(), outcome.clone()];
+        assert!(attrs.unsorted_eq(editor.removeable_attrs().unwrap()));
+
+        editor.remove_entry_attr(precondition.clone());
+        let attrs = vec![outcome.clone()];
+        assert!(attrs.unsorted_eq(editor.removeable_attrs().unwrap()));
     }
 }
