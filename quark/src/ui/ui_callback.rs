@@ -140,7 +140,9 @@ impl UiCallbackPreset {
                 TextEditorLoc::DataBuilder => {
                     let s = app.ui.data_builder.text_editor.text();
                     app.ui.data_builder.text_editor.on_exit.take().unwrap()(&s, &mut app.ui)?;
-                    app.ui.data_builder.state = None;
+                    app.ui.popup_state = None;
+                    app.ui.data_builder.cb.take().unwrap()(app.ui.data_builder.dest.take().unwrap(), &mut app.ui)?;
+                    app.ui.data_builder.reset();
                 }
             },
             UiCallbackPreset::ConfirmChoice(loc) => match loc {

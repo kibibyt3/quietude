@@ -60,7 +60,7 @@ pub enum BuilderState {
     Text,
 }
 
-#[derive(Serialize, FromStr, Display)]
+#[derive(Debug, PartialEq, Serialize, FromStr, Display)]
 #[display("{0}")]
 pub enum BuilderData {
     DialoguePrecondition(DialoguePrecondition),
@@ -564,5 +564,34 @@ impl From<ArmourType> for BuilderData {
 impl From<u32> for BuilderData {
     fn from(value: u32) -> Self {
         BuilderData::U32(value)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn iterate_choices() {
+        let mut builder = DataBuilder::default();
+        
+        builder.build(BuilderData::DialoguePrecondition(Default::default()), BuilderDest::default(), |_, _| { Ok(()) });
+        builder.iterate(BuilderData::DialoguePrecondition(DialoguePrecondition::InterlocutorHasSpecificItem(Default::default())));
+        builder.iterate(BuilderData::U32(1));
+        assert_eq!(builder.data.take().unwrap(), BuilderData::DialoguePrecondition(DialoguePrecondition::InterlocutorHasSpecificItem(1)));
+    }
+
+    #[test]
+    fn iterate_text() {
+        let mut builder = DataBuilder::default();
+        builder.build(BuilderData::DialoguePrecondition(Default::default()), BuilderDest::default(), |_, _| { Ok(()) });
+        builder.iterate(BuilderData::DialoguePrecondition(DialoguePrecondition::InterlocutorHasItem(Default::default())));
+        builder.iterate(BuilderData::ItemType(ItemType::Book(Default::default())));
+        builder.iterate(BuilderData::BookType(BookType::ILoveYou));
+
+        assert_eq!(
+            builder.data.take().unwrap(),
+            BuilderData::DialoguePrecondition(DialoguePrecondition::InterlocutorHasItem(ItemType::Book(BookType::ILoveYou))),
+        );
     }
 }
