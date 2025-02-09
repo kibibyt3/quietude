@@ -34,11 +34,6 @@ impl ChoiceMenu {
         self.index
     }
 
-    // TODO: remove later
-    pub fn exit(&mut self) {
-        let s = &self.options[self.index];
-        (self.on_exit.take().unwrap())(s);
-    }
 }
 
 impl Default for ChoiceMenu {

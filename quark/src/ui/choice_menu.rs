@@ -69,11 +69,6 @@ impl ChoiceMenu {
         self.index
     }
 
-    // TODO: remove later
-    pub fn exit(&self, ui: &mut Ui) -> Result<Option<PopupState>> {
-        let s = &self.options[self.index];
-        (self.on_exit.as_ref().unwrap().clone())(s, ui)
-    }
 }
 
 impl Screen for ChoiceMenu {
