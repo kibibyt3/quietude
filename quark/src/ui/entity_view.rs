@@ -25,13 +25,6 @@ pub struct EntityView {
     cursor_pos: usize,
 }
 
-/* TODO: remove later */
-#[derive(Default)]
-pub struct ChoiceAttributeEditor {
-    pub attr: EntityAttributeChoice,
-    pub menu: ChoiceMenu,
-}
-
 impl EntityView {
     pub fn new() -> Self {
         EntityView {
