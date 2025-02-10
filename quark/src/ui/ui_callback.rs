@@ -141,7 +141,7 @@ impl UiCallbackPreset {
                     let s = app.ui.data_builder.text_editor.text();
                     app.ui.data_builder.text_editor.on_exit.take().unwrap()(&s, &mut app.ui)?;
                     app.ui.popup_state = None;
-                    app.ui.data_builder.cb.take().unwrap()(app.ui.data_builder.dest.take().unwrap(), &mut app.ui)?;
+                    app.ui.data_builder.cb.take().unwrap()(app.ui.data_builder.data()?, &mut app.ui)?;
                     app.ui.data_builder.reset();
                 }
             },
@@ -158,7 +158,7 @@ impl UiCallbackPreset {
                     app.ui.popup_state =
                         app.ui.data_builder.choice_menu.on_exit.take().unwrap()(s, &mut app.ui)?;
                     if app.ui.popup_state.is_none() {
-                        app.ui.data_builder.cb.take().unwrap()(app.ui.data_builder.dest.take().unwrap(), &mut app.ui)?;
+                        app.ui.data_builder.cb.take().unwrap()(app.ui.data_builder.data()?, &mut app.ui)?;
                         app.ui.data_builder.reset();
                     }
                 }

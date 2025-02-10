@@ -44,7 +44,7 @@ use super::{
 // ______________________________
 
 pub struct DataBuilder {
-    pub data: Option<BuilderData>,
+    data: Option<BuilderData>,
     pub state: Option<BuilderState>,
     pub cb: Option<fn(BuilderDest, &mut Ui) -> Result<()>>,
     depth: usize,
@@ -73,11 +73,13 @@ pub enum BuilderData {
     U32(u32),
 }
 
-#[derive(Default, Debug)]
+#[derive(Display, Default, Debug)]
+#[display("{}")]
 pub enum BuilderDest {
     #[default]
     None,
-    ChoiceAttribute(DialogueAttr),
+    #[display("{}({0})")]
+    DialogueAttr(DialogueAttr),
 }
 
 impl DataBuilder {
@@ -109,9 +111,20 @@ impl DataBuilder {
     /// Iterates the data builder one step deeper.
     /// If the final depth has been reached, returns true.
     fn iterate(&mut self, data: BuilderData) -> Result<()> {
+        debug!("iterating data. prev is {}", self.data.as_ref().unwrap());
         self.data.as_mut().unwrap().elaborate(data, self.depth)?;
+        debug!("iterating data. new is {}", self.data.as_ref().unwrap());
         self.depth += 1;
         Ok(())
+    }
+
+    pub fn data(&mut self) -> Result<BuilderDest> {
+        let data = self.data.take().ok_or(anyhow!("cannot retrieve data in inactive data builder"))?;
+        let dest = self.dest.take().ok_or(anyhow!("cannot retrieve dest in inactive data builder"))?;
+        match dest {
+            BuilderDest::None => Err(anyhow!("cannot deliver {data} to {dest}")),
+            BuilderDest::DialogueAttr(_) => Ok(BuilderDest::try_from(data)?),
+        }
     }
 
     fn choice_cb(s: &str, ui: &mut Ui) -> Result<Option<PopupState>> {
@@ -515,7 +528,23 @@ impl TryInto<DialogueOutcome> for BuilderData {
 
 impl From<DialogueAttr> for BuilderDest {
     fn from(value: DialogueAttr) -> Self {
-        BuilderDest::ChoiceAttribute(value)
+        BuilderDest::DialogueAttr(value)
+    }
+}
+
+impl TryFrom<BuilderData> for BuilderDest {
+    type Error = anyhow::Error;
+
+    fn try_from(value: BuilderData) -> std::result::Result<Self, Self::Error> {
+        match value {
+            BuilderData::DialoguePrecondition(precondition) => Ok(
+                BuilderDest::DialogueAttr(DialogueAttr::Precondition(precondition))
+            ),
+            BuilderData::DialogueOutcome(outcome) => Ok(
+                BuilderDest::DialogueAttr(DialogueAttr::Outcome(outcome))
+            ),
+            _ => Err(anyhow!("cannot convert {value} to a builder destination")),
+        }
     }
 }
 
@@ -575,19 +604,19 @@ mod tests {
     fn iterate_choices() {
         let mut builder = DataBuilder::default();
         
-        builder.build(BuilderData::DialoguePrecondition(Default::default()), BuilderDest::default(), |_, _| { Ok(()) });
-        builder.iterate(BuilderData::DialoguePrecondition(DialoguePrecondition::InterlocutorHasSpecificItem(Default::default())));
-        builder.iterate(BuilderData::U32(1));
+        builder.build(BuilderData::DialoguePrecondition(Default::default()), BuilderDest::default(), |_, _| { Ok(()) }).unwrap();
+        builder.iterate(BuilderData::DialoguePrecondition(DialoguePrecondition::InterlocutorHasSpecificItem(Default::default()))).unwrap();
+        builder.iterate(BuilderData::U32(1)).unwrap();
         assert_eq!(builder.data.take().unwrap(), BuilderData::DialoguePrecondition(DialoguePrecondition::InterlocutorHasSpecificItem(1)));
     }
 
     #[test]
     fn iterate_text() {
         let mut builder = DataBuilder::default();
-        builder.build(BuilderData::DialoguePrecondition(Default::default()), BuilderDest::default(), |_, _| { Ok(()) });
-        builder.iterate(BuilderData::DialoguePrecondition(DialoguePrecondition::InterlocutorHasItem(Default::default())));
-        builder.iterate(BuilderData::ItemType(ItemType::Book(Default::default())));
-        builder.iterate(BuilderData::BookType(BookType::ILoveYou));
+        builder.build(BuilderData::DialoguePrecondition(Default::default()), BuilderDest::default(), |_, _| { Ok(()) }).unwrap();
+        builder.iterate(BuilderData::DialoguePrecondition(DialoguePrecondition::InterlocutorHasItem(Default::default()))).unwrap();
+        builder.iterate(BuilderData::ItemType(ItemType::Book(Default::default()))).unwrap();
+        builder.iterate(BuilderData::BookType(BookType::ILoveYou)).unwrap();
 
         assert_eq!(
             builder.data.take().unwrap(),

@@ -236,7 +236,7 @@ impl TryFrom<BuilderDest> for DialogueAttr {
     fn try_from(value: BuilderDest) -> std::result::Result<Self, Self::Error> {
         match value {
             BuilderDest::None => Err(anyhow!("cannot convert {value:?} to ChoiceAttribute")),
-            BuilderDest::ChoiceAttribute(attr) => Ok(attr),
+            BuilderDest::DialogueAttr(attr) => Ok(attr),
         }
     }
 }
