@@ -46,7 +46,12 @@ impl Tui {
     }
 
     pub fn restore() -> Result<()> {
-        execute!(stdout(), cursor::Show, DisableMouseCapture, LeaveAlternateScreen)?;
+        execute!(
+            stdout(),
+            cursor::Show,
+            DisableMouseCapture,
+            LeaveAlternateScreen
+        )?;
         disable_raw_mode()?;
         Ok(())
     }

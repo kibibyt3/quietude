@@ -1,10 +1,20 @@
 use anyhow::Result;
-use crossterm::{event::KeyEvent};
+use crossterm::event::KeyEvent;
 use quietude::{types::FormattedString, world::world::World};
-use ratatui::{layout::{Constraint, Direction, Layout}, prelude::Rect, widgets::{Block, Clear}, Frame};
+use ratatui::{
+    layout::{Constraint, Direction, Layout},
+    prelude::Rect,
+    widgets::{Block, Clear},
+    Frame,
+};
 use tui_textarea::TextArea;
 
-use super::{control_scheme::{ControlSchemeType, UiKey}, traits::Screen, ui::{Ui, UiState}, ui_callback::UiCallbackPreset};
+use super::{
+    control_scheme::{ControlSchemeType, UiKey},
+    traits::Screen,
+    ui::{Ui, UiState},
+    ui_callback::UiCallbackPreset,
+};
 
 /* TODO: maybe try to make this struct have a generic for the style of the title, default, and text
  * eventually
@@ -77,7 +87,7 @@ impl Screen for TextEditor {
                 Constraint::Length(1),
             ])
             .split(layout[1]);
-        
+
         let b = Block::bordered().title(self.title.to_string());
         frame.render_widget(Clear, area);
         frame.render_widget(b, area);
@@ -86,8 +96,12 @@ impl Screen for TextEditor {
         Ok(())
     }
 
-    fn handle_key_events(&mut self, key_event: KeyEvent, scheme: ControlSchemeType, world: &World)
-        -> Option<UiCallbackPreset> {
+    fn handle_key_events(
+        &mut self,
+        key_event: KeyEvent,
+        scheme: ControlSchemeType,
+        world: &World,
+    ) -> Option<UiCallbackPreset> {
         let keys = match scheme.keys_from_code(key_event.code) {
             Some(keys) => keys,
             None => &vec![],

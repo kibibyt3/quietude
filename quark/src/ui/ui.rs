@@ -1,10 +1,21 @@
 use anyhow::Result;
 use crossterm::event::KeyEvent;
-use quietude::{types::{Direction1D, Direction3D}, world::world::World};
-use ratatui::{layout::{Constraint, Direction, Layout}, style::Style, Frame};
+use quietude::{
+    types::{Direction1D, Direction3D},
+    world::world::World,
+};
+use ratatui::{
+    layout::{Constraint, Direction, Layout},
+    style::Style,
+    Frame,
+};
 use tui_textarea::TextArea;
 
-use super::{choice_menu::ChoiceMenu, chunk_editor::ChunkEditor, control_scheme::ControlSchemeType, data_builder::DataBuilder, dialogue_editor::DialogueEditor, popup_message::PopupMessage, text_editor::TextEditor, traits::Screen, ui_callback::UiCallbackPreset};
+use super::{
+    choice_menu::ChoiceMenu, chunk_editor::ChunkEditor, control_scheme::ControlSchemeType,
+    data_builder::DataBuilder, dialogue_editor::DialogueEditor, popup_message::PopupMessage,
+    text_editor::TextEditor, traits::Screen, ui_callback::UiCallbackPreset,
+};
 
 pub struct Ui {
     pub state: UiState,
@@ -73,10 +84,14 @@ impl Ui {
             return self.popup_messages[0].consumes_input(&mut self.popup_input, key, &scheme);
         }
         if self.popup_state.is_some() {
-            return self.get_active_popup_mut().unwrap().handle_key_events(key, scheme, world);
+            return self
+                .get_active_popup_mut()
+                .unwrap()
+                .handle_key_events(key, scheme, world);
         }
 
-        self.get_active_screen_mut().handle_key_events(key, scheme, world)
+        self.get_active_screen_mut()
+            .handle_key_events(key, scheme, world)
     }
 
     fn get_active_screen_mut(&mut self) -> &mut dyn Screen {
@@ -99,7 +114,7 @@ impl Ui {
                 PopupState::ChoiceMenu => Some(&mut self.choice_menu),
                 PopupState::TextEditor => Some(&mut self.text_editor),
                 PopupState::DataBuilder => Some(&mut self.data_builder),
-            }
+            },
             None => None,
         }
     }
@@ -120,7 +135,7 @@ impl Ui {
                 .constraints([
                     Constraint::Length(10),
                     Constraint::Min(20),
-                    Constraint::Length(10)
+                    Constraint::Length(10),
                 ])
                 .split(f.area());
 
@@ -133,7 +148,9 @@ impl Ui {
                 ])
                 .split(layout[1]);
 
-            self.get_active_popup_mut().unwrap().render(f, world, layout[1])?;
+            self.get_active_popup_mut()
+                .unwrap()
+                .render(f, world, layout[1])?;
         }
         if self.popup_messages.len() > 0 {
             let layout = Layout::default()
@@ -141,7 +158,7 @@ impl Ui {
                 .constraints([
                     Constraint::Length(30),
                     Constraint::Min(12),
-                    Constraint::Length(30)
+                    Constraint::Length(30),
                 ])
                 .split(f.area());
 
@@ -150,7 +167,7 @@ impl Ui {
                 .constraints([
                     Constraint::Length(15),
                     Constraint::Min(6),
-                    Constraint::Length(15)
+                    Constraint::Length(15),
                 ])
                 .split(layout[1]);
 

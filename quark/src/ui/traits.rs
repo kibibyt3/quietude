@@ -12,8 +12,12 @@ pub trait Screen {
 
     fn render(&mut self, frame: &mut Frame, world: &World, area: Rect) -> Result<()>;
 
-    fn handle_key_events(&mut self, key_event: KeyEvent, scheme: ControlSchemeType, world: &World)
-        -> Option<UiCallbackPreset>;
+    fn handle_key_events(
+        &mut self,
+        key_event: KeyEvent,
+        scheme: ControlSchemeType,
+        world: &World,
+    ) -> Option<UiCallbackPreset>;
 
     fn refresh_rate(&self) -> u16;
 }

@@ -1,7 +1,13 @@
 use anyhow::Result;
 use crossterm::event::KeyEvent;
 use quietude::types::{Color, FormattedString};
-use ratatui::{layout::Rect, style::Style, text::Line, widgets::{Block, Clear, Paragraph}, Frame};
+use ratatui::{
+    layout::Rect,
+    style::Style,
+    text::Line,
+    widgets::{Block, Clear, Paragraph},
+    Frame,
+};
 use serde::{Deserialize, Serialize};
 use tui_textarea::TextArea;
 

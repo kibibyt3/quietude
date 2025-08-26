@@ -141,7 +141,10 @@ impl UiCallbackPreset {
                     let s = app.ui.data_builder.text_editor.text();
                     app.ui.data_builder.text_editor.on_exit.take().unwrap()(&s, &mut app.ui)?;
                     app.ui.popup_state = None;
-                    app.ui.data_builder.cb.take().unwrap()(app.ui.data_builder.data()?, &mut app.ui)?;
+                    app.ui.data_builder.cb.take().unwrap()(
+                        app.ui.data_builder.data()?,
+                        &mut app.ui,
+                    )?;
                     app.ui.data_builder.reset();
                 }
             },
@@ -158,7 +161,10 @@ impl UiCallbackPreset {
                     app.ui.popup_state =
                         app.ui.data_builder.choice_menu.on_exit.take().unwrap()(s, &mut app.ui)?;
                     if app.ui.popup_state.is_none() {
-                        app.ui.data_builder.cb.take().unwrap()(app.ui.data_builder.data()?, &mut app.ui)?;
+                        app.ui.data_builder.cb.take().unwrap()(
+                            app.ui.data_builder.data()?,
+                            &mut app.ui,
+                        )?;
                         app.ui.data_builder.reset();
                     }
                 }
@@ -209,9 +215,8 @@ impl UiCallbackPreset {
                     let index = ui.dialogue_editor.cursor_pos;
                     if let DialogueAttr::Destination(_) = attr {
                         let cb = |s: &FormattedString, ui: &mut Ui| -> Result<()> {
-                            ui.dialogue_editor.add_entry_attr(
-                                DialogueAttr::Destination(s.to_string()),
-                            )?;
+                            ui.dialogue_editor
+                                .add_entry_attr(DialogueAttr::Destination(s.to_string()))?;
                             Ok(())
                         };
                         let title = format!("Option {index} Destination");
@@ -267,7 +272,7 @@ impl UiCallbackPreset {
                     .iter()
                     .map(|attr| attr.to_string())
                     .collect();
-                
+
                 app.ui.choice_menu = ChoiceMenu::new(choices, ChoiceMenuLoc::Global, cb);
                 app.ui.popup_state = Some(PopupState::ChoiceMenu);
             }

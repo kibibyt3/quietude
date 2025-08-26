@@ -75,9 +75,7 @@ impl ControlScheme {
             scheme
                 .controls
                 .insert(KeyCode::Up, vec![UiKey::MoveNorth, UiKey::MoveUp]);
-            scheme
-                .controls
-                .insert(KeyCode::Left, vec![UiKey::MoveWest]);
+            scheme.controls.insert(KeyCode::Left, vec![UiKey::MoveWest]);
             scheme
                 .controls
                 .insert(KeyCode::Down, vec![UiKey::MoveSouth, UiKey::MoveDown]);
@@ -96,9 +94,10 @@ impl ControlScheme {
             scheme
                 .controls
                 .insert(KeyCode::Char('x'), vec![UiKey::Save]);
-            scheme
-                .controls
-                .insert(KeyCode::Char('e'), vec![UiKey::EditEntity, UiKey::EditOption]);
+            scheme.controls.insert(
+                KeyCode::Char('e'),
+                vec![UiKey::EditEntity, UiKey::EditOption],
+            );
             scheme
                 .controls
                 .insert(KeyCode::Char('a'), vec![UiKey::AddItem]);
@@ -125,7 +124,8 @@ impl ControlSchemeType {
         match self {
             ControlSchemeType::Default => ControlScheme::default_scheme(),
         }
-        .controls.get(&code)
+        .controls
+        .get(&code)
     }
 }
 

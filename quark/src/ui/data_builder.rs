@@ -5,12 +5,14 @@ use crossterm::event::KeyEvent;
 use log::debug;
 use parse_display::{Display, FromStr};
 use quietude::{
-    types::FormattedString, ui::utils::centered_rect, world::{
+    types::FormattedString,
+    ui::utils::centered_rect,
+    world::{
         conditions::WorldCondition,
         dialogue::{DialogueOutcome, DialoguePrecondition},
         item::{ArmourType, BookType, ItemType, WeaponType},
         world::World,
-    }
+    },
 };
 use ratatui::{prelude::Rect, widgets::Block, Frame};
 use serde::Serialize;
@@ -119,8 +121,14 @@ impl DataBuilder {
     }
 
     pub fn data(&mut self) -> Result<BuilderDest> {
-        let data = self.data.take().ok_or(anyhow!("cannot retrieve data in inactive data builder"))?;
-        let dest = self.dest.take().ok_or(anyhow!("cannot retrieve dest in inactive data builder"))?;
+        let data = self
+            .data
+            .take()
+            .ok_or(anyhow!("cannot retrieve data in inactive data builder"))?;
+        let dest = self
+            .dest
+            .take()
+            .ok_or(anyhow!("cannot retrieve dest in inactive data builder"))?;
         match dest {
             BuilderDest::None => Err(anyhow!("cannot deliver {data} to {dest}")),
             BuilderDest::DialogueAttr(_) => Ok(BuilderDest::try_from(data)?),
@@ -134,8 +142,7 @@ impl DataBuilder {
         match next_state {
             Some(state) => match state {
                 BuilderState::Choice => {
-                    ui.data_builder.choice_menu = 
-                    ChoiceMenu::new(
+                    ui.data_builder.choice_menu = ChoiceMenu::new(
                         ui.data_builder
                             .choices()?
                             .iter()
@@ -145,10 +152,12 @@ impl DataBuilder {
                         DataBuilder::choice_cb,
                     );
                 }
-                BuilderState::Text => ui.data_builder.text_editor = 
+                BuilderState::Text => {
+                    ui.data_builder.text_editor = 
                     // TODO: maybe add an appropriate title & default
-                    TextEditor::new("", &s.parse::<BuilderData>()?.inner().ok_or(anyhow!("{s} has no inner"))?.to_string(), TextEditorLoc::DataBuilder, DataBuilder::text_cb),
-            }
+                    TextEditor::new("", &s.parse::<BuilderData>()?.inner().ok_or(anyhow!("{s} has no inner"))?.to_string(), TextEditorLoc::DataBuilder, DataBuilder::text_cb)
+                }
+            },
             None => {
                 ui.data_builder.state = next_state;
                 /*ui.data_builder.call()?;*/
@@ -388,7 +397,7 @@ impl BuilderData {
                         error
                     }
                 }
-            }
+            },
             BuilderData::DialogueOutcome(inner) => match inner {
                 DialogueOutcome::GiveInterlocutorItem(inner) => {
                     if let BuilderData::ItemType(value) = value {
@@ -430,7 +439,7 @@ impl BuilderData {
                         error
                     }
                 }
-            }
+            },
             BuilderData::ItemType(inner) => match inner {
                 ItemType::Book(inner) => {
                     if let BuilderData::BookType(value) = value {
@@ -457,10 +466,12 @@ impl BuilderData {
                     }
                 }
                 ItemType::Torch => Err(anyhow!("cannot set inner value for {self}")),
-            }
+            },
             BuilderData::WorldCondition(inner) => match inner {
-                WorldCondition::DiscoveredTimeIsles => Err(anyhow!("cannot set inner value for {self}")),
-            }
+                WorldCondition::DiscoveredTimeIsles => {
+                    Err(anyhow!("cannot set inner value for {self}"))
+                }
+            },
             _ => Err(anyhow!("cannot set inner value for {self}")),
         }
     }
@@ -468,27 +479,43 @@ impl BuilderData {
     fn inner(&self) -> Option<BuilderData> {
         match self {
             BuilderData::DialoguePrecondition(inner) => match inner {
-                DialoguePrecondition::InterlocutorHasSpecificItem(inner) => Some(BuilderData::from(inner.clone())),
-                DialoguePrecondition::InterlocutorHasItem(inner) => Some(BuilderData::from(inner.clone())),
-                DialoguePrecondition::WorldConditionIsActive(inner) => Some(BuilderData::from(inner.clone())),
-                DialoguePrecondition::WorldConditionIsInactive(inner) => Some(BuilderData::from(inner.clone())),
-            }
+                DialoguePrecondition::InterlocutorHasSpecificItem(inner) => {
+                    Some(BuilderData::from(inner.clone()))
+                }
+                DialoguePrecondition::InterlocutorHasItem(inner) => {
+                    Some(BuilderData::from(inner.clone()))
+                }
+                DialoguePrecondition::WorldConditionIsActive(inner) => {
+                    Some(BuilderData::from(inner.clone()))
+                }
+                DialoguePrecondition::WorldConditionIsInactive(inner) => {
+                    Some(BuilderData::from(inner.clone()))
+                }
+            },
             BuilderData::DialogueOutcome(inner) => match inner {
-                DialogueOutcome::GiveInterlocutorItem(inner) => Some(BuilderData::from(inner.clone())),
-                DialogueOutcome::GiveInterlocutorSpecificItem(inner) => Some(BuilderData::from(inner.clone())),
-                DialogueOutcome::TakeInterlocutorSpecificItem(inner) => Some(BuilderData::from(inner.clone())),
+                DialogueOutcome::GiveInterlocutorItem(inner) => {
+                    Some(BuilderData::from(inner.clone()))
+                }
+                DialogueOutcome::GiveInterlocutorSpecificItem(inner) => {
+                    Some(BuilderData::from(inner.clone()))
+                }
+                DialogueOutcome::TakeInterlocutorSpecificItem(inner) => {
+                    Some(BuilderData::from(inner.clone()))
+                }
                 DialogueOutcome::AddWorldCondition(inner) => Some(BuilderData::from(inner.clone())),
-                DialogueOutcome::RemoveWorldCondition(inner) => Some(BuilderData::from(inner.clone())),
-            }
+                DialogueOutcome::RemoveWorldCondition(inner) => {
+                    Some(BuilderData::from(inner.clone()))
+                }
+            },
             BuilderData::ItemType(inner) => match inner {
                 ItemType::Book(inner) => Some(BuilderData::from(inner.clone())),
                 ItemType::Weapon(inner) => Some(BuilderData::from(inner.clone())),
                 ItemType::Armour(inner) => Some(BuilderData::from(inner.clone())),
                 ItemType::Torch => None,
-            }
+            },
             BuilderData::WorldCondition(inner) => match inner {
                 WorldCondition::DiscoveredTimeIsles => None,
-            }
+            },
             _ => None,
         }
     }
@@ -509,7 +536,9 @@ impl From<PopupState> for BuilderState {
         match value {
             PopupState::ChoiceMenu => BuilderState::Choice,
             PopupState::TextEditor => BuilderState::Text,
-            PopupState::DataBuilder => panic!("cannot convert popup state {value:?} to builder state"),
+            PopupState::DataBuilder => {
+                panic!("cannot convert popup state {value:?} to builder state")
+            }
         }
     }
 }
@@ -537,12 +566,12 @@ impl TryFrom<BuilderData> for BuilderDest {
 
     fn try_from(value: BuilderData) -> std::result::Result<Self, Self::Error> {
         match value {
-            BuilderData::DialoguePrecondition(precondition) => Ok(
-                BuilderDest::DialogueAttr(DialogueAttr::Precondition(precondition))
-            ),
-            BuilderData::DialogueOutcome(outcome) => Ok(
-                BuilderDest::DialogueAttr(DialogueAttr::Outcome(outcome))
-            ),
+            BuilderData::DialoguePrecondition(precondition) => Ok(BuilderDest::DialogueAttr(
+                DialogueAttr::Precondition(precondition),
+            )),
+            BuilderData::DialogueOutcome(outcome) => {
+                Ok(BuilderDest::DialogueAttr(DialogueAttr::Outcome(outcome)))
+            }
             _ => Err(anyhow!("cannot convert {value} to a builder destination")),
         }
     }
@@ -603,24 +632,53 @@ mod tests {
     #[test]
     fn iterate_choices() {
         let mut builder = DataBuilder::default();
-        
-        builder.build(BuilderData::DialoguePrecondition(Default::default()), BuilderDest::default(), |_, _| { Ok(()) }).unwrap();
-        builder.iterate(BuilderData::DialoguePrecondition(DialoguePrecondition::InterlocutorHasSpecificItem(Default::default()))).unwrap();
+
+        builder
+            .build(
+                BuilderData::DialoguePrecondition(Default::default()),
+                BuilderDest::default(),
+                |_, _| Ok(()),
+            )
+            .unwrap();
+        builder
+            .iterate(BuilderData::DialoguePrecondition(
+                DialoguePrecondition::InterlocutorHasSpecificItem(Default::default()),
+            ))
+            .unwrap();
         builder.iterate(BuilderData::U32(1)).unwrap();
-        assert_eq!(builder.data.take().unwrap(), BuilderData::DialoguePrecondition(DialoguePrecondition::InterlocutorHasSpecificItem(1)));
+        assert_eq!(
+            builder.data.take().unwrap(),
+            BuilderData::DialoguePrecondition(DialoguePrecondition::InterlocutorHasSpecificItem(1))
+        );
     }
 
     #[test]
     fn iterate_text() {
         let mut builder = DataBuilder::default();
-        builder.build(BuilderData::DialoguePrecondition(Default::default()), BuilderDest::default(), |_, _| { Ok(()) }).unwrap();
-        builder.iterate(BuilderData::DialoguePrecondition(DialoguePrecondition::InterlocutorHasItem(Default::default()))).unwrap();
-        builder.iterate(BuilderData::ItemType(ItemType::Book(Default::default()))).unwrap();
-        builder.iterate(BuilderData::BookType(BookType::ILoveYou)).unwrap();
+        builder
+            .build(
+                BuilderData::DialoguePrecondition(Default::default()),
+                BuilderDest::default(),
+                |_, _| Ok(()),
+            )
+            .unwrap();
+        builder
+            .iterate(BuilderData::DialoguePrecondition(
+                DialoguePrecondition::InterlocutorHasItem(Default::default()),
+            ))
+            .unwrap();
+        builder
+            .iterate(BuilderData::ItemType(ItemType::Book(Default::default())))
+            .unwrap();
+        builder
+            .iterate(BuilderData::BookType(BookType::ILoveYou))
+            .unwrap();
 
         assert_eq!(
             builder.data.take().unwrap(),
-            BuilderData::DialoguePrecondition(DialoguePrecondition::InterlocutorHasItem(ItemType::Book(BookType::ILoveYou))),
+            BuilderData::DialoguePrecondition(DialoguePrecondition::InterlocutorHasItem(
+                ItemType::Book(BookType::ILoveYou)
+            )),
         );
     }
 }

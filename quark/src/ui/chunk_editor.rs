@@ -1,11 +1,25 @@
 use anyhow::Result;
 use crossterm::event::KeyEvent;
 use quietude::{
-    constants::{MAX_COORDS, MIN_COORDS}, types::{Coords3D, Direction3D}, world::{chunk::Chunk, entity::Entity, world::World}
+    constants::{MAX_COORDS, MIN_COORDS},
+    types::{Coords3D, Direction3D},
+    world::{chunk::Chunk, entity::Entity, world::World},
 };
-use ratatui::{layout::{Constraint, Direction, Layout, Rect}, style::{Modifier, Style, Stylize}, text::{Line, Span}, widgets::{Block, Borders, Padding, Paragraph}, Frame};
+use ratatui::{
+    layout::{Constraint, Direction, Layout, Rect},
+    style::{Modifier, Style, Stylize},
+    text::{Line, Span},
+    widgets::{Block, Borders, Padding, Paragraph},
+    Frame,
+};
 
-use super::{control_scheme::{ControlSchemeType, UiKey}, cursor::Cursor, entity_view::EntityView, traits::Screen, ui_callback::UiCallbackPreset};
+use super::{
+    control_scheme::{ControlSchemeType, UiKey},
+    cursor::Cursor,
+    entity_view::EntityView,
+    traits::Screen,
+    ui_callback::UiCallbackPreset,
+};
 
 pub struct ChunkEditor {
     pub state: ChunkEditorState,
@@ -98,7 +112,9 @@ impl Screen for ChunkEditor {
         let block = Block::default()
             .borders(Borders::ALL)
             .title("Chunk Editor")
-            .padding(Padding::top(((area.height - (MAX_COORDS.1 - MIN_COORDS.1) as u16) / 2) - 1));
+            .padding(Padding::top(
+                ((area.height - (MAX_COORDS.1 - MIN_COORDS.1) as u16) / 2) - 1,
+            ));
         let p = Paragraph::new(lines).block(block).centered();
 
         frame.render_widget(p, area);
@@ -132,7 +148,7 @@ impl Screen for ChunkEditor {
         if self.state == ChunkEditorState::EntityView {
             return self.entity_view.refresh_rate();
         }
-        
+
         60
     }
 
@@ -153,15 +169,27 @@ impl Screen for ChunkEditor {
 
         for key in keys {
             match key {
-                UiKey::MoveNorth => return Some(UiCallbackPreset::MoveChunkEditorCursor(Direction3D::North)),
-                UiKey::MoveEast => return Some(UiCallbackPreset::MoveChunkEditorCursor(Direction3D::East)),
-                UiKey::MoveWest => return Some(UiCallbackPreset::MoveChunkEditorCursor(Direction3D::West)),
-                UiKey::MoveSouth => return Some(UiCallbackPreset::MoveChunkEditorCursor(Direction3D::South)),
-                UiKey::MoveUp => return Some(UiCallbackPreset::MoveChunkEditorCursor(Direction3D::Up)),
-                UiKey::MoveDown => return Some(UiCallbackPreset::MoveChunkEditorCursor(Direction3D::Down)),
+                UiKey::MoveNorth => {
+                    return Some(UiCallbackPreset::MoveChunkEditorCursor(Direction3D::North))
+                }
+                UiKey::MoveEast => {
+                    return Some(UiCallbackPreset::MoveChunkEditorCursor(Direction3D::East))
+                }
+                UiKey::MoveWest => {
+                    return Some(UiCallbackPreset::MoveChunkEditorCursor(Direction3D::West))
+                }
+                UiKey::MoveSouth => {
+                    return Some(UiCallbackPreset::MoveChunkEditorCursor(Direction3D::South))
+                }
+                UiKey::MoveUp => {
+                    return Some(UiCallbackPreset::MoveChunkEditorCursor(Direction3D::Up))
+                }
+                UiKey::MoveDown => {
+                    return Some(UiCallbackPreset::MoveChunkEditorCursor(Direction3D::Down))
+                }
                 UiKey::EditEntity => return Some(UiCallbackPreset::EditEntity(self.cursor.coords)),
                 UiKey::Save => return Some(UiCallbackPreset::SaveToDisk),
-                _ => {},
+                _ => {}
             }
         }
 

@@ -1,17 +1,23 @@
-use std::{io, path::{Path, PathBuf}};
+use std::{
+    io,
+    path::{Path, PathBuf},
+};
 
 use anyhow::Result;
 use crossterm::event::{self, poll, Event, KeyCode, KeyEvent};
 use log::{error, info};
 use quietude::{
-    types::{FormattedString, FormattedText}, ui::choice_menu, utils::frequency_to_period, world::{chunk::Chunk, log::StringStyle, world::World}
+    types::{FormattedString, FormattedText},
+    ui::choice_menu,
+    utils::frequency_to_period,
+    world::{chunk::Chunk, log::StringStyle, world::World},
 };
 use ratatui::{prelude::CrosstermBackend, Frame};
 
 use crate::{
-    store::{guarantee_project_structure, load_project, register_save_path, save_project}, types::Message, ui::{
-        choice_menu::ChoiceMenu, popup_message::PopupMessage, tui::Tui, ui::Ui
-    }
+    store::{guarantee_project_structure, load_project, register_save_path, save_project},
+    types::Message,
+    ui::{choice_menu::ChoiceMenu, popup_message::PopupMessage, tui::Tui, ui::Ui},
 };
 
 pub struct App {
@@ -34,12 +40,24 @@ impl App {
             s.trim().to_string()
         });
 
-        register_save_path(Path::new(&project_dir)).unwrap_or_else(|e| panic!("{e} while registering save path"));
+        if project_dir.is_empty() {
+            panic!("Project directory cannot be empty.");
+        }
+
+        register_save_path(Path::new(&project_dir))
+            .unwrap_or_else(|e| panic!("{e} while registering save path"));
 
         let (id, chunk) = {
             let project_dir = Path::new(&project_dir);
-            if guarantee_project_structure(&project_dir).unwrap_or_else(|e| panic!("{e} while checking project directory structure")) {
-                load_project(&project_dir).unwrap_or_else(|e| panic!("{e} while loading project from path {}", project_dir.to_str().unwrap()))
+            if guarantee_project_structure(&project_dir)
+                .unwrap_or_else(|e| panic!("{e} while checking project directory structure"))
+            {
+                load_project(&project_dir).unwrap_or_else(|e| {
+                    panic!(
+                        "{e} while loading project from path {}",
+                        project_dir.to_str().unwrap()
+                    )
+                })
             } else {
                 (0, Chunk::default())
             }
@@ -138,5 +156,4 @@ impl App {
         self.running = false;
         Ok(())
     }
-
 }

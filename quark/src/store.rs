@@ -1,8 +1,17 @@
-use std::{fs::DirBuilder, path::{Path, PathBuf}, sync::OnceLock};
+use std::{
+    fs::DirBuilder,
+    path::{Path, PathBuf},
+    sync::OnceLock,
+};
 
 use anyhow::{anyhow, Result};
 use log::info;
-use quietude::{constants::{SAVE_EXTENSION, WORLD_DIR_NAME, WORLD_FILENAME}, store::{load, save}, types::Coords4D, world::chunk::Chunk};
+use quietude::{
+    constants::{SAVE_EXTENSION, WORLD_DIR_NAME, WORLD_FILENAME},
+    store::{load, save},
+    types::Coords4D,
+    world::chunk::Chunk,
+};
 
 use crate::app::App;
 
@@ -11,7 +20,7 @@ pub fn save_project(app: &App) -> Result<()> {
     if !guarantee_project_structure(Path::new(&project_dir))? {
         return Err(anyhow!("project structure was invalid"));
     }
-   
+
     project_dir.push(WORLD_DIR_NAME);
 
     let mut world_path = project_dir.clone();
@@ -36,10 +45,7 @@ pub fn load_project(path: &Path) -> Result<(u32, Chunk)> {
     world_path.push(WORLD_DIR_NAME);
     world_path.push(format!("{WORLD_FILENAME}{SAVE_EXTENSION}"));
     info!("Loading world from {}", path.to_string_lossy());
-    Ok((
-        load(&world_path)?,
-        load_chunk(&path, Coords4D(0, 0, 0, 0))?,
-    ))
+    Ok((load(&world_path)?, load_chunk(&path, Coords4D(0, 0, 0, 0))?))
 }
 
 pub fn load_chunk(path: &Path, chunk_coords: Coords4D) -> Result<Chunk> {
@@ -51,9 +57,7 @@ pub fn load_chunk(path: &Path, chunk_coords: Coords4D) -> Result<Chunk> {
     path.push(WORLD_DIR_NAME);
     path.push(format!("{}{SAVE_EXTENSION}", chunk_coords));
     info!("Loading chunk from {}", path.as_path().to_string_lossy());
-    Ok(
-        load(path.as_path())?
-    )
+    Ok(load(path.as_path())?)
 }
 
 static SAVE_PATH: OnceLock<PathBuf> = OnceLock::new();
@@ -79,9 +83,7 @@ pub fn guarantee_project_structure(path: &Path) -> Result<bool> {
     let mut path = path.to_path_buf();
     path.push(WORLD_DIR_NAME);
     if !Path::new(&path).exists() {
-        DirBuilder::new()
-            .recursive(true)
-            .create(&path)?;
+        DirBuilder::new().recursive(true).create(&path)?;
         info!("Created project directories in {}", path.to_string_lossy());
         Ok(false)
     } else {

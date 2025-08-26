@@ -1,9 +1,17 @@
 use anyhow::{anyhow, Result};
 use crossterm::event::KeyEvent;
 use quietude::{
-    types::{Coords3D, Direction1D, FormattedString, FormattedText}, ui::traits::ChoiceAttribute, world::{
-        chunk::Chunk, entity::{Entity, EntityAttribute, EntityAttributeChoice, EntityAttributeText, EntityType, Opacity, Size}, log::StringStyle, world::World
-    }
+    types::{Coords3D, Direction1D, FormattedString, FormattedText},
+    ui::traits::ChoiceAttribute,
+    world::{
+        chunk::Chunk,
+        entity::{
+            Entity, EntityAttribute, EntityAttributeChoice, EntityAttributeText, EntityType,
+            Opacity, Size,
+        },
+        log::StringStyle,
+        world::World,
+    },
 };
 use ratatui::{
     layout::{Constraint, Direction, Layout, Rect},
@@ -17,7 +25,10 @@ use tui_textarea::TextArea;
 use crate::store::get_save_path;
 
 use super::{
-    choice_menu::ChoiceMenu, control_scheme::{ControlSchemeType, UiKey}, traits::Screen, ui_callback::UiCallbackPreset
+    choice_menu::ChoiceMenu,
+    control_scheme::{ControlSchemeType, UiKey},
+    traits::Screen,
+    ui_callback::UiCallbackPreset,
 };
 
 pub struct EntityView {
@@ -65,27 +76,41 @@ impl EntityView {
     }
 
     pub fn set_choice_attr(&mut self, attr: EntityAttributeChoice, s: &str) -> Result<()> {
-        let entity = self.entity.as_mut().ok_or(anyhow!("tried to access empty entity"))?;
+        let entity = self
+            .entity
+            .as_mut()
+            .ok_or(anyhow!("tried to access empty entity"))?;
         match attr {
             EntityAttributeChoice::Type => entity.entity_type = EntityType::from_str(s)?.clone(),
             EntityAttributeChoice::IsRooted => entity.is_rooted = Some(bool::from_str(s)?.clone()),
-            EntityAttributeChoice::HasAgency => entity.has_agency = Some(bool::from_str(s)?.clone()),
+            EntityAttributeChoice::HasAgency => {
+                entity.has_agency = Some(bool::from_str(s)?.clone())
+            }
             EntityAttributeChoice::Allegiance => todo!(),
             EntityAttributeChoice::Opacity => entity.opacity = Some(Opacity::from_str(s)?.clone()),
             EntityAttributeChoice::Size => entity.size = Some(Size::from_str(s)?.clone()),
         }
 
         Ok(())
-
     }
 
     pub fn get_current_av_pair(&self) -> Result<(EntityAttribute, FormattedString)> {
-        let (attr, val) = Self::index_to_attribute_lookup(self.cursor_pos, self.entity.as_ref().ok_or(anyhow!("tried to get current attribute of empty entity"))?)?;
+        let (attr, val) = Self::index_to_attribute_lookup(
+            self.cursor_pos,
+            self.entity
+                .as_ref()
+                .ok_or(anyhow!("tried to get current attribute of empty entity"))?,
+        )?;
         Ok((attr.clone(), val.clone()))
     }
 
     pub fn entity_name(&self) -> Result<String> {
-        Ok(self.entity.as_ref().ok_or(anyhow!("tried to access empty entity"))?.name.to_string())
+        Ok(self
+            .entity
+            .as_ref()
+            .ok_or(anyhow!("tried to access empty entity"))?
+            .name
+            .to_string())
     }
 
     pub fn index_to_attribute_lookup(
@@ -106,22 +131,30 @@ impl EntityView {
             "index {index} does not compute to a valid attribute"
         )))
     }
-    
+
     pub fn add_attribute(&mut self, attr: &EntityAttribute) -> Result<()> {
-        self.entity.as_mut().ok_or(anyhow!("tried to access empty entity"))?.add_attribute(attr, &get_save_path())
+        self.entity
+            .as_mut()
+            .ok_or(anyhow!("tried to access empty entity"))?
+            .add_attribute(attr, &get_save_path())
     }
 
     pub fn remove_attribute(&mut self, attr: &EntityAttribute) -> Result<()> {
-        self.entity.as_mut().ok_or(anyhow!("tried to access empty entity"))?.remove_attribute(attr, &get_save_path())
+        self.entity
+            .as_mut()
+            .ok_or(anyhow!("tried to access empty entity"))?
+            .remove_attribute(attr, &get_save_path())
     }
 
     pub fn has_attribute(&self, attr: &EntityAttribute) -> Result<bool> {
-        Ok(self.entity.as_ref().ok_or(anyhow!("tried to access empty entity"))?.has_attribute(attr, &get_save_path()))
+        Ok(self
+            .entity
+            .as_ref()
+            .ok_or(anyhow!("tried to access empty entity"))?
+            .has_attribute(attr, &get_save_path()))
     }
 
-    pub fn attribute_list(
-        entity: &Entity,
-    ) -> Result<Vec<(FormattedText, FormattedString)>> {
+    pub fn attribute_list(entity: &Entity) -> Result<Vec<(FormattedText, FormattedString)>> {
         let mut index = 0;
         let mut list = vec![];
         for attr in EntityAttribute::attribute_order() {
@@ -152,17 +185,22 @@ impl EntityView {
                         .unwrap_or_else(|| {
                             panic!("tried to move cursor without actively editing entity")
                         })
-                        .attribute_count(&get_save_path()) - 1
+                        .attribute_count(&get_save_path())
+                        - 1
                 {
                     self.cursor_pos += 1;
                 }
             }
-
         }
     }
 
     pub fn validate_cursor_pos(&mut self) {
-        let max = self.entity.as_ref().unwrap_or_else(|| panic!("tried to access empty entity")).attribute_count(&get_save_path()) - 1;
+        let max = self
+            .entity
+            .as_ref()
+            .unwrap_or_else(|| panic!("tried to access empty entity"))
+            .attribute_count(&get_save_path())
+            - 1;
         if max < self.cursor_pos {
             self.cursor_pos = max;
         }
@@ -204,9 +242,9 @@ impl Screen for EntityView {
             lines.push(line);
         }
 
-        let block = Block::default().borders(Borders::ALL).title(format!(
-            "{}", entity.coords
-        ));
+        let block = Block::default()
+            .borders(Borders::ALL)
+            .title(format!("{}", entity.coords));
 
         let p = Paragraph::new(lines).block(block);
         frame.render_widget(Clear, area);
@@ -260,7 +298,6 @@ impl Screen for EntityView {
             }
         }
 
-
         None
     }
 
@@ -268,4 +305,3 @@ impl Screen for EntityView {
         60
     }
 }
-

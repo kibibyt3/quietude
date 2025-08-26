@@ -20,7 +20,6 @@ struct Args {
     project_directory: Option<String>,
 }
 
-
 fn main() -> Result<()> {
     let stderr = ConsoleAppender::builder().target(Target::Stderr).build();
 

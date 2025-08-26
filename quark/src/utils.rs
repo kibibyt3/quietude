@@ -13,7 +13,10 @@ where
         let lookup = |iter: Self| -> HashMap<U, usize> {
             let mut lookup = HashMap::new();
             for value in iter {
-                lookup.entry(value).and_modify(|counter| *counter += 1).or_insert(1);
+                lookup
+                    .entry(value)
+                    .and_modify(|counter| *counter += 1)
+                    .or_insert(1);
             }
             lookup
         };

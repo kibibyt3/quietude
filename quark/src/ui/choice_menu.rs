@@ -36,7 +36,11 @@ pub enum ChoiceMenuLoc {
 }
 
 impl ChoiceMenu {
-    pub fn new(options: Vec<String>, location: ChoiceMenuLoc, on_exit: fn(&str, &mut Ui) -> Result<Option<PopupState>>) -> Self {
+    pub fn new(
+        options: Vec<String>,
+        location: ChoiceMenuLoc,
+        on_exit: fn(&str, &mut Ui) -> Result<Option<PopupState>>,
+    ) -> Self {
         ChoiceMenu {
             index: 0,
             options,
@@ -68,7 +72,6 @@ impl ChoiceMenu {
     pub fn get_cursor_pos(&self) -> usize {
         self.index
     }
-
 }
 
 impl Screen for ChoiceMenu {
@@ -81,10 +84,13 @@ impl Screen for ChoiceMenu {
 
         let mut choices = self.options.clone();
         if let Some(delimiter) = self.abbr_delim {
-            choices = choices.iter().map(|s| match s.split_once(delimiter) {
-                Some((s, _)) => s.to_string(),
-                None => s.to_string(),
-            }).collect();
+            choices = choices
+                .iter()
+                .map(|s| match s.split_once(delimiter) {
+                    Some((s, _)) => s.to_string(),
+                    None => s.to_string(),
+                })
+                .collect();
         }
 
         for (i, option) in choices.iter().enumerate() {
@@ -116,10 +122,16 @@ impl Screen for ChoiceMenu {
         for key in keys {
             match key {
                 UiKey::MoveDown => {
-                    return Some(UiCallbackPreset::MoveChoiceMenuCursor(Direction1D::Down, self.location));
+                    return Some(UiCallbackPreset::MoveChoiceMenuCursor(
+                        Direction1D::Down,
+                        self.location,
+                    ));
                 }
                 UiKey::MoveUp => {
-                    return Some(UiCallbackPreset::MoveChoiceMenuCursor(Direction1D::Up, self.location));
+                    return Some(UiCallbackPreset::MoveChoiceMenuCursor(
+                        Direction1D::Up,
+                        self.location,
+                    ));
                 }
                 UiKey::Confirm => {
                     return Some(UiCallbackPreset::ConfirmChoice(self.location));
