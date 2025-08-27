@@ -1,0 +1,1 @@
+cargo test && cargo build && ./target/debug/quark $@ 2> /dev/null

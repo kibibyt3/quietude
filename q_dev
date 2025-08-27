@@ -1,0 +1,1 @@
+cargo test && cargo build && ./target/debug/quietude $@ 2> /dev/null
