@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use anyhow::Result;
+use anyhow::{bail, Result};
 use log::debug;
 use quietude::{
     types::{Coords3D, Direction1D, Direction3D, FormattedString},
@@ -265,13 +265,17 @@ impl UiCallbackPreset {
                     ui.dialogue_editor.remove_entry_attr(attr)?;
                     Ok(None)
                 };
-                let choices = app
+                let choices: Vec<_> = app
                     .ui
                     .dialogue_editor
                     .removeable_attrs()?
                     .iter()
                     .map(|attr| attr.to_string())
                     .collect();
+
+                if choices.is_empty() {
+                    bail!("no removeable attributes");
+                }
 
                 app.ui.choice_menu = ChoiceMenu::new(choices, ChoiceMenuLoc::Global, cb);
                 app.ui.popup_state = Some(PopupState::ChoiceMenu);
