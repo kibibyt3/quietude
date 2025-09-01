@@ -285,12 +285,12 @@ impl Screen for DataBuilder {
     }
 
     fn handle_key_events(
-        &mut self,
+        &self,
         key_event: KeyEvent,
         scheme: ControlSchemeType,
         world: &World,
     ) -> Option<UiCallbackPreset> {
-        self.get_active_screen_mut()
+        self.get_active_screen()
             .expect("cannot handle key events for inactive data builder")
             .handle_key_events(key_event, scheme, world)
     }

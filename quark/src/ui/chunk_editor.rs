@@ -153,7 +153,7 @@ impl Screen for ChunkEditor {
     }
 
     fn handle_key_events(
-        &mut self,
+        &self,
         key_event: KeyEvent,
         scheme: ControlSchemeType,
         world: &World,

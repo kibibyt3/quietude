@@ -22,7 +22,7 @@ use super::{
 #[derive(Default)]
 pub struct TextEditor {
     title: String,
-    text_area: TextArea<'static>,
+    pub text_area: TextArea<'static>,
     pub on_exit: Option<fn(&FormattedString, &mut Ui) -> Result<()>>,
     location: TextEditorLoc,
 }
@@ -97,7 +97,7 @@ impl Screen for TextEditor {
     }
 
     fn handle_key_events(
-        &mut self,
+        &self,
         key_event: KeyEvent,
         scheme: ControlSchemeType,
         world: &World,
@@ -113,9 +113,7 @@ impl Screen for TextEditor {
             }
         }
 
-        self.text_area.input(key_event);
-
-        None
+        return Some(UiCallbackPreset::TextEditorInput(key_event));
     }
 
     fn refresh_rate(&self) -> u16 {

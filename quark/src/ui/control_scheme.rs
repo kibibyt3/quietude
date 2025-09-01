@@ -6,6 +6,7 @@ use crossterm::event::KeyCode;
 pub enum ControlSchemeType {
     #[default]
     Default,
+    Debug,
 }
 
 struct ControlScheme {
@@ -110,12 +111,37 @@ impl ControlScheme {
             scheme
         })
     }
+
+    fn debug_scheme() -> &'static ControlScheme {
+        static SCHEME: OnceLock<ControlScheme> = OnceLock::new();
+        SCHEME.get_or_init(|| {
+            let mut scheme = ControlScheme {
+                controls: HashMap::new(),
+            };
+            scheme
+                .controls
+                .insert(KeyCode::Char('w'), vec![UiKey::MoveNorth, UiKey::MoveUp]);
+            scheme
+                .controls
+                .insert(KeyCode::Char('a'), vec![UiKey::MoveWest, UiKey::AddItem]);
+            scheme
+                .controls
+                .insert(KeyCode::Char('s'), vec![UiKey::MoveSouth, UiKey::MoveDown]);
+            scheme
+                .controls
+                .insert(KeyCode::Char('d'), vec![UiKey::MoveEast]);
+            scheme
+        })
+    }
+
+
 }
 
 impl ControlSchemeType {
     pub fn code_yields_key(&self, code: KeyCode, key: UiKey) -> bool {
         match self {
             ControlSchemeType::Default => ControlScheme::default_scheme(),
+            ControlSchemeType::Debug => ControlScheme::debug_scheme(),
         }
         .code_yields_key(code, key)
     }
@@ -123,9 +149,37 @@ impl ControlSchemeType {
     pub fn keys_from_code(&self, code: KeyCode) -> Option<&'static Vec<UiKey>> {
         match self {
             ControlSchemeType::Default => ControlScheme::default_scheme(),
+            ControlSchemeType::Debug => ControlScheme::debug_scheme(),
         }
         .controls
         .get(&code)
+    }
+
+    pub fn mapped_keys(&self) -> Vec<&'static KeyCode> {
+        let scheme = match self {
+            ControlSchemeType::Default => ControlScheme::default_scheme(),
+            ControlSchemeType::Debug => ControlScheme::debug_scheme(),
+        };
+        scheme.controls.iter().map(|(code, _)| code).collect()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::utils::UnsortedEq;
+
+    use super::*;
+
+    #[test]
+    fn mapped_keys() {
+        ControlSchemeType::Debug.mapped_keys().unsorted_eq(
+            vec![
+                &KeyCode::Char('w'),
+                &KeyCode::Char('a'),
+                &KeyCode::Char('s'),
+                &KeyCode::Char('d'),
+            ]
+        );
     }
 }
 

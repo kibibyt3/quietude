@@ -1,6 +1,7 @@
 use std::str::FromStr;
 
 use anyhow::{bail, Result};
+use crossterm::event::KeyEvent;
 use log::debug;
 use quietude::{
     types::{Coords3D, Direction1D, Direction3D, FormattedString},
@@ -35,6 +36,7 @@ pub enum UiCallbackPreset {
     AddEntityAttribute,
     RemoveEntityAttribute(EntityAttribute),
     ConfirmText(TextEditorLoc),
+    TextEditorInput(KeyEvent),
     ExitTextEditor(TextEditorLoc),
     ExitEntityView,
     MoveDialogueEditorCursor(Direction1D),
@@ -130,6 +132,9 @@ impl UiCallbackPreset {
             UiCallbackPreset::RemoveEntityAttribute(attr) => {
                 app.ui.chunk_editor.entity_view.remove_attribute(attr)?;
                 app.ui.chunk_editor.entity_view.validate_cursor_pos();
+            }
+            UiCallbackPreset::TextEditorInput(key_event) => {
+                app.ui.text_editor.text_area.input(*key_event);
             }
             UiCallbackPreset::ConfirmText(loc) => match loc {
                 TextEditorLoc::Global => {

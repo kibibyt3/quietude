@@ -254,7 +254,7 @@ impl Screen for EntityView {
     }
 
     fn handle_key_events(
-        &mut self,
+        &self,
         key_event: KeyEvent,
         scheme: ControlSchemeType,
         _world: &World,
