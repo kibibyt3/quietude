@@ -29,22 +29,6 @@ use super::{
 };
 
 #[derive(Default)]
-// TODO: in the long run it might be better to have everything happen in one menu
-// this would involve getting rid of ChoiceMenuLoc and TextEditorLoc
-// e.g.
-// ______________________________
-// |                             |
-// |   Opt1                      |
-// | > Opt2(_)                   |
-// |   |--InnerOpt1              |
-// |   |--InnerOpt2              |
-// |   |--InnerOpt3(_)           |
-// |   |  |--InnerInner1         |
-// |   |  |--InnerInner2         |
-// |   Opt3                      |
-// |                             |
-// ______________________________
-
 pub struct DataBuilder {
     data: Option<BuilderData>,
     pub state: Option<BuilderState>,
